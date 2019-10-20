@@ -9,6 +9,7 @@ class Tree(QTreeWidget):
     def __init__(self):
         super().__init__()
         self.setMinimumSize(QSize(100, 200))
+        self.setHeaderHidden(True)
         self.menu = ManageMenu(self)
 
     def sizeHint(self):
