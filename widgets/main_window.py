@@ -1,22 +1,23 @@
 from PyQt5.QtWidgets import QMainWindow, QFrame, QHBoxLayout, QSplitter
 
+from .actions import *
 from .editor import Editor
 from .menus import ManageMenu
 from .tree import Tree
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, all_actions):
         super().__init__()
         self.setWindowTitle('Strainer')
 
-        tree = Tree()
-        self.menuBar().addMenu(tree.menu)
+        manage_menu = ManageMenu(self, all_actions)
+        self.menuBar().addMenu(manage_menu)
 
         frame = QFrame(self)
         layout = QHBoxLayout()
         splitter = QSplitter()
-        splitter.addWidget(tree)
+        splitter.addWidget(Tree(manage_menu))
         splitter.addWidget(Editor())
         layout.addWidget(splitter)
         frame.setLayout(layout)

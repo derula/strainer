@@ -3,22 +3,31 @@ from PyQt5.QtWidgets import QMenu
 from .actions import *
 
 
-class ManageMenu(QMenu):
-    ACCOUNT_ACTIONS = [AddAccount, EditAccount, RemoveAccount]
-    SCRIPT_ACTIONS = [NewScript, ToggleScript, DeleteScript]
-
-    def __init__(self, parent):
-        super().__init__('Manage', parent)
-        self.actions = {}
-        for cls in self.ACCOUNT_ACTIONS:
-            action = self.actions[cls] = cls(parent)
-            self.addAction(action)
-        self.addSeparator()
-        for cls in self.SCRIPT_ACTIONS:
-            action = self.actions[cls] = cls(parent)
-            self.addAction(action)
+class MyMenu(QMenu):
+    def __init__(self, parent, all_actions):
+        super().__init__(self._text, parent)
+        self._actions = []
+        for action in self.__class__._actions:
+            if action:
+                action = all_actions[action]
+                action.setParent(self)
+                self.addAction(action)
+            else:
+                self.addSeparator()
         self.aboutToShow.connect(self.onAboutToShow)
 
+    def addAction(self, action):
+        super().addAction(action)
+        self._actions.append(action)
+
     def onAboutToShow(self):
-        for action in self.actions.values():
+        for action in self._actions:
             action.update()
+
+    def relatesTo(self, obj):
+        for action in self._actions:
+            action.relatesTo(obj)
+
+class ManageMenu(MyMenu):
+    _text = 'Manage'
+    _actions = [AddAccount, EditAccount, RemoveAccount, None, NewScript, ToggleScript, DeleteScript]
