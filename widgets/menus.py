@@ -10,7 +10,6 @@ class MyMenu(QMenu):
         for action in self.__class__._actions:
             if action:
                 action = all_actions[action]
-                action.setParent(self)
                 self.addAction(action)
             else:
                 self.addSeparator()
