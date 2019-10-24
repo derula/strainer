@@ -17,9 +17,14 @@ class MainWindow(QMainWindow):
         frame = QFrame(self)
         layout = QHBoxLayout()
         splitter = QSplitter()
-        splitter.addWidget(Tree(manage_menu))
+        tree = Tree(manage_menu)
+        splitter.addWidget(tree)
         splitter.addWidget(Editor())
         layout.addWidget(splitter)
         frame.setLayout(layout)
         self.setCentralWidget(frame)
+        self._tree = tree
 
+    @property
+    def tree(self):
+        return self._tree
