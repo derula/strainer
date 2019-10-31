@@ -1,12 +1,13 @@
 from PyQt5.QtCore import Qt, QSize, pyqtSignal
-from PyQt5.QtGui import QContextMenuEvent
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem
+from PyQt5.QtGui import QContextMenuEvent, QBrush, QColor
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QHeaderView
 
 
 class TreeItem(QTreeWidgetItem):
     def __init__(self, value):
-        super().__init__([''])
+        super().__init__(['', ''])
         self.value = value
+        self.setForeground(1, QBrush(QColor('red')))
 
     @property
     def value(self):
@@ -22,6 +23,7 @@ class Tree(QTreeWidget):
     addAccount = pyqtSignal()
     editAccount = pyqtSignal(TreeItem)
     removeAccount = pyqtSignal(TreeItem)
+    reloadAccount = pyqtSignal(TreeItem)
 
     def __init__(self, menu):
         super().__init__()
@@ -55,7 +57,11 @@ class Tree(QTreeWidget):
         self.editAccount.emit(self.currentItem())
 
     def onRemoveAccountTriggered(self, event):
-        self.deleteAccount.emit(self.currentItem())
+        self.removeAccount.emit(self.currentItem())
+
+    def onReloadAccountTriggered(self, event):
+        item = self.currentItem()
+        self.reloadAccount.emit(item.parent() or item)
 
     def onItemActivated(self, item):
         if item.parent() is None:
@@ -63,6 +69,8 @@ class Tree(QTreeWidget):
 
     def onItemChanged(self, item):
         self.sortItems(0, Qt.AscendingOrder)
+        if item.parent() is None:
+            self.reloadAccount.emit(item)
 
     def addTopLevelItem(self, item):
         super().addTopLevelItem(item)
@@ -78,3 +86,5 @@ class Tree(QTreeWidget):
             if key == Qt.Key_Delete:
                 if item.parent() is None:
                     self.removeAccount.emit(item)
+            elif key == Qt.Key_F5:
+                self.reloadAccount.emit(item.parent() or item)

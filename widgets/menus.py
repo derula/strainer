@@ -29,4 +29,8 @@ class MyMenu(QMenu):
 
 class ManageMenu(MyMenu):
     _text = 'Manage'
-    _actions = [AddAccount, EditAccount, RemoveAccount, None, NewScript, ToggleScript, DeleteScript]
+    _actions = [
+        AddAccount, EditAccount, RemoveAccount, None,
+        ReloadAccount, None,
+        NewScript, ToggleScript, DeleteScript
+    ]
