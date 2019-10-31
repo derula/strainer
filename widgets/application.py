@@ -14,28 +14,28 @@ class Application(QApplication):
         for action in actions.__all__:
             cls = getattr(actions, action)
             all_actions[cls] = cls(None)
-        self._main_window = MainWindow(all_actions)
-        self._main_window.tree.addAccount.connect(self.addAccount)
-        self._main_window.tree.editAccount.connect(self.editAccount)
-        self._main_window.tree.removeAccount.connect(self.removeAccount)
-        self._main_window.show()
-        self._account_window = AccountWindow(self._main_window)
+        self._mainWindow = MainWindow(all_actions)
+        self._mainWindow.tree.addAccount.connect(self.addAccount)
+        self._mainWindow.tree.editAccount.connect(self.editAccount)
+        self._mainWindow.tree.removeAccount.connect(self.removeAccount)
+        self._mainWindow.show()
+        self._accountWindow = AccountWindow(self._mainWindow)
 
     def addAccount(self):
-        result = self._account_window.exec()
+        result = self._accountWindow.exec()
         if result is not None:
             item = TreeItem(result)
-            self._main_window.tree.addTopLevelItem(item)
-            self._main_window.tree.setCurrentItem(item)
-        self._main_window.tree.setFocus(Qt.PopupFocusReason)
+            self._mainWindow.tree.addTopLevelItem(item)
+            self._mainWindow.tree.setCurrentItem(item)
+        self._mainWindow.tree.setFocus(Qt.PopupFocusReason)
 
     def editAccount(self, item):
-        result = self._account_window.exec(item.value)
+        result = self._accountWindow.exec(item.value)
         if result is not None:
             item.value = result
-            self._main_window.tree.setCurrentItem(item)
-        self._main_window.tree.setFocus(Qt.PopupFocusReason)
+            self._mainWindow.tree.setCurrentItem(item)
+        self._mainWindow.tree.setFocus(Qt.PopupFocusReason)
 
     def removeAccount(self, item):
-        tree = self._main_window.tree
+        tree = self._mainWindow.tree
         tree.takeTopLevelItem(tree.indexOfTopLevelItem(item))

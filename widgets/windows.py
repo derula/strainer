@@ -12,13 +12,13 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle('Strainer')
 
-        manage_menu = ManageMenu(self, all_actions)
-        self.menuBar().addMenu(manage_menu)
+        manageMenu = ManageMenu(self, all_actions)
+        self.menuBar().addMenu(manageMenu)
 
         frame = QFrame(self)
         layout = QHBoxLayout()
         splitter = QSplitter()
-        tree = Tree(manage_menu)
+        tree = Tree(manageMenu)
         splitter.addWidget(tree)
         splitter.addWidget(Editor())
         layout.addWidget(splitter)
