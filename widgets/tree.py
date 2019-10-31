@@ -35,6 +35,7 @@ class Tree(QTreeWidget):
             except AttributeError:
                 pass
         self.itemActivated.connect(self.onItemActivated)
+        self.itemChanged.connect(self.onItemChanged)
 
     def sizeHint(self):
         return QSize(150, 300)
@@ -54,6 +55,13 @@ class Tree(QTreeWidget):
     def onItemActivated(self, item):
         if item.parent() is None:
             self.editAccount.emit(item)
+
+    def onItemChanged(self, item):
+        self.sortItems(0, Qt.AscendingOrder)
+
+    def addTopLevelItem(self, item):
+        super().addTopLevelItem(item)
+        self.onItemChanged(item)
 
     def keyPressEvent(self, event):
         super().keyPressEvent(event)
