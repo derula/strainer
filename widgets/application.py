@@ -21,11 +21,12 @@ class Application(QApplication):
         all_actions[actions.EditAccount].triggered.connect(self.onEditAccountTriggered)
         all_actions[actions.RemoveAccount].triggered.connect(self.onRemoveAccountTriggered)
         self._main_window.tree.itemDoubleClicked.connect(self.onTreeItemDoubleClicked)
+        self._main_window.tree.addAccount.connect(self.addAccount)
+        self._main_window.tree.editAccount.connect(self.editAccount)
+        self._main_window.tree.removeAccount.connect(self.removeAccount)
 
     def onAddAccountTriggered(self, event):
-        result = self._account_window.exec()
-        if result is not None:
-            self._main_window.tree.addTopLevelItem(TreeItem(result))
+        self.addAccount()
 
     def onEditAccountTriggered(self, event):
         self.editAccount(self._main_window.tree.currentItem())
@@ -35,10 +36,24 @@ class Application(QApplication):
             self.editAccount(item)
 
     def onRemoveAccountTriggered(self, event):
-        tree = self._main_window.tree
-        tree.takeTopLevelItem(tree.indexOfTopLevelItem(tree.currentItem()))
+        item = self._main_window.tree.currentItem()
+        self.deleteAccount(item)
+
+    def addAccount(self):
+        result = self._account_window.exec()
+        if result is not None:
+            item = TreeItem(result)
+            self._main_window.tree.addTopLevelItem(item)
+            self._main_window.tree.setCurrentItem(item)
+        self._main_window.tree.setFocus(Qt.PopupFocusReason)
 
     def editAccount(self, item):
         result = self._account_window.exec(item.value)
         if result is not None:
             item.value = result
+            self._main_window.tree.setCurrentItem(item)
+        self._main_window.tree.setFocus(Qt.PopupFocusReason)
+
+    def removeAccount(self, item):
+        tree = self._main_window.tree
+        tree.takeTopLevelItem(tree.indexOfTopLevelItem(item))
