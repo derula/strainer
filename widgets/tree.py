@@ -26,6 +26,11 @@ class Tree(QTreeWidget):
     def __init__(self, menu):
         super().__init__()
         self.setMinimumSize(QSize(100, 200))
+        self.setColumnCount(2)
+        self.header().setMinimumSectionSize(0)
+        self.header().setStretchLastSection(False)
+        self.header().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.header().setSectionResizeMode(1, QHeaderView.ResizeToContents)
         self.setHeaderHidden(True)
         menu.relatesTo(self)
         self._menu = menu
