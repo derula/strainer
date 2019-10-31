@@ -34,7 +34,7 @@ class Tree(QTreeWidget):
                 action.triggered.connect(getattr(self, f'on{action.__class__.__name__}Triggered'))
             except AttributeError:
                 pass
-        self.itemDoubleClicked.connect(self.onItemDoubleClicked)
+        self.itemActivated.connect(self.onItemActivated)
 
     def sizeHint(self):
         return QSize(150, 300)
@@ -51,7 +51,7 @@ class Tree(QTreeWidget):
     def onRemoveAccountTriggered(self, event):
         self.deleteAccount.emit(self.currentItem())
 
-    def onItemDoubleClicked(self, item):
+    def onItemActivated(self, item):
         if item.parent() is None:
             self.editAccount.emit(item)
 
@@ -62,9 +62,6 @@ class Tree(QTreeWidget):
         if key == Qt.Key_Insert:
             self.addAccount.emit()
         elif item is not None:
-            if key == Qt.Key_Return:
-                if item.parent() is None:
-                    self.editAccount.emit(item)
             if key == Qt.Key_Delete:
                 if item.parent() is None:
                     self.removeAccount.emit(item)
