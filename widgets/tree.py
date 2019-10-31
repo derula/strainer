@@ -1,13 +1,32 @@
+from enum import Enum, auto
+
 from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent, QBrush, QColor
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QHeaderView
 
 
+class TreeItemStatus(Enum):
+    Normal = auto()
+    Loading = auto()
+    Error = auto()
+
 class TreeItem(QTreeWidgetItem):
     def __init__(self, value):
         super().__init__(['', ''])
+        self._tree = None
         self.value = value
-        self.setForeground(1, QBrush(QColor('red')))
+
+    def setStatus(self, status, toolTip=''):
+        brush = self.foreground(0)
+        if status == TreeItemStatus.Loading:
+            self.setText(1, '…')
+        elif status == TreeItemStatus.Error:
+            self.setText(1, '!')
+            brush.setColor(QColor('red'))
+        else:
+            self.setText(1, '')
+        self.setForeground(1, brush)
+        self.setToolTip(1, toolTip)
 
     @property
     def value(self):
@@ -74,6 +93,7 @@ class Tree(QTreeWidget):
 
     def addTopLevelItem(self, item):
         super().addTopLevelItem(item)
+        item._tree = self
         self.onItemChanged(item)
 
     def keyPressEvent(self, event):

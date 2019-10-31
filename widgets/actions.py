@@ -10,30 +10,31 @@ class MyAction(QAction):
         self._related = None
 
     def update(self):
-        pass
+        self.setEnabled(self._shouldEnable())
 
     def relatesTo(self, obj):
         self._related = obj
 
+    def _shouldEnable(self):
+        return not self._related.signalsBlocked()
+
 class AccountAction(MyAction):
-    def update(self):
+    def _shouldEnable(self):
         try:
-            enabled = self._related.currentItem().parent() is None
+            return super()._shouldEnable() and self._related.currentItem().parent() is None
         except AttributeError:
-            enabled = False
-        self.setEnabled(enabled)
+            return False
 
 class ScriptAction(MyAction):
-    def update(self):
+    def _shouldEnable(self):
         try:
-            enabled = self._related.currentItem().parent() is not None
+            return super()._shouldEnable() and self._related.currentItem().parent() is not None
         except AttributeError:
-            enabled = False
-        self.setEnabled(enabled)
+            return False
 
 class NonEmptyAction(MyAction):
-    def update(self):
-        self.setEnabled(self._related.currentItem() is not None)
+    def _shouldEnable(self):
+        return super()._shouldEnable() and self._related.currentItem() is not None
 
 class AddAccount(MyAction):
     _text = 'Add account'
@@ -50,8 +51,8 @@ class ReloadAccount(NonEmptyAction):
 class NewScript(NonEmptyAction):
     _text = 'New script'
 
-class ToggleScript(ScriptAction, MyAction):
+class ToggleScript(ScriptAction):
     _text = 'Activate script'
 
-class DeleteScript(ScriptAction, MyAction):
+class DeleteScript(ScriptAction):
     _text = 'Delete script'
