@@ -2,10 +2,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 
 from . import actions
-from .account_window import AccountWindow
-from .main_window import MainWindow
 from .menus import ManageMenu
 from .tree import TreeItem
+from .windows import AccountWindow, MainWindow
 
 
 class Application(QApplication):
