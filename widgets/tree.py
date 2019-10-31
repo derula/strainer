@@ -29,12 +29,31 @@ class Tree(QTreeWidget):
         self.setHeaderHidden(True)
         menu.relatesTo(self)
         self._menu = menu
+        for action in menu.actions():
+            try:
+                action.triggered.connect(getattr(self, f'on{action.__class__.__name__}Triggered'))
+            except AttributeError:
+                pass
+        self.itemDoubleClicked.connect(self.onItemDoubleClicked)
 
     def sizeHint(self):
         return QSize(150, 300)
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         self._menu.popup(event.globalPos())
+
+    def onAddAccountTriggered(self, event):
+        self.addAccount.emit()
+
+    def onEditAccountTriggered(self, event):
+        self.editAccount.emit(self.currentItem())
+
+    def onRemoveAccountTriggered(self, event):
+        self.deleteAccount.emit(self.currentItem())
+
+    def onItemDoubleClicked(self, item):
+        if item.parent() is None:
+            self.editAccount.emit(item)
 
     def keyPressEvent(self, event):
         super().keyPressEvent(event)

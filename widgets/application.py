@@ -15,29 +15,11 @@ class Application(QApplication):
             cls = getattr(actions, action)
             all_actions[cls] = cls(None)
         self._main_window = MainWindow(all_actions)
-        self._account_window = AccountWindow(self._main_window)
-        self._main_window.show()
-        all_actions[actions.AddAccount].triggered.connect(self.onAddAccountTriggered)
-        all_actions[actions.EditAccount].triggered.connect(self.onEditAccountTriggered)
-        all_actions[actions.RemoveAccount].triggered.connect(self.onRemoveAccountTriggered)
-        self._main_window.tree.itemDoubleClicked.connect(self.onTreeItemDoubleClicked)
         self._main_window.tree.addAccount.connect(self.addAccount)
         self._main_window.tree.editAccount.connect(self.editAccount)
         self._main_window.tree.removeAccount.connect(self.removeAccount)
-
-    def onAddAccountTriggered(self, event):
-        self.addAccount()
-
-    def onEditAccountTriggered(self, event):
-        self.editAccount(self._main_window.tree.currentItem())
-
-    def onTreeItemDoubleClicked(self, item):
-        if item.parent() is None:
-            self.editAccount(item)
-
-    def onRemoveAccountTriggered(self, event):
-        item = self._main_window.tree.currentItem()
-        self.deleteAccount(item)
+        self._main_window.show()
+        self._account_window = AccountWindow(self._main_window)
 
     def addAccount(self):
         result = self._account_window.exec()
