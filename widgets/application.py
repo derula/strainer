@@ -15,9 +15,8 @@ class Application(QApplication):
             cls = getattr(actions, action)
             all_actions[cls] = cls(None)
         self._mainWindow = MainWindow(all_actions)
-        self._mainWindow.tree.addAccount.connect(self.addAccount)
-        self._mainWindow.tree.editAccount.connect(self.editAccount)
-        self._mainWindow.tree.removeAccount.connect(self.removeAccount)
+        for action in ('addAccount', 'editAccount', 'removeAccount'):
+            getattr(self._mainWindow.tree, action).connect(getattr(self, action))
         self._mainWindow.show()
         self._accountWindow = AccountWindow(self._mainWindow)
 
