@@ -32,5 +32,6 @@ class ManageMenu(MyMenu):
     _actions = [
         AddAccount, EditAccount, RemoveAccount, None,
         ReloadAccount, None,
-        NewScript, ToggleScript, DeleteScript
+        NewScript, OpenScript, DeleteScript, None,
+        ActivateScript,
     ]
