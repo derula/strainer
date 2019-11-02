@@ -7,15 +7,25 @@ from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QHeaderView
 
 class TreeItem(QTreeWidgetItem):
     _STATUSES = {}
+    _DEFAULT_STATUS = None
+
+    def __init__(self, texts):
+        super().__init__(texts)
+        self._status = self._DEFAULT_STATUS
 
     def setStatus(self, status, toolTip=''):
-        text, color = self._STATUSES.get(status, ('', None))
+        text, color = self._STATUSES[status]
         brush = self.foreground(0)
         if color:
             brush.setColor(QColor(color))
         self.setText(1, text)
         self.setForeground(1, brush)
         self.setToolTip(1, toolTip)
+        self._status = status
+
+    @property
+    def status(self):
+        return self._status
 
 
 class AccountStatus(Enum):
@@ -25,9 +35,11 @@ class AccountStatus(Enum):
 
 class AccountItem(TreeItem):
     _STATUSES = {
+        AccountStatus.Normal: ('', None),
         AccountStatus.Loading: ('…', None),
         AccountStatus.Error: ('!', 'red'),
     }
+    _DEFAULT_STATUS = AccountStatus.Normal
 
     def __init__(self, value):
         super().__init__(['', ''])
@@ -56,8 +68,10 @@ class ScriptStatus(Enum):
 
 class ScriptItem(TreeItem):
     _STATUSES = {
+        ScriptStatus.Normal: ('', None),
         ScriptStatus.Active: ('*', None)
     }
+    _DEFAULT_STATUS = ScriptStatus.Normal
 
     def __init__(self, value, active=False):
         super().__init__([value, ''])
