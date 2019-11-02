@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QAction, QActionGroup
@@ -22,8 +22,9 @@ class MyAction(QAction):
     def update(self, target):
         self.setEnabled(self._shouldEnable(target))
 
+    @abstractmethod
     def _shouldEnable(self, target):
-        return True
+        pass
 
 class AccountAction(MyAction):
     def _shouldEnable(self, item):
@@ -41,11 +42,14 @@ class ScriptAction(MyAction):
 
 class NonEmptyAction(MyAction):
     def _shouldEnable(self, item):
-        return item is not None
+        return bool(item)
 
 class AddAccount(MyAction):
     _text = 'Add account'
     _shortcut = QKeySequence(Qt.Key_Insert)
+
+    def _shouldEnable(self, item):
+        return item is not False
 
 class EditAccount(AccountAction):
     _text = 'Account settings'

@@ -109,10 +109,10 @@ class Tree(QTreeWidget):
 
     def blockSignals(self, value):
         super().blockSignals(value)
-        self.onCurrentItemChanged(None if value else self.currentItem())
+        self._menu.update(False if value else self.currentItem())
 
-    def onCurrentItemChanged(self, next=None, previous=None):
-        self._menu.update(None if self.signalsBlocked() else next)
+    def onCurrentItemChanged(self, next, previous):
+        self._menu.update(next)
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         self._menu.popup(event.globalPos())
