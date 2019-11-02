@@ -83,6 +83,10 @@ class Tree(QTreeWidget):
     editAccount = pyqtSignal(AccountItem)
     removeAccount = pyqtSignal(AccountItem)
     reloadAccount = pyqtSignal(AccountItem)
+    newScript = pyqtSignal()
+    openScript = pyqtSignal(ScriptItem)
+    deleteScript = pyqtSignal(ScriptItem)
+    activateScript = pyqtSignal(ScriptItem)
 
     def __init__(self, menu):
         super().__init__()
@@ -127,12 +131,25 @@ class Tree(QTreeWidget):
         self.removeAccount.emit(self.currentItem())
 
     def onReloadAccountTriggered(self, event):
-        item = self.currentItem()
-        self.reloadAccount.emit(item.parent() or item)
+        self.reloadAccount.emit(self.currentItem())
+
+    def onNewScriptTriggered(self, event):
+        self.newScript.emit()
+
+    def onOpenScriptTriggered(self, event):
+        self.openScript.emit(self.currentItem())
+
+    def onDeleteScriptTriggered(self, event):
+        self.deleteScript.emit(self.currentItem())
+
+    def onActivateScriptTriggered(self, event):
+        self.activateScript.emit(self.currentItem())
 
     def onItemActivated(self, item):
         if isinstance(item, AccountItem):
             self.editAccount.emit(item)
+        else:
+            self.openScript.emit(item)
 
     def onItemChanged(self, item):
         self.sortItems(0, Qt.AscendingOrder)
