@@ -93,18 +93,26 @@ class Tree(QTreeWidget):
         self.header().setSectionResizeMode(0, QHeaderView.Stretch)
         self.header().setSectionResizeMode(1, QHeaderView.ResizeToContents)
         self.setHeaderHidden(True)
-        menu.relatesTo(self)
         self._menu = menu
         for action in menu.actions():
             try:
                 action.triggered.connect(getattr(self, f'on{action.__class__.__name__}Triggered'))
             except AttributeError:
                 pass
+        self.currentItemChanged.connect(self.onCurrentItemChanged)
         self.itemActivated.connect(self.onItemActivated)
         self.itemChanged.connect(self.onItemChanged)
+        menu.update(None)
 
     def sizeHint(self):
         return QSize(150, 300)
+
+    def blockSignals(self, value):
+        super().blockSignals(value)
+        self.onCurrentItemChanged(None if value else self.currentItem())
+
+    def onCurrentItemChanged(self, next=None, previous=None):
+        self._menu.update(None if self.signalsBlocked() else next)
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         self._menu.popup(event.globalPos())
@@ -136,16 +144,3 @@ class Tree(QTreeWidget):
         super().addTopLevelItem(item)
         self.onItemChanged(item)
         self.setCurrentItem(item)
-
-    def keyPressEvent(self, event):
-        super().keyPressEvent(event)
-        key = event.key()
-        item = self.currentItem()
-        if key == Qt.Key_Insert:
-            self.addAccount.emit()
-        elif item is not None:
-            if key == Qt.Key_Delete:
-                if isinstance(item, AccountItem):
-                    self.removeAccount.emit(item)
-            elif key == Qt.Key_F5:
-                self.reloadAccount.emit(item.parent() or item)

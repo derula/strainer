@@ -13,19 +13,14 @@ class MyMenu(QMenu):
                 self.addAction(action)
             else:
                 self.addSeparator()
-        self.aboutToShow.connect(self.onAboutToShow)
 
     def addAction(self, action):
         super().addAction(action)
         self._actions.append(action)
 
-    def onAboutToShow(self):
+    def update(self, item):
         for action in self._actions:
-            action.update()
-
-    def relatesTo(self, obj):
-        for action in self._actions:
-            action.relatesTo(obj)
+            action.update(item)
 
 class ManageMenu(MyMenu):
     _text = 'Manage'
