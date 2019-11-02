@@ -98,15 +98,20 @@ class Tree(QTreeWidget):
         self.header().setSectionResizeMode(1, QHeaderView.ResizeToContents)
         self.setHeaderHidden(True)
         self._menu = menu
-        for action in menu.actions():
-            try:
-                self.connectAction(action)
-            except AttributeError:
-                pass
+        self._signals = tuple(f'{name[0].lower()}{name[1:]}' for name in (a.__class__.__name__ for a in menu.actions))
+        for action, name in zip(menu.actions, self._signals):
+            action.triggered.connect(self._signalHandler(name))
         self.currentItemChanged.connect(self.onCurrentItemChanged)
         self.itemActivated.connect(self.onItemActivated)
         self.itemChanged.connect(self.onItemChanged)
         menu.update(None)
+
+    def _signalHandler(self, name):
+        signal = getattr(self, name)
+        if '()' in signal.signal:
+            return lambda event: getattr(self, name).emit()
+        else:
+            return lambda event: getattr(self, name).emit(self.currentItem())
 
     def sizeHint(self):
         return QSize(150, 300)
@@ -121,14 +126,6 @@ class Tree(QTreeWidget):
     def contextMenuEvent(self, event: QContextMenuEvent):
         self._menu.popup(event.globalPos())
 
-    def connectAction(self, action):
-        name = action.__class__.__name__
-        signal = getattr(self, f'{name[0].lower()}{name[1:]}')
-        if '()' in signal.signal:
-            action.triggered.connect(lambda event: signal.emit())
-        else:
-            action.triggered.connect(lambda event: signal.emit(self.currentItem()))
-
     def onItemActivated(self, item):
         if isinstance(item, AccountItem):
             self.editAccount.emit(item)
@@ -139,6 +136,13 @@ class Tree(QTreeWidget):
         self.sortItems(0, Qt.AscendingOrder)
         if item.parent() is None:
             self.reloadAccount.emit(item)
+
+    def connectSignals(self, target):
+        for signal in self._signals:
+            try:
+                getattr(self, signal).connect(getattr(target, signal))
+            except AttributeError:
+                pass
 
     def addAccountItem(self, value):
         item = AccountItem(value)

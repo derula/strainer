@@ -18,6 +18,10 @@ class MyMenu(QMenu):
         super().addAction(action)
         self._actions.append(action)
 
+    @property
+    def actions(self):
+        return self._actions
+
     def update(self, item):
         for action in self._actions:
             action.update(item)

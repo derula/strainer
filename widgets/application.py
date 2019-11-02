@@ -41,8 +41,7 @@ class Application(QApplication):
             cls = getattr(actions, action)
             all_actions[cls] = cls(None)
         self._mainWindow = MainWindow(all_actions)
-        for action in ('addAccount', 'editAccount', 'removeAccount', 'reloadAccount'):
-            getattr(self._mainWindow.tree, action).connect(getattr(self, action))
+        self._mainWindow.tree.connectSignals(self)
         self._mainWindow.show()
         self._accountWindow = AccountWindow(self._mainWindow)
         self._loadScriptsThread = None
