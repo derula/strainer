@@ -100,7 +100,7 @@ class Tree(QTreeWidget):
         self._menu = menu
         for action in menu.actions():
             try:
-                action.triggered.connect(getattr(self, f'on{action.__class__.__name__}Triggered'))
+                self.connectAction(action)
             except AttributeError:
                 pass
         self.currentItemChanged.connect(self.onCurrentItemChanged)
@@ -121,29 +121,13 @@ class Tree(QTreeWidget):
     def contextMenuEvent(self, event: QContextMenuEvent):
         self._menu.popup(event.globalPos())
 
-    def onAddAccountTriggered(self, event):
-        self.addAccount.emit()
-
-    def onEditAccountTriggered(self, event):
-        self.editAccount.emit(self.currentItem())
-
-    def onRemoveAccountTriggered(self, event):
-        self.removeAccount.emit(self.currentItem())
-
-    def onReloadAccountTriggered(self, event):
-        self.reloadAccount.emit(self.currentItem())
-
-    def onNewScriptTriggered(self, event):
-        self.newScript.emit()
-
-    def onOpenScriptTriggered(self, event):
-        self.openScript.emit(self.currentItem())
-
-    def onDeleteScriptTriggered(self, event):
-        self.deleteScript.emit(self.currentItem())
-
-    def onActivateScriptTriggered(self, event):
-        self.activateScript.emit(self.currentItem())
+    def connectAction(self, action):
+        name = action.__class__.__name__
+        signal = getattr(self, f'{name[0].lower()}{name[1:]}')
+        if '()' in signal.signal:
+            action.triggered.connect(lambda event: signal.emit())
+        else:
+            action.triggered.connect(lambda event: signal.emit(self.currentItem()))
 
     def onItemActivated(self, item):
         if isinstance(item, AccountItem):
