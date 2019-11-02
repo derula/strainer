@@ -31,6 +31,7 @@ class LoadScriptsThread(QThread):
             raise
         finally:
             self._tree.blockSignals(False)
+        self._tree.update(self._tree.indexFromItem(self._item, 1))
 
 class Application(QApplication):
     def __init__(self, argv):
