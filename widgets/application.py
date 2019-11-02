@@ -4,7 +4,7 @@ from sievelib import managesieve
 
 from . import actions
 from .menus import ManageMenu
-from .tree import TreeItem, TreeItemStatus
+from .tree import AccountStatus
 from .windows import AccountWindow, MainWindow
 
 
@@ -18,15 +18,16 @@ class LoadScriptsThread(QThread):
         _, server, port, login, passwd, starttls, authmech = self._item.value
         self._tree.blockSignals(True)
         try:
-            self._item.setStatus(TreeItemStatus.Loading, 'Loading scripts from server...')
+            self._item.setStatus(AccountStatus.Loading, 'Loading scripts from server...')
             conn = managesieve.Client(server, port)
             if not conn.connect(login, passwd, starttls=starttls, authmech=authmech):
                 raise managesieve.Error('Failed to authenticate to server')
-            self._item.setStatus(TreeItemStatus.Normal)
+            self._item.replaceScriptItems(*conn.listscripts())
+            self._item.setStatus(AccountStatus.Normal)
         except managesieve.Error as e:
-            self._item.setStatus(TreeItemStatus.Error, e.args[0])
+            self._item.setStatus(AccountStatus.Error, e.args[0])
         except Exception:
-            self._item.setStatus(TreeItemStatus.Normal)
+            self._item.setStatus(AccountStatus.Normal)
             raise
         finally:
             self._tree.blockSignals(False)
@@ -48,9 +49,7 @@ class Application(QApplication):
     def addAccount(self):
         result = self._accountWindow.exec()
         if result is not None:
-            item = TreeItem(result)
-            self._mainWindow.tree.addTopLevelItem(item)
-            self._mainWindow.tree.setCurrentItem(item)
+            self._mainWindow.tree.addAccountItem(result)
         self._mainWindow.tree.setFocus(Qt.PopupFocusReason)
 
     def editAccount(self, item):

@@ -5,28 +5,33 @@ from PyQt5.QtGui import QContextMenuEvent, QBrush, QColor
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QHeaderView
 
 
-class TreeItemStatus(Enum):
+class TreeItem(QTreeWidgetItem):
+    _STATUSES = {}
+
+    def setStatus(self, status, toolTip=''):
+        text, color = self._STATUSES.get(status, ('', None))
+        brush = self.foreground(0)
+        if color:
+            brush.setColor(QColor(color))
+        self.setText(1, text)
+        self.setForeground(1, brush)
+        self.setToolTip(1, toolTip)
+
+
+class AccountStatus(Enum):
     Normal = auto()
     Loading = auto()
     Error = auto()
 
-class TreeItem(QTreeWidgetItem):
+class AccountItem(TreeItem):
+    _STATUSES = {
+        AccountStatus.Loading: ('…', None),
+        AccountStatus.Error: ('!', 'red'),
+    }
+
     def __init__(self, value):
         super().__init__(['', ''])
-        self._tree = None
         self.value = value
-
-    def setStatus(self, status, toolTip=''):
-        brush = self.foreground(0)
-        if status == TreeItemStatus.Loading:
-            self.setText(1, '…')
-        elif status == TreeItemStatus.Error:
-            self.setText(1, '!')
-            brush.setColor(QColor('red'))
-        else:
-            self.setText(1, '')
-        self.setForeground(1, brush)
-        self.setToolTip(1, toolTip)
 
     @property
     def value(self):
@@ -38,11 +43,32 @@ class TreeItem(QTreeWidgetItem):
         self.setText(0, text)
         self.setData(0, Qt.UserRole, value)
 
+    def replaceScriptItems(self, active_script, inactive_scripts):
+        self.takeChildren()
+        self.addChildren(
+            ScriptItem(script, script == active_script) for script in sorted((active_script, *inactive_scripts))
+        )
+        self.sortChildren(0, Qt.AscendingOrder)
+
+class ScriptStatus(Enum):
+    Normal = auto()
+    Active = auto()
+
+class ScriptItem(TreeItem):
+    _STATUSES = {
+        ScriptStatus.Active: ('*', None)
+    }
+
+    def __init__(self, value, active=False):
+        super().__init__([value, ''])
+        if active:
+            self.setStatus(ScriptStatus.Active)
+
 class Tree(QTreeWidget):
     addAccount = pyqtSignal()
-    editAccount = pyqtSignal(TreeItem)
-    removeAccount = pyqtSignal(TreeItem)
-    reloadAccount = pyqtSignal(TreeItem)
+    editAccount = pyqtSignal(AccountItem)
+    removeAccount = pyqtSignal(AccountItem)
+    reloadAccount = pyqtSignal(AccountItem)
 
     def __init__(self, menu):
         super().__init__()
@@ -83,7 +109,7 @@ class Tree(QTreeWidget):
         self.reloadAccount.emit(item.parent() or item)
 
     def onItemActivated(self, item):
-        if item.parent() is None:
+        if isinstance(item, AccountItem):
             self.editAccount.emit(item)
 
     def onItemChanged(self, item):
@@ -91,10 +117,11 @@ class Tree(QTreeWidget):
         if item.parent() is None:
             self.reloadAccount.emit(item)
 
-    def addTopLevelItem(self, item):
+    def addAccountItem(self, value):
+        item = AccountItem(value)
         super().addTopLevelItem(item)
-        item._tree = self
         self.onItemChanged(item)
+        self.setCurrentItem(item)
 
     def keyPressEvent(self, event):
         super().keyPressEvent(event)
@@ -104,7 +131,7 @@ class Tree(QTreeWidget):
             self.addAccount.emit()
         elif item is not None:
             if key == Qt.Key_Delete:
-                if item.parent() is None:
+                if isinstance(item, AccountItem):
                     self.removeAccount.emit(item)
             elif key == Qt.Key_F5:
                 self.reloadAccount.emit(item.parent() or item)
