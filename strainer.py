@@ -1,7 +1,5 @@
-from sys import argv, exit
-
-from widgets import Application
+from runpy import run_module
 
 
 if __name__ == '__main__':
-    exit(Application(argv).exec_())
+    run_module('strainer')
