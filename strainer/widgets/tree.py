@@ -1,8 +1,8 @@
-from enum import Enum, auto
-
 from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent, QBrush, QColor
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QHeaderView
+
+from ..types import Account, AccountStatus, ScriptStatus
 
 
 class TreeItem(QTreeWidgetItem):
@@ -27,12 +27,6 @@ class TreeItem(QTreeWidgetItem):
     def status(self):
         return self._status
 
-
-class AccountStatus(Enum):
-    Normal = auto()
-    Loading = auto()
-    Error = auto()
-
 class AccountItem(TreeItem):
     _STATUSES = {
         AccountStatus.Normal: ('', None),
@@ -47,7 +41,7 @@ class AccountItem(TreeItem):
 
     @property
     def value(self):
-        return [self.text(0), *self.data(0, Qt.UserRole)]
+        return Account(self.text(0), *self.data(0, Qt.UserRole))
 
     @value.setter
     def value(self, value):
@@ -61,10 +55,6 @@ class AccountItem(TreeItem):
             ScriptItem(script, script == active_script) for script in sorted((active_script, *inactive_scripts))
         )
         self.sortChildren(0, Qt.AscendingOrder)
-
-class ScriptStatus(Enum):
-    Normal = auto()
-    Active = auto()
 
 class ScriptItem(TreeItem):
     _STATUSES = {
