@@ -59,12 +59,20 @@ class ScriptItem(TreeItem):
 
     def setStatus(self, status, tooltip=''):
         super().setStatus(status, tooltip)
-        if self._active and status == TreeItemStatus.Normal:
-            self.setText(1, '*')
+        self._applyActiveState()
 
     @property
     def active(self):
         return self._active
+
+    @active.setter
+    def active(self, value):
+        self._active = value
+        self._applyActiveState()
+
+    def _applyActiveState(self):
+        if self._active and self._status == TreeItemStatus.Normal:
+            self.setText(1, '*')
 
 class Tree(QTreeWidget):
     addAccount = pyqtSignal()

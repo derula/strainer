@@ -18,18 +18,21 @@ class MainWindow(QMainWindow):
         frame = QFrame(self)
         layout = QHBoxLayout()
         splitter = QSplitter()
-        tree = Tree(manageMenu)
-        splitter.addWidget(tree)
-        splitter.addWidget(Editor())
+        self._tree = Tree(manageMenu)
+        self._editor = Editor()
+        splitter.addWidget(self._tree)
+        splitter.addWidget(self._editor)
         layout.addWidget(splitter)
         frame.setLayout(layout)
         self.setCentralWidget(frame)
-        self._tree = tree
 
     @property
     def tree(self):
         return self._tree
 
+    @property
+    def editor(self):
+        return self._editor
 
 class AccountWindow(QDialog):
     def __init__(self, parent):

@@ -41,8 +41,12 @@ class Application(QApplication):
     def reloadAccount(self, item):
         self._performSieveAction(item, lambda conn: item.replaceScriptItems(*conn.listscripts()))
 
+    def openScript(self, item):
+        self._performSieveAction(item, lambda conn: self._mainWindow.editor.setText(conn.getscript(item.text(0))))
+
     def _performSieveAction(self, item, action):
+        account = (item.parent() or item).value
         if self._sieveConnection is not None:
             self._sieveConnection.exit()
-        self._sieveConnection = SieveConnection(self._mainWindow.tree, item, action=action)
+        self._sieveConnection = SieveConnection(self._mainWindow.tree, item, account, action=action)
 
