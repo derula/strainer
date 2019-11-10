@@ -2,10 +2,9 @@ from PyQt5.QtCore import Qt, QThread
 from PyQt5.QtWidgets import QApplication
 from sievelib import managesieve
 
-from .. import sieve
+from ..sieve import SieveConnection
 from . import actions
 from .menus import ManageMenu
-from .tree import AccountStatus
 from .windows import AccountWindow, MainWindow
 
 
@@ -20,7 +19,7 @@ class Application(QApplication):
         self._mainWindow.tree.connectSignals(self)
         self._mainWindow.show()
         self._accountWindow = AccountWindow(self._mainWindow)
-        self._loadScriptsThread = None
+        self._sieveConnection = None
 
     def addAccount(self):
         result = self._accountWindow.exec()
@@ -40,6 +39,10 @@ class Application(QApplication):
         tree.takeTopLevelItem(tree.indexOfTopLevelItem(item))
 
     def reloadAccount(self, item):
-        if self._loadScriptsThread is not None:
-            self._loadScriptsThread.exit()
-        self._loadScriptsThread = sieve.load_scripts(self._mainWindow.tree, item)
+        self._performSieveAction(item, lambda conn: item.replaceScriptItems(*conn.listscripts()))
+
+    def _performSieveAction(self, item, action):
+        if self._sieveConnection is not None:
+            self._sieveConnection.exit()
+        self._sieveConnection = SieveConnection(self._mainWindow.tree, item, action=action)
+

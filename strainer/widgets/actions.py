@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QAction, QActionGroup
 
-from .tree import AccountItem, ScriptItem, ScriptStatus
+from .tree import AccountItem, ScriptItem
 
 __all__ = (
     'AddAccount', 'EditAccount', 'RemoveAccount', 'ReloadAccount',
@@ -79,4 +79,4 @@ class ActivateScript(ScriptAction):
     _text = 'Activate script'
 
     def _shouldEnable(self, item):
-        return super()._shouldEnable(item) and item.status is ScriptStatus.Normal
+        return super()._shouldEnable(item) and not item.active

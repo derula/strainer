@@ -2,16 +2,19 @@ from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent, QBrush, QColor
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QHeaderView
 
-from ..types import Account, AccountStatus, ScriptStatus
+from ..types import Account, TreeItemStatus
 
 
 class TreeItem(QTreeWidgetItem):
-    _STATUSES = {}
-    _DEFAULT_STATUS = None
+    _STATUSES = {
+        TreeItemStatus.Normal: ('', None),
+        TreeItemStatus.Loading: ('…', None),
+        TreeItemStatus.Error: ('!', 'red'),
+    }
 
     def __init__(self, texts):
         super().__init__(texts)
-        self._status = self._DEFAULT_STATUS
+        self.setStatus(TreeItemStatus.Normal)
 
     def setStatus(self, status, toolTip=''):
         text, color = self._STATUSES[status]
@@ -28,13 +31,6 @@ class TreeItem(QTreeWidgetItem):
         return self._status
 
 class AccountItem(TreeItem):
-    _STATUSES = {
-        AccountStatus.Normal: ('', None),
-        AccountStatus.Loading: ('…', None),
-        AccountStatus.Error: ('!', 'red'),
-    }
-    _DEFAULT_STATUS = AccountStatus.Normal
-
     def __init__(self, value):
         super().__init__(['', ''])
         self.value = value
@@ -57,16 +53,18 @@ class AccountItem(TreeItem):
         self.sortChildren(0, Qt.AscendingOrder)
 
 class ScriptItem(TreeItem):
-    _STATUSES = {
-        ScriptStatus.Normal: ('', None),
-        ScriptStatus.Active: ('*', None)
-    }
-    _DEFAULT_STATUS = ScriptStatus.Normal
-
     def __init__(self, value, active=False):
+        self._active = active
         super().__init__([value, ''])
-        if active:
-            self.setStatus(ScriptStatus.Active)
+
+    def setStatus(self, status, tooltip=''):
+        super().setStatus(status, tooltip)
+        if self._active and status == TreeItemStatus.Normal:
+            self.setText(1, '*')
+
+    @property
+    def active(self):
+        return self._active
 
 class Tree(QTreeWidget):
     addAccount = pyqtSignal()

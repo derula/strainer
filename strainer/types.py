@@ -11,11 +11,7 @@ class Account(NamedTuple):
     starttls: str
     authmech: Optional[str]
 
-class AccountStatus(Enum):
+class TreeItemStatus(Enum):
     Normal = auto()
     Loading = auto()
     Error = auto()
-
-class ScriptStatus(Enum):
-    Normal = auto()
-    Active = auto()
