@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QThread
 from sievelib import managesieve
 
-from .types import TreeItemStatus
+from ..types import TreeItemStatus
 
 
 class SieveConnection(QThread):
