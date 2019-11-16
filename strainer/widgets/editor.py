@@ -5,15 +5,23 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import QSizePolicy
 from sievelib.parser import Lexer, Parser, ParseError
+from sievelib.commands import get_command_instance, UnknownCommand, ControlCommand, ActionCommand, TestCommand
 
 
 class Style(Enum):
+    Default = 0
     Punctuation = auto()
     Comment = auto()
     String = auto()
-    Identifier = auto()
-    Tag = auto()
     Number = auto()
+    Tag = auto()
+    Identifier = auto()
+
+class IdentifierStyle(Enum):
+    Unknown = Style.Identifier.value
+    Control = auto()
+    Action = auto()
+    Test = auto()
 
 class SieveLexer(QsciLexerCustom):
     _TOKEN_STYLES = {
@@ -29,9 +37,14 @@ class SieveLexer(QsciLexerCustom):
         'bracket_comment': Style.Comment,
         'multiline': Style.String,
         'string': Style.String,
-        'identifier': Style.Identifier,
-        'tag': Style.Tag,
         'number': Style.Number,
+        'tag': Style.Tag,
+        'identifier': Style.Identifier,
+    }
+    _IDENTIFIER_STYLES = {
+        'control': IdentifierStyle.Control,
+        'action': IdentifierStyle.Action,
+        'test':  IdentifierStyle.Test,
     }
     _FONTS = ['Source Code Pro', 'DejaVu Sans Mono', 'Monospace', 'Consolas', 'Courier New']
 
@@ -43,12 +56,17 @@ class SieveLexer(QsciLexerCustom):
             if font.exactMatch():
                 break
         self.setDefaultFont(font)
-        self.setColor(QColor('#ff0000bf'), Style.Punctuation.value)
+        #self.setColor(QColor('#ff0000bf'), Style.Punctuation.value)
         self.setColor(QColor('#ff007f00'), Style.Comment.value)
         self.setColor(QColor('#ff7f0000'), Style.String.value)
-        self.setColor(QColor('#ff0000bf'), Style.Identifier.value)
-        self.setColor(QColor('#ff0000bf'), Style.Tag.value)
         self.setColor(QColor('#ff7f0000'), Style.Number.value)
+        self.setColor(QColor('#ff7f007f'), Style.Tag.value)
+        self.setColor(QColor('#ff0000bf'), IdentifierStyle.Control.value)
+        self.setColor(QColor('#ff0000bf'), IdentifierStyle.Action.value)
+        self.setColor(QColor('#ff0000bf'), IdentifierStyle.Test.value)
+        self.setFont(QFont(font.family(), 10, weight=QFont.Bold), IdentifierStyle.Control.value)
+        self.setFont(QFont(font.family(), 10, weight=QFont.Bold, italic=True), IdentifierStyle.Action.value)
+        self.setFont(QFont(font.family(), 10, italic=True), IdentifierStyle.Test.value)
         self._lexer = Lexer(Parser.lrules)
         self._stylingPos: int
 
@@ -56,12 +74,12 @@ class SieveLexer(QsciLexerCustom):
         return 'Sieve'
 
     def description(self, style):
-        if style == 0:
-            return 'Default'
-        try:
-            return Style(style).name
-        except ValueError:
-            return ''
+        for style_class in (Style, IdentifierStyle):
+            try:
+                return style_class(style).name
+            except ValueError:
+                pass
+        return ''
 
     def styleText(self, start, end):
         editor = self.parent()
@@ -86,7 +104,16 @@ class SieveLexer(QsciLexerCustom):
     def _doStyleText(self, text: bytes) -> None:
         self._stylingPos = 0
         for token, value in self._lexer.scan(text):
-            self.setStyling(self._lexer.pos - self._stylingPos, self._TOKEN_STYLES[token].value)
+            length = self._lexer.pos - self._stylingPos
+            style = self._TOKEN_STYLES[token]
+            # Get the correct sub-style for identifiers
+            if style is Style.Identifier:
+                try:
+                    command = get_command_instance(value.decode('ascii'), checkexists=False)
+                    style = self._IDENTIFIER_STYLES[command.get_type()]
+                except (UnknownCommand, NotImplementedError, KeyError):
+                    style = IdentifierStyle.Unknown
+            self.setStyling(length, style.value)
             self._stylingPos = self._lexer.pos
 
 class Editor(QsciScintilla):
