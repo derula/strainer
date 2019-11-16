@@ -108,7 +108,7 @@ class SieveLexer(QsciLexerCustom):
     def _doStyleText(self, start: int) -> None:
         editor = self.parent()
         self._stylingPos = 0
-        for token, value in self._lexer.scan(editor.text().encode('utf-8')[start:]):
+        for token, value in self._lexer.scan(editor.bytes(start, editor.length())):
             length = self._lexer.pos - self._stylingPos
             style = self._TOKEN_STYLES[token]
             # Get the correct sub-style for identifiers
