@@ -2,7 +2,7 @@ from enum import auto, Enum
 
 from PyQt5.Qsci import QsciScintilla, QsciLexerCustom
 from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QFont, QColor
+from PyQt5.QtGui import QFontDatabase, QFont, QColor
 from PyQt5.QtWidgets import QSizePolicy
 from sievelib.parser import Lexer, Parser, ParseError
 from sievelib.commands import get_command_instance, UnknownCommand, ControlCommand, ActionCommand, TestCommand
@@ -46,17 +46,21 @@ class SieveLexer(QsciLexerCustom):
         'action': IdentifierStyle.Action,
         'test':  IdentifierStyle.Test,
     }
-    _FONTS = ['Source Code Pro', 'DejaVu Sans Mono', 'Monospace', 'Consolas', 'Courier New']
+    _FONTS = ['Source Code Pro', 'Noto Mono', 'DejaVu Sans Mono', 'Monospace', 'Consolas']
 
     def __init__(self, parent):
         super().__init__(parent)
         # QScintilla only uses the primary font family rather than searching through alternatives.
         # So we need to do this manually...
-        for font in (QFont(name, 10) for name in self._FONTS):
-            if font.exactMatch():
-                break
+        db = QFontDatabase()
+        fonts = set(db.families(QFontDatabase.WritingSystem.Latin))
+        for font_name in self._FONTS:
+            if font_name in fonts:
+                font = QFont(font_name, 10)
+                #break
+        else:
+            font = db.systemFont(QFontDatabase.FixedFont)
         self.setDefaultFont(font)
-        #self.setColor(QColor('#ff0000bf'), Style.Punctuation.value)
         self.setColor(QColor('#ff007f00'), Style.Comment.value)
         self.setColor(QColor('#ff7f0000'), Style.String.value)
         self.setColor(QColor('#ff7f0000'), Style.Number.value)
@@ -64,9 +68,9 @@ class SieveLexer(QsciLexerCustom):
         self.setColor(QColor('#ff0000bf'), IdentifierStyle.Control.value)
         self.setColor(QColor('#ff0000bf'), IdentifierStyle.Action.value)
         self.setColor(QColor('#ff0000bf'), IdentifierStyle.Test.value)
-        self.setFont(QFont(font.family(), 10, weight=QFont.Bold), IdentifierStyle.Control.value)
-        self.setFont(QFont(font.family(), 10, weight=QFont.Bold, italic=True), IdentifierStyle.Action.value)
-        self.setFont(QFont(font.family(), 10, italic=True), IdentifierStyle.Test.value)
+        self.setFont(QFont(font.family(), font.pointSize(), weight=QFont.Bold), IdentifierStyle.Control.value)
+        self.setFont(QFont(font.family(), font.pointSize(), weight=QFont.Bold, italic=True), IdentifierStyle.Action.value)
+        self.setFont(QFont(font.family(), font.pointSize(), italic=True), IdentifierStyle.Test.value)
         self._lexer = Lexer(Parser.lrules)
         self._stylingPos: int
 
