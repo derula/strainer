@@ -49,6 +49,7 @@ class SieveLexer(QsciLexerCustom):
         self.setColor(QColor('#ff0000bf'), Style.Identifier.value)
         self.setColor(QColor('#ff0000bf'), Style.Tag.value)
         self.setColor(QColor('#ff7f0000'), Style.Number.value)
+        self._lexer = Lexer(Parser.lrules)
 
     def language(self):
         return 'Sieve'
@@ -63,7 +64,6 @@ class SieveLexer(QsciLexerCustom):
 
     def styleText(self, start, end):
         editor = self.parent()
-        lexer = Lexer(Parser.lrules)
         editor.SendScintilla(QsciScintilla.SCI_SETINDICATORCURRENT, 0)
         editor.SendScintilla(QsciScintilla.SCI_INDICATORCLEARRANGE, 0, len(editor.text()))
         # We're alwaysd parsing the entire file.
@@ -73,20 +73,24 @@ class SieveLexer(QsciLexerCustom):
         start = pos = 0
         while start < end:
             try:
-                for token, value in lexer.scan(editor.text().encode('utf-8')[start:]):
-                    length = len(value)
-                    if lexer.pos > pos + length:
-                        self.setStyling(lexer.pos - pos - length, 0)
-                    self.setStyling(length, self._TOKEN_STYLES[token].value)
-                    pos = lexer.pos
+                pos = self._doStyleText(pos, editor.text().encode('utf-8')[start:])
             except ParseError:
                 # Mark and skip past any syntactical errors
-                editor.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, start + lexer.pos, 1)
+                editor.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, start + self._lexer.pos, 1)
                 self.setStyling(1, 0)
                 start += pos + 1
                 pos = 0
             else:
                 break
+
+    def _doStyleText(self, pos: int, text: str) -> int:
+        for token, value in self._lexer.scan(text):
+            length = len(value)
+            if self._lexer.pos > pos + length:
+                self.setStyling(self._lexer.pos - pos - length, 0)
+            self.setStyling(length, self._TOKEN_STYLES[token].value)
+            pos = self._lexer.pos
+        return pos
 
 
 class Editor(QsciScintilla):
