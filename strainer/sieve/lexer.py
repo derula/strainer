@@ -2,7 +2,7 @@ from enum import auto, Enum
 
 from PyQt5.Qsci import QsciScintilla, QsciLexerCustom
 from PyQt5.QtGui import QFontDatabase, QFont, QColor
-from sievelib.parser import Lexer, Parser, ParseError
+from sievelib.parser import Parser, ParseError
 from sievelib.commands import get_command_instance, UnknownCommand, ControlCommand, ActionCommand, TestCommand
 
 
@@ -71,7 +71,7 @@ class SieveLexer(QsciLexerCustom):
         for style, (color, font_kwargs) in self._STYLE_SETTINGS.items():
             self.setColor(QColor(color), style.value)
             self.setFont(QFont(font.family(), font.pointSize(), **font_kwargs), style.value)
-        self._lexer = Lexer(Parser.lrules)
+        self._lexer = Parser().lexer
         self._stylingPos: int
 
     def language(self):
