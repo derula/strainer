@@ -64,7 +64,7 @@ class SieveLexer(QsciLexerCustom):
         for font_name in self._FONTS:
             if font_name in fonts:
                 font = QFont(font_name, 10)
-                #break
+                break
         else:
             font = db.systemFont(QFontDatabase.FixedFont)
         self.setDefaultFont(font)
