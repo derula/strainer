@@ -92,7 +92,7 @@ class SieveLexer(QsciLexerCustom):
         start = 0
         while True:
             try:
-                self._doStyleText(editor.text().encode('utf-8')[start:])
+                self._doStyleText(start)
                 break
             except ParseError:
                 # Mark and skip past any syntactical errors
@@ -101,9 +101,10 @@ class SieveLexer(QsciLexerCustom):
                 editor.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, start - 1, error_len)
                 self.setStyling(error_len, 0)
 
-    def _doStyleText(self, text: bytes) -> None:
+    def _doStyleText(self, start: int) -> None:
+        editor = self.parent()
         self._stylingPos = 0
-        for token, value in self._lexer.scan(text):
+        for token, value in self._lexer.scan(editor.text().encode('utf-8')[start:]):
             length = self._lexer.pos - self._stylingPos
             style = self._TOKEN_STYLES[token]
             # Get the correct sub-style for identifiers
@@ -112,6 +113,8 @@ class SieveLexer(QsciLexerCustom):
                     command = get_command_instance(value.decode('ascii'), checkexists=False)
                     style = self._IDENTIFIER_STYLES[command.get_type()]
                 except (UnknownCommand, NotImplementedError, KeyError):
+                    value_start = start + self._lexer.pos - len(value)
+                    editor.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, value_start, len(value))
                     style = IdentifierStyle.Unknown
             self.setStyling(length, style.value)
             self._stylingPos = self._lexer.pos
