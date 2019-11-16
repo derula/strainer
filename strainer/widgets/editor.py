@@ -105,7 +105,7 @@ class SieveLexer(QsciLexerCustom):
                 editor.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, start - 1, error_len)
                 self.setStyling(error_len, 0)
 
-    def _doStyleText(self, start: int) -> None:
+    def _doStyleText(self, start: int):
         editor = self.parent()
         self._stylingPos = 0
         for token, value in self._lexer.scan(editor.bytes(start, editor.length())):
@@ -127,10 +127,24 @@ class Editor(QsciScintilla):
     def __init__(self):
         super().__init__()
         self.setMinimumSize(QSize(300, 200))
+        self.setScrollWidth(300)
+        self.setScrollWidthTracking(True)
+
         self.setUtf8(True)
         self.setEolMode(QsciScintilla.EolWindows)
-        self.setMarginType(0, QsciScintilla.NumberMargin)
-        self.setMarginWidth(0, "0000")
+
+        self.setMarginLineNumbers(0, True)
+        self.linesChanged.connect(lambda: self.setMarginWidth(0, f'0{self.lines()}'))
+
+        self.setAutoIndent(True)
+        self.setTabWidth(2)
+        self.setTabIndents(True)
+        self.setBackspaceUnindents(True)
+        self.setIndentationsUseTabs(False)
+        self.setIndentationGuides(True)
+
+        self.setBraceMatching(QsciScintilla.BraceMatch.SloppyBraceMatch)
+
         self.setLexer(SieveLexer(self))
 
     def sizeHint(self):
