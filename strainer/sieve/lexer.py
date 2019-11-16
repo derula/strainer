@@ -44,6 +44,15 @@ class SieveLexer(QsciLexerCustom):
         'action': IdentifierStyle.Action,
         'test':  IdentifierStyle.Test,
     }
+    _STYLE_SETTINGS = {
+        Style.Comment: ('#007f00', {}),
+        Style.String: ('#7f0000', {}),
+        Style.Number: ('#7f0000', {}),
+        Style.Tag: ('#7f007f', {}),
+        IdentifierStyle.Control: ('#0000bf', {'weight': QFont.Bold}),
+        IdentifierStyle.Action: ('#0000bf', {'weight': QFont.Bold, 'italic': True}),
+        IdentifierStyle.Test: ('#0000bf', {'italic': True}),
+    }
     _FONTS = ['Source Code Pro', 'Noto Mono', 'DejaVu Sans Mono', 'Monospace', 'Consolas']
 
     def __init__(self, parent):
@@ -59,16 +68,9 @@ class SieveLexer(QsciLexerCustom):
         else:
             font = db.systemFont(QFontDatabase.FixedFont)
         self.setDefaultFont(font)
-        self.setColor(QColor('#007f00'), Style.Comment.value)
-        self.setColor(QColor('#7f0000'), Style.String.value)
-        self.setColor(QColor('#7f0000'), Style.Number.value)
-        self.setColor(QColor('#7f007f'), Style.Tag.value)
-        self.setColor(QColor('#0000bf'), IdentifierStyle.Control.value)
-        self.setColor(QColor('#0000bf'), IdentifierStyle.Action.value)
-        self.setColor(QColor('#0000bf'), IdentifierStyle.Test.value)
-        self.setFont(QFont(font.family(), font.pointSize(), weight=QFont.Bold), IdentifierStyle.Control.value)
-        self.setFont(QFont(font.family(), font.pointSize(), weight=QFont.Bold, italic=True), IdentifierStyle.Action.value)
-        self.setFont(QFont(font.family(), font.pointSize(), italic=True), IdentifierStyle.Test.value)
+        for style, (color, font_kwargs) in self._STYLE_SETTINGS.items():
+            self.setColor(QColor(color), style.value)
+            self.setFont(QFont(font.family(), font.pointSize(), **font_kwargs), style.value)
         self._lexer = Lexer(Parser.lrules)
         self._stylingPos: int
 
