@@ -10,7 +10,9 @@ class Style(Enum):
     Default = 0
     Punctuation = auto()
     Comment = auto()
+    CommentMultiline = auto()
     String = auto()
+    StringMultiline = auto()
     Number = auto()
     Tag = auto()
     Identifier = auto()
@@ -32,8 +34,8 @@ class SieveLexer(QsciLexerCustom):
         'semicolon': Style.Punctuation,
         'comma': Style.Punctuation,
         'hash_comment': Style.Comment,
-        'bracket_comment': Style.Comment,
-        'multiline': Style.String,
+        'bracket_comment': Style.CommentMultiline,
+        'multiline': Style.StringMultiline,
         'string': Style.String,
         'number': Style.Number,
         'tag': Style.Tag,
@@ -46,7 +48,9 @@ class SieveLexer(QsciLexerCustom):
     }
     _STYLE_SETTINGS = {
         Style.Comment: ('#007f00', {}),
+        Style.CommentMultiline: ('#007f00', {}),
         Style.String: ('#7f0000', {}),
+        Style.StringMultiline: ('#7f0000', {}),
         Style.Number: ('#7f0000', {}),
         Style.Tag: ('#7f007f', {}),
         IdentifierStyle.Control: ('#0000bf', {'weight': QFont.Bold}),
@@ -54,6 +58,7 @@ class SieveLexer(QsciLexerCustom):
         IdentifierStyle.Test: ('#0000bf', {'italic': True}),
     }
     _FONTS = ['Source Code Pro', 'Noto Mono', 'DejaVu Sans Mono', 'Monospace', 'Consolas']
+    _MULTILINE_STYLES = {Style.CommentMultiline.value, Style.StringMultiline.value}
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -92,7 +97,6 @@ class SieveLexer(QsciLexerCustom):
         # We're alwaysd parsing the entire file.
         # This is not ideal, but QScintilla and sievelib don't cooperate nicely on multi-line comments / strings.
         # Hopefully scripts won't get too long.
-        self.startStyling(0)
         start = 0
         while True:
             try:
@@ -101,13 +105,14 @@ class SieveLexer(QsciLexerCustom):
             except ParseError:
                 # Mark and skip past any syntactical errors
                 start += self._lexer.pos + 1
-                error_len = start - self._stylingPos
+                error_len = self._lexer.pos - self._stylingPos
                 editor.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, start - 1, error_len)
                 self.setStyling(error_len, 0)
 
     def _doStyleText(self, start: int):
         editor = self.parent()
         self._stylingPos = 0
+        self.startStyling(start)
         for token, value in self._lexer.scan(editor.bytes(start, editor.length())):
             length = self._lexer.pos - self._stylingPos
             style = self._TOKEN_STYLES[token]
@@ -122,3 +127,8 @@ class SieveLexer(QsciLexerCustom):
                     style = IdentifierStyle.Unknown
             self.setStyling(length, style.value)
             self._stylingPos = self._lexer.pos
+
+# Fix a bug in sievelib (adhering to \r\n as per spec)
+for i, (key, _) in enumerate(Parser.lrules):
+    if key == b'multiline':
+        Parser.lrules[i] = (key, br'text:[^$]*?[\r\n]+\.\r?$')
