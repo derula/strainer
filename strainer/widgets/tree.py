@@ -129,9 +129,13 @@ class Tree(QTreeWidget):
             self.openScript.emit(item)
 
     def onItemChanged(self, item):
+        self.onItemsChanged([item])
+
+    def onItemsChanged(self, items):
         self.sortItems(0, Qt.AscendingOrder)
-        if item.parent() is None:
-            self.reloadAccount.emit(item)
+        for item in items:
+            if item.parent() is None:
+                self.reloadAccount.emit(item)
 
     def connectSignals(self, target):
         for signal in self._signals:
@@ -140,8 +144,14 @@ class Tree(QTreeWidget):
             except AttributeError:
                 pass
 
-    def addAccountItem(self, value):
-        item = AccountItem(value)
-        super().addTopLevelItem(item)
-        self.onItemChanged(item)
-        self.setCurrentItem(item)
+    def addAccountItem(self, account):
+        return self.addAccountItems([account])[0]
+
+    def addAccountItems(self, accounts):
+        if not accounts:
+            return []
+        items = [AccountItem(account) for account in accounts]
+        super().addTopLevelItems(items)
+        self.onItemsChanged(items)
+        self.setCurrentItem(items[0])
+        return items

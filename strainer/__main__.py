@@ -1,6 +1,7 @@
 from sys import argv, exit
 
+from .config import accounts
 from .widgets import Application
 
 
-exit(Application(argv).exec_())
+exit(Application(argv, accounts).exec_())
