@@ -1,8 +1,8 @@
-from PyQt5.QtCore import Qt, QThread
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QApplication
 from sievelib import managesieve
 
-from ..sieve import SieveConnection
+from ..sieve import TreeSieveConnection
 from . import actions
 from .menus import ManageMenu
 from .windows import AccountWindow, MainWindow
@@ -51,8 +51,7 @@ class Application(QApplication):
         self._performSieveAction(item, lambda conn: self._mainWindow.editor.setText(conn.getscript(item.text(0))))
 
     def _performSieveAction(self, item, action):
-        account = (item.parent() or item).value
         if self._sieveConnection is not None:
             self._sieveConnection.exit()
-        self._sieveConnection = SieveConnection(self._mainWindow.tree, item, account, action=action)
-
+        self._sieveConnection = TreeSieveConnection(self._mainWindow.tree, item, (item.parent() or item).value)
+        self._sieveConnection.start(action)

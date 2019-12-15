@@ -1,2 +1,2 @@
-from .connection import SieveConnection
+from .connection import SieveConnection, TreeSieveConnection
 from .lexer import SieveLexer
