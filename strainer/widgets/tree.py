@@ -45,12 +45,12 @@ class AccountItem(TreeItem):
         self.setText(0, text)
         self.setData(0, Qt.UserRole, value)
 
-    def replaceScriptItems(self, active_script, inactive_scripts):
+    def replaceScriptItems(self, activeScript, inactiveScripts):
         self.takeChildren()
-        self.addChildren(
-            ScriptItem(script, script == active_script) for script in sorted((active_script, *inactive_scripts))
-        )
+        self.addChild(ScriptItem(activeScript, True))
+        self.addChildren(ScriptItem(script) for script in inactiveScripts)
         self.sortChildren(0, Qt.AscendingOrder)
+        self.setExpanded(True)
 
 class ScriptItem(TreeItem):
     def __init__(self, value, active=False):
