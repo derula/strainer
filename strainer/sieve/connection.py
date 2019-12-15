@@ -1,57 +1,66 @@
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QThread
+from collections import deque
+
+from PyQt5.QtCore import pyqtSignal, QMutex, QObject, Qt, QThread, QWaitCondition
 from sievelib import managesieve
 
 from ..types import TreeItemStatus
 
 
-class SieveConnection(QThread):
+class SieveConnection(QObject):
+    connecting = pyqtSignal()
     success = pyqtSignal(managesieve.Client)
     failure = pyqtSignal(str)
-    finished = pyqtSignal()
 
-    def __init__(self, account):
+    def __init__(self, item, account=None, action=None):
         super().__init__()
-        self._account = account
-
-    def start(self, action=None):
+        self._item = item
+        self._account = account or item.value
+        self.connecting.connect(self.setLoading, Qt.BlockingQueuedConnection)
+        self.success.connect(self.setNormal, Qt.BlockingQueuedConnection)
+        self.failure.connect(self.setError, Qt.BlockingQueuedConnection)
         if action is not None:
-            self.success.connect(action)
-        self.finished.connect(lambda: self.success.disconnect(action))
-        super().start()
+            self.success.connect(action, Qt.BlockingQueuedConnection)
 
-    def run(self):
+    def exec(self):
         server, port, login, passwd, starttls, authmech = self._account[1:]
-        conn = managesieve.Client(server, port)
+        client = managesieve.Client(server, port)
         try:
-            if not conn.connect(login, passwd, starttls=starttls, authmech=authmech):
-                self.failure.emit('Failed to authenticate to server')
-            else:
-                self.success.emit(conn)
+            self.connecting.emit()
+            if not client.connect(login, passwd, starttls=starttls, authmech=authmech):
+                raise managesieve.Error('Failed to authenticate to server')
+            self.success.emit(client)
         except managesieve.Error as e:
             self.failure.emit(e.args[0])
-        finally:
-            self.finished.emit()
 
-class TreeSieveConnection(SieveConnection):
-    def __init__(self, tree, item, account=None):
-        super().__init__(account or item.value)
-        self._tree = tree
-        self._item = item
-        self.finished.connect(self.unblock)
-        self.success.connect(self.succeed)
-        self.failure.connect(self.fail)
-
-    def start(self, action=None):
-        self._tree.blockSignals(True)
+    def setLoading(self):
         self._item.setStatus(TreeItemStatus.Loading, 'Loading, please wait...')
-        super().start(action)
 
-    def unblock(self):
-        self._tree.blockSignals(False)
-        self._tree.update(self._tree.indexFromItem(self._item, 1))
-
-    def succeed(self, conn):
+    def setNormal(self, _):
         self._item.setStatus(TreeItemStatus.Normal)
 
-    def fail(self, message):
+    def setError(self, message):
         self._item.setStatus(TreeItemStatus.Error, message)
+
+class SieveConnectionQueue(QThread):
+    def __init__(self, tree):
+        super().__init__()
+        self._tree = tree
+        self._triggered = QMutex()
+        self._triggered.lock()
+        self._queue = deque()
+        self.start()
+
+    def enqueue(self, item, account=None, action=None):
+        self._queue.append(SieveConnection(item, account, action))
+        self._triggered.unlock()
+
+    def run(self):
+        while True:
+            while not self._queue:
+                self._triggered.lock()
+            try:
+                self._tree.blockSignals(True)
+                while self._queue:
+                    self._queue.popleft().exec()
+            finally:
+                self._tree.blockSignals(False)

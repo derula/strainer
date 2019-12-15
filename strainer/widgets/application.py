@@ -1,8 +1,8 @@
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 from sievelib import managesieve
 
-from ..sieve import TreeSieveConnection
+from ..sieve import SieveConnectionQueue
 from . import actions
 from .menus import ManageMenu
 from .windows import AccountWindow, MainWindow
@@ -16,12 +16,12 @@ class Application(QApplication):
             cls = getattr(actions, action)
             all_actions[cls] = cls(None)
         self._accounts = accounts
-        self._sieveConnection = None
         self._mainWindow = MainWindow(all_actions)
+        self._sieveQueue = SieveConnectionQueue(self._mainWindow.tree)
+        self._accountWindow = AccountWindow(self._mainWindow)
         self._mainWindow.tree.connectSignals(self)
         self._mainWindow.tree.addAccountItems(accounts.all)
         self._mainWindow.show()
-        self._accountWindow = AccountWindow(self._mainWindow)
 
     def addAccount(self):
         result = self._accountWindow.exec()
@@ -45,13 +45,9 @@ class Application(QApplication):
         self._accounts.remove(item.value)
 
     def reloadAccount(self, item):
-        self._performSieveAction(item, lambda conn: item.replaceScriptItems(*conn.listscripts()))
+        self._sieveQueue.enqueue(item, action=lambda client: item.replaceScriptItems(*client.listscripts()))
 
     def openScript(self, item):
-        self._performSieveAction(item, lambda conn: self._mainWindow.editor.setText(conn.getscript(item.text(0))))
-
-    def _performSieveAction(self, item, action):
-        if self._sieveConnection is not None:
-            self._sieveConnection.exit()
-        self._sieveConnection = TreeSieveConnection(self._mainWindow.tree, item, (item.parent() or item).value)
-        self._sieveConnection.start(action)
+        def loadScript(client):
+            return self._mainWindow.editor.setText(client.getscript(item.text(0)))
+        self._sieveQueue.enqueue(item, item.parent().value, loadScript)
