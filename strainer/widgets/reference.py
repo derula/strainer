@@ -9,6 +9,9 @@ class Reference(QWebEngineView):
         super().__init__()
         self.setUrl(self._make_url())
 
+    def sizeHint(self):
+        return QSize(300, 600)
+
     def _make_url(self, *components):
         if not components:
             components = ('index',)

@@ -31,4 +31,4 @@ class Editor(QsciScintilla):
         self.setLexer(SieveLexer(self))
 
     def sizeHint(self):
-        return QSize(450, 300)
+        return QSize(750, 600)

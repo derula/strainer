@@ -110,7 +110,7 @@ class Tree(QTreeWidget):
             return lambda event: getattr(self, name).emit(self.currentItem())
 
     def sizeHint(self):
-        return QSize(150, 300)
+        return QSize(200, 600)
 
     def blockSignals(self, value):
         super().blockSignals(value)
