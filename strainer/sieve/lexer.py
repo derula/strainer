@@ -114,7 +114,7 @@ class SieveLexer(QsciLexerCustom):
         self._stylingPos = 0
         self.startStyling(start)
         for token, value in self._lexer.scan(editor.bytes(start, editor.length())):
-            length = self._lexer.pos - self._stylingPos
+            self.setStyling(self._lexer.pos - self._stylingPos - len(value), 0)
             style = self._TOKEN_STYLES[token]
             # Get the correct sub-style for identifiers
             if style is Style.Identifier:
@@ -125,7 +125,7 @@ class SieveLexer(QsciLexerCustom):
                     value_start = start + self._lexer.pos - len(value)
                     editor.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, value_start, len(value))
                     style = IdentifierStyle.Unknown
-            self.setStyling(length, style.value)
+            self.setStyling(len(value), style.value)
             self._stylingPos = self._lexer.pos
 
 # Fix a bug in sievelib (adhering to \r\n as per spec)
