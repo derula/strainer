@@ -1,5 +1,5 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtWidgets import QApplication, QStyle
 from sievelib import managesieve
 
 from ..sieve import SieveConnectionQueue
@@ -21,6 +21,10 @@ class Application(QApplication):
         self._accountWindow = AccountWindow(self._mainWindow)
         self._mainWindow.tree.connectSignals(self)
         self._mainWindow.tree.addAccountItems(accounts.all)
+        geometry = self.desktop().availableGeometry()
+        size = geometry.size()
+        size = QSize(size.width() * 0.75, size.height() * 0.75)
+        self._mainWindow.setGeometry(QStyle.alignedRect(Qt.LeftToRight, Qt.AlignCenter, size, geometry))
         self._mainWindow.show()
 
     def addAccount(self):
