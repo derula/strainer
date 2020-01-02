@@ -5,8 +5,10 @@ from ..sieve import SieveLexer
 
 
 class Editor(QsciScintilla):
-    def __init__(self):
+    def __init__(self, reference):
         super().__init__()
+        self._reference = reference
+
         self.setMinimumSize(QSize(300, 200))
         self.setScrollWidth(300)
         self.setScrollWidthTracking(True)

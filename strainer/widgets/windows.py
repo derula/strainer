@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QMainWindow, QFrame, QHBoxLayout, QSplitter, QDialog
 from .editor import Editor
 from .fields import *
 from .menus import ManageMenu
+from .reference import Reference
 from .tree import Tree
 
 
@@ -19,9 +20,11 @@ class MainWindow(QMainWindow):
         layout = QHBoxLayout()
         splitter = QSplitter()
         self._tree = Tree(manageMenu)
-        self._editor = Editor()
+        self._reference = Reference()
+        self._editor = Editor(self._reference)
         splitter.addWidget(self._tree)
         splitter.addWidget(self._editor)
+        splitter.addWidget(self._reference)
         layout.addWidget(splitter)
         frame.setLayout(layout)
         self.setCentralWidget(frame)
