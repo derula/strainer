@@ -78,6 +78,8 @@ class SieveLexer(QsciLexerCustom):
             self.setFont(QFont(font.family(), font.pointSize(), **font_kwargs), style.value)
         self._lexer = Parser().lexer
         self._stylingPos: int
+        for style in IdentifierStyle:
+            parent.SendScintilla(QsciScintilla.SCI_STYLESETHOTSPOT, style.value, True)
 
     def language(self):
         return 'Sieve'

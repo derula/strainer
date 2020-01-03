@@ -7,7 +7,13 @@ class Reference(QWebEngineView):
 
     def __init__(self):
         super().__init__()
+        self.home()
+
+    def home(self):
         self.setUrl(self._make_url())
+
+    def browse(self, token_type, token_value):
+        self.setUrl(self._make_url(token_type, 'core', token_value))
 
     def sizeHint(self):
         return QSize(300, 600)

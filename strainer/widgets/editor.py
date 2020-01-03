@@ -29,6 +29,13 @@ class Editor(QsciScintilla):
         self.setBraceMatching(QsciScintilla.BraceMatch.SloppyBraceMatch)
 
         self.setLexer(SieveLexer(self))
+        self.SCN_HOTSPOTCLICK.connect(self.onHotspotClicked)
+
+    def onHotspotClicked(self, position, modifiers):
+        position = self.SendScintilla(QsciScintilla.SCI_WORDSTARTPOSITION, position, True)
+        for style, value in self.lexer().scan(position):
+            self._reference.browse(style.name.lower(), value.decode('ascii').lower())
+            break
 
     def sizeHint(self):
         return QSize(750, 600)
