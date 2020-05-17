@@ -153,6 +153,4 @@ class Tree(QTreeWidget):
         items = [AccountItem(account) for account in accounts]
         super().addTopLevelItems(items)
         self.onItemsChanged(items)
-        if items:
-            self.setCurrentItem(items[0])
         return items

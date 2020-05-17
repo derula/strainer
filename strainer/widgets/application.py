@@ -20,7 +20,7 @@ class Application(QApplication):
         self._sieveQueue = SieveConnectionQueue(self._mainWindow.tree)
         self._accountWindow = AccountWindow(self._mainWindow)
         self._mainWindow.tree.connectSignals(self)
-        self._mainWindow.tree.addAccountItems(accounts.all)
+        self._mainWindow.tree.addAccountItems(list(accounts.all))
         geometry = self.desktop().availableGeometry()
         size = geometry.size()
         size = QSize(size.width() * 0.75, size.height() * 0.75)
