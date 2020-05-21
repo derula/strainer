@@ -4,7 +4,6 @@ from sievelib import managesieve
 
 from ..sieve import SieveConnectionQueue
 from . import actions
-from .menus import ManageMenu
 from .windows import AccountWindow, MainWindow
 
 

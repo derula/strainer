@@ -34,3 +34,17 @@ class ManageMenu(MyMenu):
         NewScript, OpenScript, DeleteScript, None,
         ActivateScript,
     ]
+
+class EditMenu(MyMenu):
+    _text = 'Edit'
+    _actions = []
+
+    def __init__(self, parent):
+        super().__init__(parent, [])
+        self.aboutToShow.connect(self.update)
+
+    def update(self):
+        self.clear()
+        self._menu = self.parent().editor.createStandardContextMenu()
+        for action in self._menu.actions():
+            self.addAction(action)

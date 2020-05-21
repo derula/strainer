@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QFrame, QHBoxLayout, QSplitter, QDialog
 
 from .editor import Editor
 from .fields import *
-from .menus import ManageMenu
+from .menus import ManageMenu, EditMenu
 from .reference import Reference
 from .tree import Tree
 
@@ -15,6 +15,7 @@ class MainWindow(QMainWindow):
 
         manageMenu = ManageMenu(self, all_actions)
         self.menuBar().addMenu(manageMenu)
+        self.menuBar().addMenu(EditMenu(self))
 
         frame = QFrame(self)
         layout = QHBoxLayout()
