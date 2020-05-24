@@ -3,7 +3,8 @@ from enum import auto, Enum
 from PyQt5.Qsci import QsciScintilla, QsciLexerCustom
 from PyQt5.QtGui import QFontDatabase, QFont, QColor
 from sievelib.parser import Parser, ParseError
-from sievelib.commands import get_command_instance, UnknownCommand, ControlCommand, ActionCommand, TestCommand
+from sievelib.commands import UnknownCommand, ControlCommand, ActionCommand, TestCommand, \
+    comparator, address_part, match_type, get_command_instance
 
 
 class Style(int, Enum):
@@ -17,9 +18,15 @@ class Style(int, Enum):
     Tag = auto()
     Identifier = auto()
 
+class TagStyle(int, Enum):
+    Unknown = Style.Tag
+    Comparator = max(Style) + 1
+    AddressPart = auto()
+    MatchType = auto()
+
 class IdentifierStyle(int, Enum):
     Unknown = Style.Identifier
-    Control = auto()
+    Control = max(TagStyle) + 1
     Action = auto()
     Test = auto()
 
@@ -41,6 +48,11 @@ class SieveLexer(QsciLexerCustom):
         'tag': Style.Tag,
         'identifier': Style.Identifier,
     }
+    _TAG_STYLES = {
+        **{value: TagStyle.Comparator for value in comparator['values']},
+        **{value: TagStyle.AddressPart for value in address_part['values']},
+        **{value: TagStyle.MatchType for value in match_type['values']},
+    }
     _IDENTIFIER_STYLES = {
         'control': IdentifierStyle.Control,
         'action': IdentifierStyle.Action,
@@ -52,7 +64,9 @@ class SieveLexer(QsciLexerCustom):
         Style.String: ('#7f0000', {}),
         Style.StringMultiline: ('#7f0000', {}),
         Style.Number: ('#7f0000', {}),
-        Style.Tag: ('#7f007f', {}),
+        TagStyle.Comparator: ('#7f007f', {}),
+        TagStyle.AddressPart: ('#7f007f', {}),
+        TagStyle.MatchType: ('#7f007f', {}),
         IdentifierStyle.Control: ('#0000bf', {'weight': QFont.Bold}),
         IdentifierStyle.Action: ('#0000bf', {'weight': QFont.Bold, 'italic': True}),
         IdentifierStyle.Test: ('#0000bf', {'italic': True}),
@@ -78,14 +92,14 @@ class SieveLexer(QsciLexerCustom):
             self.setFont(QFont(font.family(), font.pointSize(), **font_kwargs), style)
         self._lexer = Parser().lexer
         self._stylingPos: int
-        for style in set(IdentifierStyle) - {IdentifierStyle.Unknown}:
+        for style in (set(TagStyle) | set(IdentifierStyle)) - {TagStyle.Unknown, IdentifierStyle.Unknown}:
             parent.SendScintilla(QsciScintilla.SCI_STYLESETHOTSPOT, style, True)
 
     def language(self):
         return 'Sieve'
 
     def description(self, style):
-        for style_class in (Style, IdentifierStyle):
+        for style_class in (Style, TagStyle, IdentifierStyle):
             try:
                 return style_class(style).name
             except ValueError:
@@ -125,7 +139,9 @@ class SieveLexer(QsciLexerCustom):
         for token, value in self._lexer.scan(editor.bytes(start, editor.length())):
             style = self._TOKEN_STYLES[token]
             # Get the correct sub-style for identifiers
-            if style is Style.Identifier:
+            if style is Style.Tag:
+                style = self._TAG_STYLES.get(value.decode('ascii'), TagStyle.Unknown)
+            elif style is Style.Identifier:
                 try:
                     command = get_command_instance(value.decode('ascii'), checkexists=False)
                     style = self._IDENTIFIER_STYLES[command.get_type()]

@@ -2,6 +2,7 @@ from PyQt5.Qsci import QsciScintilla
 from PyQt5.QtCore import QSize
 
 from ..sieve import SieveLexer
+from ..sieve.lexer import TagStyle
 
 
 class Editor(QsciScintilla):
@@ -33,8 +34,15 @@ class Editor(QsciScintilla):
 
     def onHotspotClicked(self, position, modifiers):
         position = self.SendScintilla(QsciScintilla.SCI_WORDSTARTPOSITION, position, True)
+        if self.text(position - 1, position) == ':':
+            position -= 1
         for style, value in self.lexer().scan(position):
-            self._reference.browse(style.name.lower(), value.decode('ascii').lower())
+            category = style.name.lower()
+            if isinstance(style, TagStyle):
+                page, category = category, 'operators'
+            else:
+                page = value.decode('ascii').lower()
+            self._reference.browse(category, page)
             break
 
     def sizeHint(self):

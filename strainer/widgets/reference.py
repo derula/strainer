@@ -12,8 +12,8 @@ class Reference(QWebEngineView):
     def home(self):
         self.setUrl(self._make_url())
 
-    def browse(self, token_type, token_value):
-        self.setUrl(self._make_url(token_type, 'core', token_value))
+    def browse(self, category, page):
+        self.setUrl(self._make_url(category, 'core', page))
 
     def sizeHint(self):
         return QSize(300, 600)
