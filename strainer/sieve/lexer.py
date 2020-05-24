@@ -6,7 +6,7 @@ from sievelib.parser import Parser, ParseError
 from sievelib.commands import get_command_instance, UnknownCommand, ControlCommand, ActionCommand, TestCommand
 
 
-class Style(Enum):
+class Style(int, Enum):
     Default = 0
     Punctuation = auto()
     Comment = auto()
@@ -17,8 +17,8 @@ class Style(Enum):
     Tag = auto()
     Identifier = auto()
 
-class IdentifierStyle(Enum):
-    Unknown = Style.Identifier.value
+class IdentifierStyle(int, Enum):
+    Unknown = Style.Identifier
     Control = auto()
     Action = auto()
     Test = auto()
@@ -58,7 +58,7 @@ class SieveLexer(QsciLexerCustom):
         IdentifierStyle.Test: ('#0000bf', {'italic': True}),
     }
     _FONTS = ['Source Code Pro', 'Noto Mono', 'DejaVu Sans Mono', 'Monospace', 'Consolas']
-    _MULTILINE_STYLES = {Style.CommentMultiline.value, Style.StringMultiline.value}
+    _MULTILINE_STYLES = {Style.CommentMultiline, Style.StringMultiline}
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -74,12 +74,12 @@ class SieveLexer(QsciLexerCustom):
             font = db.systemFont(QFontDatabase.FixedFont)
         self.setDefaultFont(font)
         for style, (color, font_kwargs) in self._STYLE_SETTINGS.items():
-            self.setColor(QColor(color), style.value)
-            self.setFont(QFont(font.family(), font.pointSize(), **font_kwargs), style.value)
+            self.setColor(QColor(color), style)
+            self.setFont(QFont(font.family(), font.pointSize(), **font_kwargs), style)
         self._lexer = Parser().lexer
         self._stylingPos: int
         for style in set(IdentifierStyle) - {IdentifierStyle.Unknown}:
-            parent.SendScintilla(QsciScintilla.SCI_STYLESETHOTSPOT, style.value, True)
+            parent.SendScintilla(QsciScintilla.SCI_STYLESETHOTSPOT, style, True)
 
     def language(self):
         return 'Sieve'
@@ -117,7 +117,7 @@ class SieveLexer(QsciLexerCustom):
         self.startStyling(start)
         for style, value in self.scan(start):
             self.setStyling(self._lexer.pos - self._stylingPos - len(value), 0)
-            self.setStyling(len(value), style.value)
+            self.setStyling(len(value), style)
             self._stylingPos = self._lexer.pos
 
     def scan(self, start):
