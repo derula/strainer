@@ -110,7 +110,7 @@ class SieveLexer(QsciLexerCustom):
         editor = self.parent()
         editor.SendScintilla(QsciScintilla.SCI_SETINDICATORCURRENT, 0)
         editor.SendScintilla(QsciScintilla.SCI_INDICATORCLEARRANGE, 0, len(editor.text()))
-        # We're alwaysd parsing the entire file.
+        # We're always parsing the entire file.
         # This is not ideal, but QScintilla and sievelib don't cooperate nicely on multi-line comments / strings.
         # Hopefully scripts won't get too long.
         start = 0
