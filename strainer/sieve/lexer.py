@@ -19,13 +19,11 @@ class Style(int, Enum):
     Identifier = auto()
 
 class TagStyle(int, Enum):
-    Unknown = Style.Tag
     Comparator = max(Style) + 1
     AddressPart = auto()
     MatchType = auto()
 
 class IdentifierStyle(int, Enum):
-    Unknown = Style.Identifier
     Control = max(TagStyle) + 1
     Action = auto()
     Test = auto()
@@ -64,6 +62,7 @@ class SieveLexer(QsciLexerCustom):
         Style.String: ('#7f0000', {}),
         Style.StringMultiline: ('#7f0000', {}),
         Style.Number: ('#7f0000', {}),
+        Style.Tag: ('#7f007f', {}),
         TagStyle.Comparator: ('#7f007f', {}),
         TagStyle.AddressPart: ('#7f007f', {}),
         TagStyle.MatchType: ('#7f007f', {}),
@@ -92,7 +91,7 @@ class SieveLexer(QsciLexerCustom):
             self.setFont(QFont(font.family(), font.pointSize(), **font_kwargs), style)
         self._lexer = Parser().lexer
         self._stylingPos: int
-        for style in (set(TagStyle) | set(IdentifierStyle)) - {TagStyle.Unknown, IdentifierStyle.Unknown}:
+        for style in set(TagStyle) | set(IdentifierStyle):
             parent.SendScintilla(QsciScintilla.SCI_STYLESETHOTSPOT, style, True)
 
     def language(self):
@@ -139,16 +138,15 @@ class SieveLexer(QsciLexerCustom):
         for token, value in self._lexer.scan(editor.bytes(start, editor.length())):
             style = self._TOKEN_STYLES[token]
             # Get the correct sub-style for identifiers
-            if style is Style.Tag:
-                style = self._TAG_STYLES.get(value.decode('ascii'), TagStyle.Unknown)
-            elif style is Style.Identifier:
-                try:
+            try:
+                if style is Style.Tag:
+                    style = self._TAG_STYLES[value.decode('ascii')]
+                elif style is Style.Identifier:
                     command = get_command_instance(value.decode('ascii'), checkexists=False)
                     style = self._IDENTIFIER_STYLES[command.get_type()]
-                except (UnknownCommand, NotImplementedError, KeyError):
-                    value_start = start + self._lexer.pos - len(value)
-                    editor.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, value_start, len(value))
-                    style = IdentifierStyle.Unknown
+            except (UnknownCommand, NotImplementedError, KeyError):
+                value_start = start + self._lexer.pos - len(value)
+                editor.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, value_start, len(value))
             yield style, value
 
 # Fix a bug in sievelib (adhering to \r\n as per spec)
