@@ -1,4 +1,5 @@
 from enum import auto, Enum
+from functools import partial
 
 from PyQt5.Qsci import QsciScintilla, QsciLexerCustom
 from PyQt5.QtGui import QFontDatabase, QFont, QColor
@@ -93,6 +94,7 @@ class SieveLexer(QsciLexerCustom):
         self._stylingPos: int
         for style in set(TagStyle) | set(IdentifierStyle):
             parent.SendScintilla(QsciScintilla.SCI_STYLESETHOTSPOT, style, True)
+        self.getStyling = partial(parent.SendScintilla, QsciScintilla.SCI_GETSTYLEAT)
 
     def language(self):
         return 'Sieve'
@@ -107,24 +109,42 @@ class SieveLexer(QsciLexerCustom):
 
     def styleText(self, start, end):
         editor = self.parent()
+        start, end = self._fixRange(start, end)
         editor.SendScintilla(QsciScintilla.SCI_SETINDICATORCURRENT, 0)
-        editor.SendScintilla(QsciScintilla.SCI_INDICATORCLEARRANGE, 0, len(editor.text()))
-        # We're always parsing the entire file.
-        # This is not ideal, but QScintilla and sievelib don't cooperate nicely on multi-line comments / strings.
-        # Hopefully scripts won't get too long.
-        start = 0
+        editor.SendScintilla(QsciScintilla.SCI_INDICATORCLEARRANGE, 0, editor.length())
         while True:
             try:
-                self._doStyleText(start)
+                self._doStyleText(start, end)
                 break
             except ParseError:
                 # Mark and skip past any syntactical errors
                 start += self._lexer.pos + 1
-                error_len = self._lexer.pos - self._stylingPos
-                editor.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, start - 1, error_len)
-                self.setStyling(error_len, 0)
+                editor.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, start - 1, 1)
+                self.setStyling(1, 0)
 
-    def _doStyleText(self, start: int):
+    def _fixRange(self, start, end):
+        editor = self.parent()
+        # Include current block of the same style (use case: removing text:, ., /*, or */)
+        while start > 0 and self.getStyling(start) == self.getStyling(start - 1):
+            start -= 1
+        while end < editor.length() and self.getStyling(end) == self.getStyling(end + 1):
+            end += 1
+
+        # Include first and last error (use case: adding text:, ., /*, or */)
+        if editor.SendScintilla(QsciScintilla.SCI_INDICATORVALUEAT, 0, 0):
+            start = 0
+        else:
+            first_error = editor.SendScintilla(QsciScintilla.SCI_INDICATOREND, 0, 0)
+            if first_error:  # because if there is no error, SCI_INDICATOREND will return 0
+                start = min(start, first_error)
+        if editor.SendScintilla(QsciScintilla.SCI_INDICATORVALUEAT, 0, editor.length() - 1):
+            end = editor.length()
+        else:
+            end = max(end, editor.SendScintilla(QsciScintilla.SCI_INDICATORSTART, 0, editor.length()))
+
+        return start, end
+
+    def _doStyleText(self, start: int, end: int):
         editor = self.parent()
         self._stylingPos = 0
         self.startStyling(start)
@@ -132,6 +152,8 @@ class SieveLexer(QsciLexerCustom):
             self.setStyling(self._lexer.pos - self._stylingPos - len(value), 0)
             self.setStyling(len(value), style)
             self._stylingPos = self._lexer.pos
+            if start + self._lexer.pos > end:
+                break
 
     def scan(self, start):
         editor = self.parent()
