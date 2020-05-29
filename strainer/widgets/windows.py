@@ -1,5 +1,6 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QFrame, QHBoxLayout, QSplitter, QDialog, QFormLayout, QDialogButtonBox
+from qtawesome import icon
 
 from .editor import Editor
 from .fields import *
@@ -66,8 +67,10 @@ class AccountWindow(QDialog):
     def exec(self, values = None):
         if values:
             self.setWindowTitle('Change account settings')
+            self.setWindowIcon(icon('mdi.account-edit'))
         else:
             self.setWindowTitle('Add new account')
+            self.setWindowIcon(icon('mdi.account-plus'))
             values = ('New account', '', 4190, '', '', False, None)
         layout = self.layout()
         for i, value in enumerate(values):

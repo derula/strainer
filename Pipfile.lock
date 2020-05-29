@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "80cfc866e0f26e5c838e486628d6beb8858d86e413741ba1a042be2dab2371d8"
+            "sha256": "48800316e74b79fc9b068c05cacde3d4116084028a0f6ea44fcc69e46df60f1b"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -154,6 +154,21 @@
             "index": "pypi",
             "version": "==2.11.4"
         },
+        "qtawesome": {
+            "hashes": [
+                "sha256:1387830e102ad6453837f10ca4f9954de090700f2a9e18c4a60de4b0279d24c1",
+                "sha256:ca9719c82d41707f62c340811b23bcab95336e73edd88b7eab7fd951d2e27fab"
+            ],
+            "index": "pypi",
+            "version": "==0.7.2"
+        },
+        "qtpy": {
+            "hashes": [
+                "sha256:2db72c44b55d0fe1407be8fba35c838ad0d6d3bb81f23007886dc1fc0f459c8d",
+                "sha256:fa0b8363b363e89b2a6f49eddc162a04c0699ae95e109a6be3bb145a913190ea"
+            ],
+            "version": "==1.9.0"
+        },
         "sievelib": {
             "hashes": [
                 "sha256:b6fe5d4239dab278def5eab9ece95463ea241c99b9ba6dc8ac452394a83f697b",
@@ -164,10 +179,10 @@
         },
         "six": {
             "hashes": [
-                "sha256:236bdbdce46e6e6a3d61a337c0f8b763ca1e8717c03b369e87a7ec7ce1319c0a",
-                "sha256:8f3cd2e254d8f793e7f3d6d9df77b92252b52637291d0f0da013c76ea2724b6c"
+                "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259",
+                "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
             ],
-            "version": "==1.14.0"
+            "version": "==1.15.0"
         }
     },
     "develop": {}

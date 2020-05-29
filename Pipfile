@@ -11,6 +11,7 @@ sievelib = "*"
 PyInstaller = "*"
 QScintilla = "*"
 PyQtWebEngine = "*"
+qtawesome = "*"
 
 [requires]
 python_version = "3.7"
