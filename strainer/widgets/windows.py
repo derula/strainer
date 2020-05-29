@@ -13,6 +13,7 @@ class MainWindow(QMainWindow):
     def __init__(self, all_actions):
         super().__init__()
         self.setWindowTitle('Strainer')
+        self.setWindowIcon(icon('mdi.filter'))
 
         manageMenu = ManageMenu(self, all_actions)
         self.menuBar().addMenu(manageMenu)
