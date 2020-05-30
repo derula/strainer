@@ -7,7 +7,7 @@ from .base import *
 
 class AddAccount(MyAction):
     _text = 'Add account'
-    _shortcut = QKeySequence(Qt.Key_Insert)
+    _shortcut = QKeySequence(Qt.SHIFT | Qt.Key_Insert)
     _icon = 'mdi.account-plus'
 
     def _shouldEnable(self, item):
@@ -15,13 +15,13 @@ class AddAccount(MyAction):
 
 class EditAccount(NonEmptyAction):
     _text = 'Account settings'
-    _shortcut = QKeySequence(Qt.Key_Return)
+    _shortcut = QKeySequence(Qt.SHIFT | Qt.Key_Return)
     _icon = 'mdi.account-edit'
     _signal = pyqtSignal(QTreeWidgetItem)
 
 class RemoveAccount(NonEmptyAction):
     _text = 'Remove account'
-    _shortcut = QKeySequence(Qt.Key_Delete)
+    _shortcut = QKeySequence(Qt.SHIFT | Qt.Key_Delete)
     _icon = 'mdi.account-remove'
     _signal = pyqtSignal(QTreeWidgetItem)
 
@@ -33,7 +33,7 @@ class ReloadAccount(NonEmptyAction):
 
 class NewScript(NonEmptyAction):
     _text = 'New script'
-    _shortcut = QKeySequence(Qt.SHIFT | Qt.Key_Insert)
+    _shortcut = QKeySequence(Qt.Key_Insert)
     _icon = 'mdi.file-plus'
 
 class OpenScript(ScriptAction):
