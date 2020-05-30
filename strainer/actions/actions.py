@@ -2,7 +2,6 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QTreeWidgetItem
 
-from ..types import AccountTreeItem, ScriptTreeItem
 from .base import *
 
 
@@ -18,13 +17,13 @@ class EditAccount(AccountAction):
     _text = 'Account settings'
     _shortcut = QKeySequence(Qt.Key_Return)
     _icon = 'mdi.account-edit'
-    _signal = pyqtSignal(AccountTreeItem)
+    _signal = pyqtSignal(QTreeWidgetItem)
 
 class RemoveAccount(AccountAction):
     _text = 'Remove account'
     _shortcut = QKeySequence(Qt.Key_Delete)
     _icon = 'mdi.account-remove'
-    _signal = pyqtSignal(AccountTreeItem)
+    _signal = pyqtSignal(QTreeWidgetItem)
 
 class ReloadAccount(NonEmptyAction):
     _text = 'Reload account'
@@ -41,18 +40,18 @@ class OpenScript(ScriptAction):
     _text = 'Open script'
     _shortcut = QKeySequence(Qt.Key_Return)
     _icon = 'mdi.file-download'
-    _signal = pyqtSignal(ScriptTreeItem)
+    _signal = pyqtSignal(QTreeWidgetItem)
 
 class DeleteScript(ScriptAction):
     _text = 'Delete script'
     _shortcut = QKeySequence(Qt.Key_Delete)
     _icon = 'mdi.file-remove'
-    _signal = pyqtSignal(ScriptTreeItem)
+    _signal = pyqtSignal(QTreeWidgetItem)
 
 class ActivateScript(ScriptAction):
     _text = 'Activate script'
     _icon = 'mdi.file-check'
-    _signal = pyqtSignal(ScriptTreeItem)
+    _signal = pyqtSignal(QTreeWidgetItem)
 
     def _shouldEnable(self, item):
         return super()._shouldEnable(item) and not item.active
