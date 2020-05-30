@@ -40,6 +40,12 @@ class Account(NamedTuple):
             result['passwd'] = b64encode(pw_key.encrypt(self.passwd.encode('utf-8'))).decode('ascii')
         return result
 
+class AccountTreeItem:
+    pass
+
+class ScriptTreeItem:
+    pass
+
 class TreeItemStatus(Enum):
     Normal = auto()
     Loading = auto()

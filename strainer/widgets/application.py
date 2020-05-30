@@ -13,16 +13,17 @@ class Application(QApplication):
         all_actions = {}
         for action in actions.__all__:
             cls = getattr(actions, action)
-            all_actions[cls] = cls(None)
+            action = cls(None)
+            name = f'{cls.__name__[0].lower()}{cls.__name__[1:]}'
+            try:
+                action.connect(getattr(self, name))
+            except AttributeError:
+                pass
+            all_actions[cls] = action
         self._accounts = accounts
         self._mainWindow = MainWindow(all_actions)
         self._sieveQueue = SieveConnectionQueue(self._mainWindow.tree)
         self._accountWindow = AccountWindow(self._mainWindow)
-        for action in all_actions.values():
-            try:
-                action.connect(self)
-            except AttributeError:
-                pass
         self._mainWindow.tree().addAccountItems(list(accounts.all))
         geometry = self.desktop().availableGeometry()
         size = geometry.size()

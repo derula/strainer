@@ -1,21 +1,13 @@
-from PyQt5.QtCore import Qt, QSize, pyqtSignal
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QTreeWidget, QHeaderView
 
+from ...actions import *
 from ..menus import ManageMenu
-from .items import AccountItem, ScriptItem
+from .items import AccountItem
 
 
 class Tree(QTreeWidget):
-    addAccount = pyqtSignal()
-    editAccount = pyqtSignal(AccountItem)
-    removeAccount = pyqtSignal(AccountItem)
-    reloadAccount = pyqtSignal(AccountItem)
-    newScript = pyqtSignal()
-    openScript = pyqtSignal(ScriptItem)
-    deleteScript = pyqtSignal(ScriptItem)
-    activateScript = pyqtSignal(ScriptItem)
-
     def __init__(self, parent):
         super().__init__(parent)
         self.setMinimumSize(QSize(100, 200))
@@ -28,9 +20,7 @@ class Tree(QTreeWidget):
         self._menu = ManageMenu(self.window())
         for action in self._menu.actions():
             try:
-                signal = action.signal(self)
-                if '()' not in signal.signal:
-                    action.signalArgs(lambda: (self.currentItem(),))
+                action.setDefaultArgs(lambda: (self.currentItem(),))
             except AttributeError:
                 pass
         self.currentItemChanged.connect(self.onCurrentItemChanged)
@@ -53,9 +43,9 @@ class Tree(QTreeWidget):
 
     def onItemActivated(self, item):
         if isinstance(item, AccountItem):
-            self.editAccount.emit(item)
+            self.window().action(EditAccount).emit(item)
         else:
-            self.openScript.emit(item)
+            self.window().action(OpenScript).emit(item)
 
     def onItemChanged(self, item):
         self.onItemsChanged([item])
@@ -64,7 +54,7 @@ class Tree(QTreeWidget):
         self.sortItems(0, Qt.AscendingOrder)
         for item in items:
             if item.parent() is None:
-                self.reloadAccount.emit(item)
+                self.window().action(ReloadAccount).emit(item)
 
     def addAccountItem(self, account):
         return self.addAccountItems([account])[0]

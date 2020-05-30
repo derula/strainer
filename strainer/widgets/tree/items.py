@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTreeWidgetItem
 
-from ...types import Account, TreeItemStatus
+from ...types import Account, TreeItemStatus, AccountTreeItem, ScriptTreeItem
 
 
 class TreeItem(QTreeWidgetItem):
@@ -30,7 +30,7 @@ class TreeItem(QTreeWidgetItem):
     def status(self):
         return self._status
 
-class AccountItem(TreeItem):
+class AccountItem(AccountTreeItem, TreeItem):
     def __init__(self, value):
         super().__init__(['', ''])
         self.value = value
@@ -52,7 +52,7 @@ class AccountItem(TreeItem):
         self.sortChildren(0, Qt.AscendingOrder)
         self.setExpanded(True)
 
-class ScriptItem(TreeItem):
+class ScriptItem(ScriptTreeItem, TreeItem):
     def __init__(self, value, active=False):
         self._active = active
         super().__init__([value, ''])

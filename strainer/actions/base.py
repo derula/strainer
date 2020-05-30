@@ -8,6 +8,7 @@ __all__ = ('MyAction', 'AccountAction', 'ScriptAction', 'NonEmptyAction')
 class MyAction(QAction):
     _shortcut = None
     _icon = None
+    _signal = None
 
     def __init__(self, tree):
         super().__init__(self._text, tree)
@@ -15,25 +16,23 @@ class MyAction(QAction):
             self.setShortcut(self._shortcut)
         if self._icon:
             self.setIcon(icon(self._icon))
-        name = self.__class__.__name__
-        self._signalName = f'{name[0].lower()}{name[1:]}'
-        self._signal = self._signalArgs = None
-        self.triggered.connect(self.emit)
+        self._defaultArgs = None
+        if self._signal:
+            self.triggered.connect(lambda checked: self.emit())
 
-    def signal(self, owner):
-        self._signal = getattr(owner, self._signalName)
+    def signal(self):
         return self._signal
 
-    def signalArgs(self, getArgs):
-        self._signalArgs = getArgs
+    def setDefaultArgs(self, getArgs):
+        self._defaultArgs = getArgs
 
-    def connect(self, receiver):
-        self._signal.connect(getattr(receiver, self._signalName))
+    def connect(self, handler):
+        (self._signal or self.triggered).connect(handler)
 
-    def emit(self):
-        if self._signal is not None:
-            args = self._signalArgs() if self._signalArgs is not None else ()
-            self._signal.emit(*args)
+    def emit(self, *args):
+        if self._defaultArgs:
+            args += self._defaultArgs()[len(args):]
+        self._signal.emit(*args)
 
     def update(self, target):
         self.setEnabled(self._shouldEnable(target))
