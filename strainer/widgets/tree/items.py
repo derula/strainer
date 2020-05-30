@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTreeWidgetItem
 
-from ..types import Account, TreeItemStatus
+from ...types import Account, TreeItemStatus
 
 
 class TreeItem(QTreeWidgetItem):

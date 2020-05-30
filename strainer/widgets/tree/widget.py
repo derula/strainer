@@ -2,8 +2,8 @@ from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QTreeWidget, QHeaderView
 
-from .menus import ManageMenu
-from .tree_items import AccountItem, ScriptItem
+from ..menus import ManageMenu
+from .items import AccountItem, ScriptItem
 
 
 class Tree(QTreeWidget):
