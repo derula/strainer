@@ -4,38 +4,32 @@ from PyQt5.QtWidgets import QMenu
 from qtawesome import icon
 
 from ..actions import *
-
-
-class MyActionWidget:
-    _text = ''
-
-    def __init__(self, parent):
-        super().__init__(self._text, parent)
-        self._actions = []
-        for action in self.__class__._actions:
-            if action:
-                action = parent.action(action)
-                self.addAction(action)
-            else:
-                self.addSeparator()
+from .base import MyActionWidget
 
 
 class MyMenu(MyActionWidget, QMenu):
+    pass
+
+
+class AccountMenu(MyMenu):
+    _text = 'Account'
+    _actions = [AddAccount, EditAccount, RemoveAccount, None, ReloadAccount]
+
+
+class ScriptMenu(MyMenu):
+    _text = 'Script'
+    _actions = [NewScript, OpenScript, DeleteScript, None, ActivateScript]
+
+
+class ManageMenu(MyMenu):
+    _actions = [*AccountMenu._actions, None, *ScriptMenu._actions]
+
     def update(self, currentItem=None):
         for action in self.actions():
             try:
                 action.update(currentItem)
             except AttributeError:
                 pass
-
-class ManageMenu(MyMenu):
-    _text = 'Manage'
-    _actions = [
-        AddAccount, EditAccount, RemoveAccount, None,
-        ReloadAccount, None,
-        NewScript, OpenScript, DeleteScript, None,
-        ActivateScript,
-    ]
 
 class EditMenu(MyMenu):
     _text = 'Edit'
@@ -49,9 +43,9 @@ class EditMenu(MyMenu):
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.aboutToShow.connect(self.update)
+        self.aboutToShow.connect(self.onAboutToShow)
 
-    def update(self):
+    def onAboutToShow(self):
         self.clear()
         self._menu = self.parent().editor().createStandardContextMenu()
         for action in self._menu.actions():

@@ -19,7 +19,8 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle('Strainer')
         self.setWindowIcon(icon('mdi.filter'))
-        self.menuBar().addMenu(ManageMenu(self))
+        self.menuBar().addMenu(AccountMenu(self))
+        self.menuBar().addMenu(ScriptMenu(self))
         self.menuBar().addMenu(EditMenu(self))
 
         self._tree = Tree(splitter)
