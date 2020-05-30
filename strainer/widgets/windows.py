@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(QFrame(self))
         QHBoxLayout(self.centralWidget()).addWidget(splitter)
 
-        self.setWindowTitle('Strainer')
+        self.onModificationChanged()
         self.setWindowIcon(icon('mdi.filter'))
         self.menuBar().addMenu(AccountMenu(self))
         self.menuBar().addMenu(ScriptMenu(self))
@@ -26,6 +26,8 @@ class MainWindow(QMainWindow):
         self._tree = Tree(splitter)
         self._editor = Editor(splitter)
         self._reference = Reference(splitter)
+
+        self._editor.modificationChanged.connect(self.onModificationChanged)
 
     def action(self, action_type):
         return self._actions[action_type]
@@ -38,6 +40,9 @@ class MainWindow(QMainWindow):
 
     def reference(self):
         return self._reference
+
+    def onModificationChanged(self, isModified=False):
+        self.setWindowTitle(f"Strainer{' *' if isModified else ''}")
 
 class AccountWindow(QDialog):
     def __init__(self, parent):

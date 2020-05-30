@@ -60,5 +60,6 @@ class Application(QApplication):
 
     def openScript(self, item):
         def loadScript(client):
-            return self._mainWindow.editor().setText(client.getscript(item.text(0)))
+            self._mainWindow.editor().setText(client.getscript(item.text(0)))
+            self._mainWindow.editor().setModified(False)
         self._sieveQueue.enqueue(item, item.parent().value, loadScript)
