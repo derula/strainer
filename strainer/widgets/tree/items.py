@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QFont
 from PyQt5.QtWidgets import QTreeWidgetItem
 
 from ...types import Account, TreeItemStatus
@@ -53,13 +53,14 @@ class AccountItem(TreeItem):
         self.setExpanded(True)
 
 class ScriptItem(TreeItem):
-    def __init__(self, value, active=False):
-        self._active = active
+    def __init__(self, value, is_active=False):
+        self._open = False
+        self._active = is_active
         super().__init__([value, ''])
 
     def setStatus(self, status, tooltip=''):
         super().setStatus(status, tooltip)
-        self._applyActiveState()
+        self._applyState()
 
     @property
     def active(self):
@@ -68,8 +69,20 @@ class ScriptItem(TreeItem):
     @active.setter
     def active(self, value):
         self._active = value
-        self._applyActiveState()
+        self._applyState()
 
-    def _applyActiveState(self):
+    @property
+    def open(self):
+        return self._open
+
+    @open.setter
+    def open(self, value):
+        self._open = value
+        self._applyState()
+
+    def _applyState(self):
+        font = self.font(0)
+        font.setItalic(self._open)
+        self.setFont(0, font)
         if self._active and self._status == TreeItemStatus.Normal:
             self.setText(1, '*')

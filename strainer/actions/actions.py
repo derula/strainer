@@ -42,6 +42,18 @@ class OpenScript(ScriptAction):
     _icon = 'mdi.file-download'
     _signal = pyqtSignal(QTreeWidgetItem)
 
+    def _shouldEnable(self, item):
+        return super()._shouldEnable(item) and not item.open
+
+class SaveScript(ScriptAction):
+    _text = 'Save script'
+    _shortcut = QKeySequence(Qt.CTRL | Qt.Key_S)
+    _icon = 'mdi.file-upload'
+    _signal = pyqtSignal(QTreeWidgetItem)
+
+    def _shouldEnable(self, item):
+        return super()._shouldEnable(item) and item.open
+
 class DeleteScript(ScriptAction):
     _text = 'Delete script'
     _shortcut = QKeySequence(Qt.Key_Delete)

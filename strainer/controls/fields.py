@@ -2,10 +2,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QLineEdit, QCheckBox, QComboBox
 from PyQt5.QtGui import QIntValidator
 
-__all__ = (
-    'StringField', 'PasswordField', 'IntegerField', 'CheckboxField', 'OptionsField',
-)
-
 
 class StringField(QLineEdit):
     def __init__(self, max_len=255):

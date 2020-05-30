@@ -8,6 +8,8 @@ from .styles import TagStyle
 class Editor(QsciScintilla):
     def __init__(self, parent):
         super().__init__(parent)
+        self.close()
+
         self.setMinimumSize(QSize(300, 200))
         self.setScrollWidth(300)
         self.setScrollWidthTracking(True)
@@ -45,3 +47,16 @@ class Editor(QsciScintilla):
 
     def sizeHint(self):
         return QSize(750, 600)
+
+    def open(self, text, scriptName):
+        self._scriptName = scriptName
+        self.setText(text)
+        self.setModified(False)
+        self.setReadOnly(not scriptName)
+
+    def close(self):
+        self.open('', '')
+
+    @property
+    def scriptName(self):
+        return self._scriptName

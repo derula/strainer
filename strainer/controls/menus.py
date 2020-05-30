@@ -18,7 +18,7 @@ class AccountMenu(MyMenu):
 
 class ScriptMenu(MyMenu):
     _text = 'Script'
-    _actions = [NewScript, OpenScript, DeleteScript, None, ActivateScript]
+    _actions = [NewScript, OpenScript, SaveScript, DeleteScript, None, ActivateScript]
 
 
 class ManageMenu(MyMenu):

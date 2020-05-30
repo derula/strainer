@@ -1,10 +1,10 @@
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QApplication, QStyle
+from PyQt5.QtWidgets import QApplication, QStyle, QMessageBox
 from sievelib import managesieve
 
 from .. import actions
 from ..sieve import SieveConnectionQueue
-from .windows import AccountWindow, MainWindow
+from .windows import AccountWindow, ConfirmClose, MainWindow
 
 
 class Application(QApplication):
@@ -21,6 +21,7 @@ class Application(QApplication):
                 pass
             all_actions[cls] = action
         self._accounts = accounts
+        self._openScript = None
         self._mainWindow = MainWindow(all_actions)
         self._sieveQueue = SieveConnectionQueue(self._mainWindow.tree)
         self._accountWindow = AccountWindow(self._mainWindow)
@@ -56,10 +57,33 @@ class Application(QApplication):
 
     def reloadAccount(self, item):
         item = item.parent() or item
+        openScript = None
+        if self._openScript and self._openScript.parent() == item:
+            if self.closeScript() == QMessageBox.Cancel:
+                return
         self._sieveQueue.enqueue(item, action=lambda client: item.replaceScriptItems(*client.listscripts()))
 
     def openScript(self, item):
+        if self.closeScript() == QMessageBox.Cancel:
+            return
         def loadScript(client):
-            self._mainWindow.editor().setText(client.getscript(item.text(0)))
-            self._mainWindow.editor().setModified(False)
+            self._openScript = item
+            self._openScript.open = True
+            self._mainWindow.editor().open(client.getscript(item.text(0)), item.text(0))
         self._sieveQueue.enqueue(item, item.parent().value, loadScript)
+
+    def saveScript(self):
+        ...
+
+    def closeScript(self):
+        if self._openScript and self._mainWindow.editor().isModified():
+            result = ConfirmClose(self._openScript.text(0)).exec()
+        else:
+            result = QMessageBox.Discard
+        if result == QMessageBox.Save:
+            self.saveScript()
+        if result != QMessageBox.Cancel and self._openScript:
+            self._mainWindow.editor().close()
+            self._openScript.open = False
+            self._openScript = None
+        return result

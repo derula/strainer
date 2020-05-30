@@ -1,12 +1,22 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMainWindow, QFrame, QHBoxLayout, QSplitter, QDialog, QFormLayout, QDialogButtonBox
+from PyQt5.QtWidgets import QMainWindow, QFrame, QHBoxLayout, QSplitter, QDialog, QFormLayout, QDialogButtonBox, QMessageBox
 from qtawesome import icon
 
+from ..actions import SaveScript
 from ..controls import *
 from .editor import Editor
 from .reference import Reference
 from .tree import Tree
 
+
+class ConfirmClose(QMessageBox):
+    def __init__(self, scriptName):
+        super().__init__(QMessageBox.Question, 'Unsaved changes in open script',
+            f'The script "{scriptName}" has unsaved changes.\n'
+            'If you close it now, these changes will be lost.\n'
+            'What do you want to do?',
+            QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel
+        )
 
 class MainWindow(QMainWindow):
     def __init__(self, all_actions):
@@ -17,7 +27,6 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(QFrame(self))
         QHBoxLayout(self.centralWidget()).addWidget(splitter)
 
-        self.onModificationChanged()
         self.setWindowIcon(icon('mdi.filter'))
         self.menuBar().addMenu(AccountMenu(self))
         self.menuBar().addMenu(ScriptMenu(self))
@@ -26,8 +35,8 @@ class MainWindow(QMainWindow):
         self._tree = Tree(splitter)
         self._editor = Editor(splitter)
         self._reference = Reference(splitter)
-
         self._editor.modificationChanged.connect(self.onModificationChanged)
+        self.onModificationChanged()
 
     def action(self, action_type):
         return self._actions[action_type]
@@ -42,7 +51,22 @@ class MainWindow(QMainWindow):
         return self._reference
 
     def onModificationChanged(self, isModified=False):
-        self.setWindowTitle(f"Strainer{' *' if isModified else ''}")
+        title = 'Strainer'
+        if self._editor.scriptName:
+            title = f"{title} ({self._editor.scriptName}{'*' if isModified else ''})"
+        self.setWindowTitle(title)
+
+    def closeEvent(self, event):
+        if self._editor.scriptName and self._editor.isModified():
+            result = ConfirmClose(self._editor.scriptName).exec()
+        else:
+            result = QMessageBox.Discard
+        if result == QMessageBox.Cancel:
+            event.ignore()
+            return
+        if result == QMessageBox.Save:
+            self._actions[SaveScript].trigger()
+        event.accept()
 
 class AccountWindow(QDialog):
     def __init__(self, parent):
