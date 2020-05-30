@@ -33,6 +33,7 @@ class Tree(QTreeWidget):
                     action.signalArgs(lambda: (self.currentItem(),))
             except AttributeError:
                 pass
+        self.currentItemChanged.connect(self.onCurrentItemChanged)
         self.itemActivated.connect(self.onItemActivated)
         self.itemChanged.connect(self.onItemChanged)
         self._menu.update()
