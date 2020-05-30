@@ -43,9 +43,9 @@ class Tree(QTreeWidget):
 
     def onItemActivated(self, item):
         if isinstance(item, AccountItem):
-            self.window().action(EditAccount).emit(item)
+            self.window().action(EditAccount).trigger(item)
         else:
-            self.window().action(OpenScript).emit(item)
+            self.window().action(OpenScript).trigger(item)
 
     def onItemChanged(self, item):
         self.onItemsChanged([item])
@@ -54,7 +54,7 @@ class Tree(QTreeWidget):
         self.sortItems(0, Qt.AscendingOrder)
         for item in items:
             if item.parent() is None:
-                self.window().action(ReloadAccount).emit(item)
+                self.window().action(ReloadAccount).trigger(item)
 
     def addAccountItem(self, account):
         return self.addAccountItems([account])[0]

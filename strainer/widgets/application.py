@@ -16,7 +16,7 @@ class Application(QApplication):
             action = cls(None)
             name = f'{cls.__name__[0].lower()}{cls.__name__[1:]}'
             try:
-                action.connect(getattr(self, name))
+                action.triggered.connect(getattr(self, name))
             except AttributeError:
                 pass
             all_actions[cls] = action

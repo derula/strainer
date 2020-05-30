@@ -18,18 +18,18 @@ class MyAction(QAction):
             self.setIcon(icon(self._icon))
         self._defaultArgs = None
         if self._signal:
-            self.triggered.connect(lambda checked: self.emit())
-
-    def signal(self):
-        return self._signal
+            super().triggered.connect(lambda checked: self.trigger())
 
     def setDefaultArgs(self, getArgs):
         self._defaultArgs = getArgs
 
-    def connect(self, handler):
-        (self._signal or self.triggered).connect(handler)
+    @property
+    def triggered(self):
+        return self._signal or super().triggered
 
-    def emit(self, *args):
+    def trigger(self, *args):
+        if not self._signal:
+            return super().trigger()
         if self._defaultArgs:
             args += self._defaultArgs()[len(args):]
         self._signal.emit(*args)
