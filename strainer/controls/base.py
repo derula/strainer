@@ -6,7 +6,7 @@ class MyActionWidget:
         self._actions = []
         for action in self.__class__._actions:
             if action:
-                action = parent.action(action)
+                action = parent.window().action(action)
                 self.addAction(action)
             else:
                 self.addSeparator()
