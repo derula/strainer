@@ -18,8 +18,12 @@ class Application(QApplication):
         self._mainWindow = MainWindow(all_actions)
         self._sieveQueue = SieveConnectionQueue(self._mainWindow.tree)
         self._accountWindow = AccountWindow(self._mainWindow)
-        self._mainWindow.tree.connectSignals(self)
-        self._mainWindow.tree.addAccountItems(list(accounts.all))
+        for action in all_actions.values():
+            try:
+                action.connect(self)
+            except AttributeError:
+                pass
+        self._mainWindow.tree().addAccountItems(list(accounts.all))
         geometry = self.desktop().availableGeometry()
         size = geometry.size()
         size = QSize(size.width() * 0.75, size.height() * 0.75)
@@ -29,21 +33,21 @@ class Application(QApplication):
     def addAccount(self):
         result = self._accountWindow.exec()
         if result is not None:
-            item = self._mainWindow.tree.addAccountItem(result)
+            item = self._mainWindow.tree().addAccountItem(result)
             self._accounts.add(item.value)
-        self._mainWindow.tree.setFocus(Qt.PopupFocusReason)
+        self._mainWindow.tree().setFocus(Qt.PopupFocusReason)
 
     def editAccount(self, item):
         old_value = item.value
         result = self._accountWindow.exec(old_value)
         if result is not None:
             item.value = result
-            self._mainWindow.tree.setCurrentItem(item)
+            self._mainWindow.tree().setCurrentItem(item)
             self._accounts.update(old_value.name, item.value)
-        self._mainWindow.tree.setFocus(Qt.PopupFocusReason)
+        self._mainWindow.tree().setFocus(Qt.PopupFocusReason)
 
     def removeAccount(self, item):
-        tree = self._mainWindow.tree
+        tree = self._mainWindow.tree()
         tree.takeTopLevelItem(tree.indexOfTopLevelItem(item))
         self._accounts.remove(item.value)
 
@@ -52,5 +56,5 @@ class Application(QApplication):
 
     def openScript(self, item):
         def loadScript(client):
-            return self._mainWindow.editor.setText(client.getscript(item.text(0)))
+            return self._mainWindow.editor().setText(client.getscript(item.text(0)))
         self._sieveQueue.enqueue(item, item.parent().value, loadScript)

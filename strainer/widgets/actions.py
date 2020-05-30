@@ -4,7 +4,7 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QAction, QActionGroup
 from qtawesome import icon
 
-from .tree import AccountItem, ScriptItem
+from .tree_items import AccountItem, ScriptItem
 
 __all__ = (
     'AddAccount', 'EditAccount', 'RemoveAccount', 'ReloadAccount',
@@ -22,6 +22,25 @@ class MyAction(QAction):
             self.setShortcut(self._shortcut)
         if self._icon:
             self.setIcon(icon(self._icon))
+        name = self.__class__.__name__
+        self._signalName = f'{name[0].lower()}{name[1:]}'
+        self._signal = self._signalArgs = None
+        self.triggered.connect(self.emit)
+
+    def signal(self, owner):
+        self._signal = getattr(owner, self._signalName)
+        return self._signal
+
+    def signalArgs(self, getArgs):
+        self._signalArgs = getArgs
+
+    def connect(self, receiver):
+        self._signal.connect(getattr(receiver, self._signalName))
+
+    def emit(self):
+        if self._signal is not None:
+            args = self._signalArgs() if self._signalArgs is not None else ()
+            self._signal.emit(*args)
 
     def update(self, target):
         self.setEnabled(self._shouldEnable(target))
@@ -54,7 +73,7 @@ class AddAccount(MyAction):
     _icon = 'mdi.account-plus'
 
     def _shouldEnable(self, item):
-        return item is not False
+        return item is not None
 
 class EditAccount(AccountAction):
     _text = 'Account settings'

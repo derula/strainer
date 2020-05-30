@@ -5,8 +5,8 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 class Reference(QWebEngineView):
     __make_url = 'https://thsmi.github.io/sieve-reference/en/{}.html'.format
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent):
+        super().__init__(parent)
         self.home()
 
     def home(self):

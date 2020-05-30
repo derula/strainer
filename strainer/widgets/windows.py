@@ -12,33 +12,32 @@ from .tree import Tree
 class MainWindow(QMainWindow):
     def __init__(self, all_actions):
         super().__init__()
+        self._actions = all_actions
+
+        splitter = QSplitter()
+        self.setCentralWidget(QFrame(self))
+        QHBoxLayout(self.centralWidget()).addWidget(splitter)
+
         self.setWindowTitle('Strainer')
         self.setWindowIcon(icon('mdi.filter'))
-
-        manageMenu = ManageMenu(self, all_actions)
-        self.menuBar().addMenu(manageMenu)
+        self.menuBar().addMenu(ManageMenu(self))
         self.menuBar().addMenu(EditMenu(self))
 
-        frame = QFrame(self)
-        layout = QHBoxLayout()
-        splitter = QSplitter()
-        self._tree = Tree(manageMenu)
-        self._reference = Reference()
-        self._editor = Editor(self._reference)
-        splitter.addWidget(self._tree)
-        splitter.addWidget(self._editor)
-        splitter.addWidget(self._reference)
-        layout.addWidget(splitter)
-        frame.setLayout(layout)
-        self.setCentralWidget(frame)
+        self._tree = Tree(splitter)
+        self._editor = Editor(splitter)
+        self._reference = Reference(splitter)
 
-    @property
+    def action(self, action_type):
+        return self._actions[action_type]
+
     def tree(self):
         return self._tree
 
-    @property
     def editor(self):
         return self._editor
+
+    def reference(self):
+        return self._reference
 
 class AccountWindow(QDialog):
     def __init__(self, parent):

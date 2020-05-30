@@ -59,8 +59,8 @@ class SieveConnectionQueue(QThread):
             while not self._queue:
                 self._triggered.lock()
             try:
-                self._tree.blockSignals(True)
+                self._tree().blockSignals(True)
                 while self._queue:
                     self._queue.popleft().exec()
             finally:
-                self._tree.blockSignals(False)
+                self._tree().blockSignals(False)

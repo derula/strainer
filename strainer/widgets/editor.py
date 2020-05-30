@@ -6,10 +6,8 @@ from ..sieve.lexer import TagStyle
 
 
 class Editor(QsciScintilla):
-    def __init__(self, reference):
-        super().__init__()
-        self._reference = reference
-
+    def __init__(self, parent):
+        super().__init__(parent)
         self.setMinimumSize(QSize(300, 200))
         self.setScrollWidth(300)
         self.setScrollWidthTracking(True)
@@ -42,7 +40,7 @@ class Editor(QsciScintilla):
                 page, category = category, 'operators'
             else:
                 page = value.decode('ascii').lower()
-            self._reference.browse(category, page)
+            self.window().reference().browse(category, page)
             break
 
     def sizeHint(self):
