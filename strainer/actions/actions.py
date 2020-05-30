@@ -13,13 +13,13 @@ class AddAccount(MyAction):
     def _shouldEnable(self, item):
         return item is not None
 
-class EditAccount(AccountAction):
+class EditAccount(NonEmptyAction):
     _text = 'Account settings'
     _shortcut = QKeySequence(Qt.Key_Return)
     _icon = 'mdi.account-edit'
     _signal = pyqtSignal(QTreeWidgetItem)
 
-class RemoveAccount(AccountAction):
+class RemoveAccount(NonEmptyAction):
     _text = 'Remove account'
     _shortcut = QKeySequence(Qt.Key_Delete)
     _icon = 'mdi.account-remove'

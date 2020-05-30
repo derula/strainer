@@ -39,6 +39,7 @@ class Application(QApplication):
         self._mainWindow.tree().setFocus(Qt.PopupFocusReason)
 
     def editAccount(self, item):
+        item = item.parent() or item
         old_value = item.value
         result = self._accountWindow.exec(old_value)
         if result is not None:
@@ -48,6 +49,7 @@ class Application(QApplication):
         self._mainWindow.tree().setFocus(Qt.PopupFocusReason)
 
     def removeAccount(self, item):
+        item = item.parent() or item
         tree = self._mainWindow.tree()
         tree.takeTopLevelItem(tree.indexOfTopLevelItem(item))
         self._accounts.remove(item.value)
