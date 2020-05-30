@@ -2,8 +2,6 @@ from abc import abstractmethod
 from PyQt5.QtWidgets import QAction
 from qtawesome import icon
 
-from ..widgets.tree_items import AccountItem, ScriptItem
-
 __all__ = ('MyAction', 'AccountAction', 'ScriptAction', 'NonEmptyAction')
 
 
@@ -46,17 +44,11 @@ class MyAction(QAction):
 
 class AccountAction(MyAction):
     def _shouldEnable(self, item):
-        try:
-            return isinstance(item, AccountItem)
-        except AttributeError:
-            return False
+        return bool(item and not item.parent())
 
 class ScriptAction(MyAction):
     def _shouldEnable(self, item):
-        try:
-            return isinstance(item, ScriptItem)
-        except AttributeError:
-            return False
+        return bool(item and item.parent())
 
 class NonEmptyAction(MyAction):
     def _shouldEnable(self, item):
