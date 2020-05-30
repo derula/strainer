@@ -6,7 +6,9 @@ from qtawesome import icon
 from ..actions import *
 
 
-class MyMenu(QMenu):
+class MyActionWidget:
+    _text = ''
+
     def __init__(self, parent):
         super().__init__(self._text, parent)
         self._actions = []
@@ -17,6 +19,8 @@ class MyMenu(QMenu):
             else:
                 self.addSeparator()
 
+
+class MyMenu(MyActionWidget, QMenu):
     def update(self, currentItem=None):
         for action in self.actions():
             try:
@@ -45,9 +49,9 @@ class EditMenu(MyMenu):
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.aboutToShow.connect(self.onAboutToShow)
+        self.aboutToShow.connect(self.update)
 
-    def onAboutToShow(self):
+    def update(self):
         self.clear()
         self._menu = self.parent().editor().createStandardContextMenu()
         for action in self._menu.actions():

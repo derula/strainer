@@ -2,9 +2,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QFrame, QHBoxLayout, QSplitter, QDialog, QFormLayout, QDialogButtonBox
 from qtawesome import icon
 
+from ..controls import *
 from .editor import Editor
-from .fields import *
-from .menus import ManageMenu, EditMenu
 from .reference import Reference
 from .tree import Tree
 
