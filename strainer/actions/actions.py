@@ -1,5 +1,6 @@
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QKeySequence
+from PyQt5.QtWidgets import QTreeWidgetItem
 
 from ..types import AccountTreeItem, ScriptTreeItem
 from .base import *
@@ -29,7 +30,7 @@ class ReloadAccount(NonEmptyAction):
     _text = 'Reload account'
     _shortcut = QKeySequence(Qt.Key_F5)
     _icon = 'mdi.account-convert'
-    _signal = pyqtSignal(AccountTreeItem)
+    _signal = pyqtSignal(QTreeWidgetItem)
 
 class NewScript(NonEmptyAction):
     _text = 'New script'

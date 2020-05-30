@@ -53,6 +53,7 @@ class Application(QApplication):
         self._accounts.remove(item.value)
 
     def reloadAccount(self, item):
+        item = item.parent() or item
         self._sieveQueue.enqueue(item, action=lambda client: item.replaceScriptItems(*client.listscripts()))
 
     def openScript(self, item):
