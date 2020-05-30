@@ -1,8 +1,8 @@
 from PyQt5.Qsci import QsciScintilla
 from PyQt5.QtCore import QSize
 
-from ..sieve import SieveLexer
-from ..sieve.lexer import TagStyle
+from .lexer import SieveLexer
+from .styles import TagStyle
 
 
 class Editor(QsciScintilla):

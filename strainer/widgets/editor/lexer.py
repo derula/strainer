@@ -1,4 +1,3 @@
-from enum import auto, Enum
 from functools import partial
 
 from PyQt5.Qsci import QsciScintilla, QsciLexerCustom
@@ -7,27 +6,8 @@ from sievelib.parser import Parser, ParseError
 from sievelib.commands import UnknownCommand, ControlCommand, ActionCommand, TestCommand, \
     comparator, address_part, match_type, get_command_instance
 
+from .styles import *
 
-class Style(int, Enum):
-    Default = 0
-    Punctuation = auto()
-    Comment = auto()
-    CommentMultiline = auto()
-    String = auto()
-    StringMultiline = auto()
-    Number = auto()
-    Tag = auto()
-    Identifier = auto()
-
-class TagStyle(int, Enum):
-    Comparator = max(Style) + 1
-    AddressPart = auto()
-    MatchType = auto()
-
-class IdentifierStyle(int, Enum):
-    Control = max(TagStyle) + 1
-    Action = auto()
-    Test = auto()
 
 class SieveLexer(QsciLexerCustom):
     _TOKEN_STYLES = {
