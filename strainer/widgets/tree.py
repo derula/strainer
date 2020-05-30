@@ -2,7 +2,6 @@ from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QTreeWidget, QHeaderView
 
-from .actions import *
 from .menus import ManageMenu
 from .tree_items import AccountItem, ScriptItem
 

@@ -3,7 +3,7 @@ import string
 from PyQt5.QtWidgets import QMenu
 from qtawesome import icon
 
-from .actions import *
+from ..actions import *
 
 
 class MyMenu(QMenu):
