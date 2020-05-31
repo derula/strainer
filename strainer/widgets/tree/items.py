@@ -27,6 +27,14 @@ class TreeItem(QTreeWidgetItem):
         self._status = status
 
     @property
+    def name(self):
+        return self.text(0)
+
+    @name.setter
+    def name(self, newValue):
+        self.setText(0, newValue)
+
+    @property
     def status(self):
         return self._status
 
@@ -37,12 +45,11 @@ class AccountItem(TreeItem):
 
     @property
     def value(self):
-        return Account(self.text(0), *self.data(0, Qt.UserRole))
+        return Account(self.name, *self.data(0, Qt.UserRole))
 
     @value.setter
     def value(self, value):
-        text, *value = value
-        self.setText(0, text)
+        self.name, *value = value
         self.setData(0, Qt.UserRole, value)
 
     def replaceScriptItems(self, activeScript, inactiveScripts):
