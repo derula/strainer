@@ -51,8 +51,8 @@ class Application(QApplication):
         item = item.parent() or item
         tree = self._mainWindow.tree()
         if ConfirmRemoveAccount(self._mainWindow).exec(item.name):
-        tree.takeTopLevelItem(tree.indexOfTopLevelItem(item))
-        self._accounts.remove(item.value)
+            tree.takeTopLevelItem(tree.indexOfTopLevelItem(item))
+            self._accounts.remove(item.value)
 
     def reloadAccount(self, item):
         item = item.parent() or item
@@ -101,4 +101,10 @@ class Application(QApplication):
             ))
 
     def saveScript(self):
-        ...
+        script = self._mainWindow.openScript()
+        text = self._mainWindow.editor().text()
+        if script:
+            self._sieveQueue.enqueue(script, script.parent().value, SieveErrorChecker(
+                lambda client: client.putscript(script.name, text),
+                lambda _: self._mainWindow.editor().setModified(text != self._mainWindow.editor().text())
+            ))
