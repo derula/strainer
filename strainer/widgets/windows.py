@@ -10,18 +10,23 @@ from .tree import Tree
 
 
 class ConfirmClose(QMessageBox):
-    def __init__(self, scriptName):
+    def __init__(self, editor):
         super().__init__(QMessageBox.Question, 'Unsaved changes in open script',
-            f'The script "{scriptName}" has unsaved changes.\n'
+            f'The script "{editor.scriptName}" has unsaved changes.\n'
             'If you close it now, these changes will be lost.\n'
             'What do you want to do?'
         )
+        self._editor = editor
         self._discard = self.addButton('Discard changes', QMessageBox.DestructiveRole)
         self.addButton('Keep editing', QMessageBox.RejectRole)
 
     def exec(self):
-        super().exec()
-        return self.clickedButton() == self._discard
+        if self._editor.scriptName and self._editor.isModified():
+            super().exec()
+            if self.clickedButton() != self._discard:
+                self._editor.setFocus(Qt.OtherFocusReason)
+                return False
+        return True
 
 class MainWindow(QMainWindow):
     def __init__(self, all_actions):
@@ -63,10 +68,10 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(title)
 
     def closeEvent(self, event):
-        if self._editor.scriptName and self._editor.isModified():
-            if not ConfirmClose(self._editor.scriptName).exec():
-                return event.ignore()
-        event.accept()
+        if ConfirmClose(self._editor).exec():
+            event.accept()
+        else:
+            event.ignore()
 
 class AccountWindow(QDialog):
     def __init__(self, parent):

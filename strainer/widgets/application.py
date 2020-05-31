@@ -76,9 +76,9 @@ class Application(QApplication):
         ...
 
     def closeScript(self):
-        if self._openScript and self._mainWindow.editor().isModified():
-            if not ConfirmClose(self._openScript.text(0)).exec():
-                return False
+        if not ConfirmClose(self._mainWindow.editor()).exec():
+            return False
+        if self._openScript:
             self._mainWindow.editor().close()
             self._openScript.open = False
             self._openScript = None
