@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QApplication, QInputDialog, QMessageBox, QStyle
 
 from . import actions
-from .sieve import SieveConnectionQueue
+from .sieve import SieveConnectionQueue, SieveErrorChecker
 from .windows import *
 
 class Application(QApplication):
@@ -57,39 +57,37 @@ class Application(QApplication):
         item = item.parent() or item
         openScript = self._mainWindow.openScript()
         if not openScript or openScript.parent() != item or self._mainWindow.setOpenScript(None):
-            self._sieveQueue.enqueue(item, action=lambda client: item.replaceScriptItems(*client.listscripts()))
+            self._sieveQueue.enqueue(item, action=SieveErrorChecker(
+                lambda client: client.listscripts(),
+                lambda result: item.replaceScriptItems(*result)
+            ))
 
     def newScript(self, item):
         item = item.parent() or item
-        result = self._scriptNameDialog.exec(item)
-        if result is None:
-            return
-        def newScript(client):
-            if client.putscript(result, ''):
-                self._mainWindow.tree().setCurrentItem(item.addScriptItem(result))
-            else:
-                QMessageBox(QMessageBox.Critical, 'Script creation failed', client.errmsg, QMessageBox.Ok)
-        self._sieveQueue.enqueue(item, action=newScript)
+        scriptName = self._scriptNameDialog.exec(item)
         self._mainWindow.tree().setFocus(Qt.PopupFocusReason)
+        if scriptName is not None:
+            self._sieveQueue.enqueue(item, action=SieveErrorChecker(
+                lambda client: client.putscript(scriptName, ''),
+                lambda _: self._mainWindow.tree().setCurrentItem(item.addScriptItem(scriptName))
+            ))
 
     def renameScript(self, item):
         account = item.parent() or item
-        result = self._scriptNameDialog.exec(account, item.name)
-        if result is None:
-            return
-        def renameScript(client):
-            if client.renamescript(item.name, result):
-                item.name = result
-            else:
-                QMessageBox(QMessageBox.Critical, 'Script rename failed', client.errmsg, QMessageBox.Ok)
-        self._sieveQueue.enqueue(item, account.value, action=renameScript)
+        scriptName = self._scriptNameDialog.exec(account, item.name)
         self._mainWindow.tree().setFocus(Qt.PopupFocusReason)
+        if scriptName is not None:
+            self._sieveQueue.enqueue(item, account.value, SieveErrorChecker(
+                lambda client: client.renamescript(item.name, scriptName),
+                lambda _: item.setText(0, scriptName)  # because assignment is syntactically invalid in a lambda
+            ))
 
     def openScript(self, item):
-        def loadScript(client):
-            self._mainWindow.setOpenScript(item, client.getscript(item.name))
         if self._mainWindow.setOpenScript(None):
-            self._sieveQueue.enqueue(item, item.parent().value, loadScript)
+            self._sieveQueue.enqueue(item, item.parent().value, SieveErrorChecker(
+                lambda client: client.getscript(item.name),
+                lambda result: self._mainWindow.setOpenScript(item, result)
+            ))
 
     def saveScript(self):
         ...

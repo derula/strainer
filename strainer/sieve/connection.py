@@ -1,6 +1,7 @@
 from collections import deque
 
 from PyQt5.QtCore import pyqtSignal, QMutex, QObject, Qt, QThread
+from PyQt5.QtWidgets import QMessageBox
 from sievelib import managesieve
 
 from ..types import TreeItemStatus
@@ -64,3 +65,21 @@ class SieveConnectionQueue(QThread):
                     self._queue.popleft().exec()
             finally:
                 self._tree().blockSignals(False)
+
+class SieveErrorChecker:
+    def __init__(self, action, reaction):
+        self._action = action
+        self._reaction = reaction
+
+    def __call__(self, client):
+        result = self._action(client)
+        if result is None or result is False:
+            SieveErrorMessage().exec()
+        else:
+            self._reaction(result)
+
+class SieveErrorMessage(QMessageBox):
+    _text = 'Failed to run given ManageSieve command.\nIf the problem persists, try reloading the account.'
+
+    def __init__(self):
+        super().__init__(QMessageBox.Critical, 'ManageSieve error', self._text, QMessageBox.Ok)

@@ -1,1 +1,1 @@
-from .connection import SieveConnectionQueue
+from .connection import SieveConnectionQueue, SieveErrorChecker
