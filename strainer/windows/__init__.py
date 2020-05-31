@@ -3,4 +3,4 @@ from .mainWindow import *
 from .messages import *
 
 
-__all__ = ('AccountWindow', 'MainWindow', 'ConfirmClose')
+__all__ = ('AccountDialog', 'MainWindow', 'ConfirmCloseMessage')

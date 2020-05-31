@@ -3,7 +3,7 @@ from qtawesome import icon
 
 from ..controls import *
 from ..widgets import *
-from .messages import ConfirmClose
+from .messages import ConfirmCloseMessage
 
 
 class MainWindow(QMainWindow):
@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(title)
 
     def closeEvent(self, event):
-        if ConfirmClose(self._editor).exec():
+        if ConfirmCloseMessage(self._editor).exec():
             event.accept()
         else:
             event.ignore()

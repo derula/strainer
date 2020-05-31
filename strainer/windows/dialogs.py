@@ -4,7 +4,7 @@ from qtawesome import icon
 from ..controls import *
 
 
-class AccountWindow(QDialog):
+class AccountDialog(QDialog):
     def __init__(self, parent):
         super().__init__(parent)
 

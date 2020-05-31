@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox
 
 
-class ConfirmClose(QMessageBox):
+class ConfirmCloseMessage(QMessageBox):
     def __init__(self, editor):
         super().__init__(QMessageBox.Question, 'Unsaved changes in open script',
             f'The script "{editor.scriptName}" has unsaved changes.\n'

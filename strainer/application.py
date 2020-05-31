@@ -4,7 +4,7 @@ from sievelib import managesieve
 
 from . import actions
 from .sieve import SieveConnectionQueue
-from .windows import AccountWindow, ConfirmClose, MainWindow
+from .windows import AccountDialog, ConfirmCloseMessage, MainWindow
 
 
 class Application(QApplication):
@@ -24,7 +24,7 @@ class Application(QApplication):
         self._openScript = None
         self._mainWindow = MainWindow(all_actions)
         self._sieveQueue = SieveConnectionQueue(self._mainWindow.tree)
-        self._accountWindow = AccountWindow(self._mainWindow)
+        self._accountWindow = AccountDialog(self._mainWindow)
         self._mainWindow.tree().addAccountItems(list(accounts.all))
         geometry = self.desktop().availableGeometry()
         size = geometry.size()
@@ -76,7 +76,7 @@ class Application(QApplication):
         ...
 
     def closeScript(self):
-        if not ConfirmClose(self._mainWindow.editor()).exec():
+        if not ConfirmCloseMessage(self._mainWindow.editor()).exec():
             return False
         if self._openScript:
             self._mainWindow.editor().close()
