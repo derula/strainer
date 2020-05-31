@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QApplication, QStyle, QMessageBox
+from PyQt5.QtWidgets import QApplication, QStyle
 from sievelib import managesieve
 
 from .. import actions
@@ -64,7 +64,7 @@ class Application(QApplication):
         self._sieveQueue.enqueue(item, action=lambda client: item.replaceScriptItems(*client.listscripts()))
 
     def openScript(self, item):
-        if self.closeScript() == QMessageBox.Cancel:
+        if not self.closeScript():
             return
         def loadScript(client):
             self._openScript = item
@@ -77,13 +77,9 @@ class Application(QApplication):
 
     def closeScript(self):
         if self._openScript and self._mainWindow.editor().isModified():
-            result = ConfirmClose(self._openScript.text(0)).exec()
-        else:
-            result = QMessageBox.Discard
-        if result == QMessageBox.Save:
-            self.saveScript()
-        if result != QMessageBox.Cancel and self._openScript:
+            if not ConfirmClose(self._openScript.text(0)).exec():
+                return False
             self._mainWindow.editor().close()
             self._openScript.open = False
             self._openScript = None
-        return result
+        return True

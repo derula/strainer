@@ -14,9 +14,14 @@ class ConfirmClose(QMessageBox):
         super().__init__(QMessageBox.Question, 'Unsaved changes in open script',
             f'The script "{scriptName}" has unsaved changes.\n'
             'If you close it now, these changes will be lost.\n'
-            'What do you want to do?',
-            QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel
+            'What do you want to do?'
         )
+        self._discard = self.addButton('Discard changes', QMessageBox.DestructiveRole)
+        self.addButton('Keep editing', QMessageBox.RejectRole)
+
+    def exec(self):
+        super().exec()
+        return self.clickedButton() == self._discard
 
 class MainWindow(QMainWindow):
     def __init__(self, all_actions):
@@ -59,14 +64,8 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         if self._editor.scriptName and self._editor.isModified():
-            result = ConfirmClose(self._editor.scriptName).exec()
-        else:
-            result = QMessageBox.Discard
-        if result == QMessageBox.Cancel:
-            event.ignore()
-            return
-        if result == QMessageBox.Save:
-            self._actions[SaveScript].trigger()
+            if not ConfirmClose(self._editor.scriptName).exec():
+                return event.ignore()
         event.accept()
 
 class AccountWindow(QDialog):
