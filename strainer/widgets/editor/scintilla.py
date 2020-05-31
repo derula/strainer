@@ -1,5 +1,5 @@
 from PyQt5.Qsci import QsciScintilla
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, Qt
 
 from .lexer import SieveLexer
 from .styles import TagStyle
@@ -53,6 +53,8 @@ class Editor(QsciScintilla):
         self.setText(text)
         self.setModified(False)
         self.setReadOnly(not scriptName)
+        if scriptName:
+            self.setFocus(Qt.OtherFocusReason)
 
     def close(self):
         self.open('', '')
