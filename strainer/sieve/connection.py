@@ -1,6 +1,6 @@
 from collections import deque
 
-from PyQt5.QtCore import pyqtSignal, QMutex, QObject, Qt, QThread, QWaitCondition
+from PyQt5.QtCore import pyqtSignal, QMutex, QObject, Qt, QThread
 from sievelib import managesieve
 
 from ..types import TreeItemStatus
