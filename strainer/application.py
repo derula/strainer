@@ -2,8 +2,8 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QApplication, QStyle
 from sievelib import managesieve
 
-from .. import actions
-from ..sieve import SieveConnectionQueue
+from . import actions
+from .sieve import SieveConnectionQueue
 from .windows import AccountWindow, ConfirmClose, MainWindow
 
 
