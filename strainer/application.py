@@ -19,7 +19,6 @@ class Application(QApplication):
                 pass
             all_actions[cls] = action
         self._accounts = accounts
-        self._openScript = None
         self._mainWindow = MainWindow(all_actions)
         self._sieveQueue = SieveConnectionQueue(self._mainWindow.tree)
         self._accountDialog = AccountDialog(self._mainWindow)
@@ -56,11 +55,9 @@ class Application(QApplication):
 
     def reloadAccount(self, item):
         item = item.parent() or item
-        openScript = None
-        if self._openScript and self._openScript.parent() == item:
-            if not self.closeScript():
-                return
-        self._sieveQueue.enqueue(item, action=lambda client: item.replaceScriptItems(*client.listscripts()))
+        openScript = self._mainWindow.openScript()
+        if not openScript or openScript.parent() != item or self._mainWindow.setOpenScript(None):
+            self._sieveQueue.enqueue(item, action=lambda client: item.replaceScriptItems(*client.listscripts()))
 
     def newScript(self, item):
         item = item.parent() or item
@@ -89,22 +86,10 @@ class Application(QApplication):
         self._mainWindow.tree().setFocus(Qt.PopupFocusReason)
 
     def openScript(self, item):
-        if not self.closeScript():
-            return
         def loadScript(client):
-            self._openScript = item
-            self._openScript.open = True
-            self._mainWindow.editor().open(client.getscript(item.name), item.name)
-        self._sieveQueue.enqueue(item, item.parent().value, loadScript)
+            self._mainWindow.setOpenScript(item, client.getscript(item.name))
+        if self._mainWindow.setOpenScript(None):
+            self._sieveQueue.enqueue(item, item.parent().value, loadScript)
 
     def saveScript(self):
         ...
-
-    def closeScript(self):
-        if not ConfirmCloseMessage(self._mainWindow.editor()).exec():
-            return False
-        if self._openScript:
-            self._mainWindow.editor().close()
-            self._openScript.open = False
-            self._openScript = None
-        return True

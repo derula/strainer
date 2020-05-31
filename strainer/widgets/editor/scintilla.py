@@ -48,17 +48,11 @@ class Editor(QsciScintilla):
     def sizeHint(self):
         return QSize(750, 600)
 
-    def open(self, text, scriptName):
-        self._scriptName = scriptName
+    def open(self, text):
         self.setText(text)
-        self.setModified(False)
-        self.setReadOnly(not scriptName)
-        if scriptName:
-            self.setFocus(Qt.OtherFocusReason)
+        self.setReadOnly(False)
+        self.setFocus(Qt.OtherFocusReason)
 
     def close(self):
-        self.open('', '')
-
-    @property
-    def scriptName(self):
-        return self._scriptName
+        self.setText('')
+        self.setReadOnly(True)

@@ -25,6 +25,9 @@ class MainWindow(QMainWindow):
         self._editor = Editor(splitter)
         self._reference = Reference(splitter)
         self._editor.modificationChanged.connect(self.onModificationChanged)
+        self._openScript = None
+        self._confirmClose = ConfirmCloseMessage(self).exec
+
         self.onModificationChanged()
 
     def action(self, action_type):
@@ -39,14 +42,32 @@ class MainWindow(QMainWindow):
     def reference(self):
         return self._reference
 
+    def openScript(self):
+        return self._openScript
+
+    def setOpenScript(self, item, content = ''):
+        if self._openScript:
+            if not self._confirmClose():
+                return False
+            self._openScript.open = False
+            self._openScript = None
+            self._editor.close()
+        if item:
+            self._editor.open(content)
+            self._openScript = item
+            self._openScript.open = True
+        self._editor.setModified(False)
+        self.onModificationChanged(False)
+        return True
+
     def onModificationChanged(self, isModified=False):
         title = 'Strainer'
-        if self._editor.scriptName:
-            title = f"{title} ({self._editor.scriptName}{'*' if isModified else ''})"
+        if self._openScript:
+            title = f"{title} ({self._openScript.name}{'*' if isModified else ''})"
         self.setWindowTitle(title)
 
     def closeEvent(self, event):
-        if ConfirmCloseMessage(self._editor).exec():
+        if self._confirmClose():
             event.accept()
         else:
             event.ignore()

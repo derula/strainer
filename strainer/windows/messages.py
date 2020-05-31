@@ -3,20 +3,25 @@ from PyQt5.QtWidgets import QMessageBox
 
 
 class ConfirmCloseMessage(QMessageBox):
-    def __init__(self, editor):
-        super().__init__(QMessageBox.Question, 'Unsaved changes in open script',
-            f'The script "{editor.scriptName}" has unsaved changes.\n'
-            'If you close it now, these changes will be lost.\n'
-            'What do you want to do?'
-        )
-        self._editor = editor
+    _textTemplate = \
+        'The script "{}" has unsaved changes.\n' \
+        'If you close it now, these changes will be lost.\n' \
+        'What do you want to do?'
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setWindowTitle('Unsaved changes in open script')
+        self.setIcon(QMessageBox.Question)
         self._discard = self.addButton('Discard changes', QMessageBox.DestructiveRole)
         self.addButton('Keep editing', QMessageBox.RejectRole)
 
     def exec(self):
-        if self._editor.scriptName and self._editor.isModified():
+        script = self.parent().openScript()
+        if script and self.parent().editor().isModified():
+            self.setText(self._textTemplate.format(script.name))
+            self._discard.setFocus()
             super().exec()
             if self.clickedButton() != self._discard:
-                self._editor.setFocus(Qt.OtherFocusReason)
+                self.parent().editor().setFocus(Qt.OtherFocusReason)
                 return False
         return True
