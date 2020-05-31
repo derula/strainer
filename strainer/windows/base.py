@@ -2,17 +2,41 @@ from abc import abstractmethod
 from typing import Any, NamedTuple
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QFormLayout
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QFormLayout, QMessageBox
 from qtawesome import icon
 
-__all__ = ('DialogTitle', 'AddOrChangeDialog')
+__all__ = ('DialogTitle', 'ConfirmMessage', 'AddOrChangeDialog')
 
 
 class DialogTitle(NamedTuple):
     icon: str
     text: str
 
-class AddOrChangeDialog(QDialog):
+class DialogTitleMixin:
+    def _applyTitle(self, title):
+        self.setWindowIcon(icon(title.icon))
+        self.setWindowTitle(title.text)
+
+class ConfirmMessage(DialogTitleMixin, QMessageBox):
+    _title: DialogTitle
+    _textTemplate: str
+    _acceptText: str
+    _rejectText: str
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self._applyTitle(self._title)
+        self.setIcon(QMessageBox.Question)
+        self._confirm = self.addButton(self._acceptText, QMessageBox.DestructiveRole)
+        self.addButton(self._rejectText, QMessageBox.RejectRole)
+
+    def exec(self, *args, **kwargs):
+        self.setText(self._textTemplate.format(*args, **kwargs))
+        self._confirm.setFocus()
+        super().exec()
+        return self.clickedButton() == self._confirm
+
+class AddOrChangeDialog(DialogTitleMixin, QDialog):
     _addTitle: DialogTitle
     _changeTitle: DialogTitle
     _defaultValue: Any
@@ -30,9 +54,7 @@ class AddOrChangeDialog(QDialog):
         self._buttons[0].setEnabled(value)
 
     def exec(self, oldValue = None):
-        title = self._changeTitle if oldValue else self._addTitle
-        self.setWindowIcon(icon(title.icon))
-        self.setWindowTitle(title.text)
+        self._applyTitle(self._changeTitle if oldValue else self._addTitle)
         self._setValue(oldValue or self._defaultValue)
         if super().exec() == QDialog.Accepted:
             return self._getValue()

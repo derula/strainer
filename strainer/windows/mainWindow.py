@@ -1,3 +1,4 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QMainWindow, QSplitter
 from qtawesome import icon
 
@@ -45,9 +46,10 @@ class MainWindow(QMainWindow):
     def openScript(self):
         return self._openScript
 
-    def setOpenScript(self, item, content = ''):
+    def setOpenScript(self, item, content='', *, force=False):
         if self._openScript:
-            if not self._confirmClose():
+            if not force and not self._confirmClose():
+                self.parent().editor().setFocus(Qt.OtherFocusReason)
                 return False
             self._openScript.open = False
             self._openScript = None

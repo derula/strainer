@@ -50,6 +50,7 @@ class Application(QApplication):
     def removeAccount(self, item):
         item = item.parent() or item
         tree = self._mainWindow.tree()
+        if ConfirmRemoveAccount(self._mainWindow).exec(item.name):
         tree.takeTopLevelItem(tree.indexOfTopLevelItem(item))
         self._accounts.remove(item.value)
 
@@ -80,6 +81,16 @@ class Application(QApplication):
             self._sieveQueue.enqueue(item, account.value, SieveErrorChecker(
                 lambda client: client.renamescript(item.name, scriptName),
                 lambda _: item.setText(0, scriptName)  # because assignment is syntactically invalid in a lambda
+            ))
+
+    def deleteScript(self, item):
+        account = item.parent()
+        if ConfirmDeleteScript(self._mainWindow).exec(item.name, account.name):
+            if item == self._mainWindow.openScript():
+                self._mainWindow.setOpenScript(None, force=True)
+            self._sieveQueue.enqueue(item, account.value, SieveErrorChecker(
+                lambda client: client.deletescript(item.name),
+                lambda _: account.takeChild(account.indexOfChild(item))
             ))
 
     def openScript(self, item):
