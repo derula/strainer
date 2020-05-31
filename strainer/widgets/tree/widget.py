@@ -17,6 +17,7 @@ class Tree(QTreeWidget):
         self.header().setSectionResizeMode(0, QHeaderView.Stretch)
         self.header().setSectionResizeMode(1, QHeaderView.ResizeToContents)
         self.setHeaderHidden(True)
+        self.setExpandsOnDoubleClick(False)
         self._menu = ManageMenu(self.window())
         for action in self._menu.actions():
             try:
