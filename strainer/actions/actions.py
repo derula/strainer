@@ -35,6 +35,13 @@ class NewScript(NonEmptyAction):
     _text = 'New script'
     _shortcut = QKeySequence(Qt.Key_Insert)
     _icon = 'mdi.file-plus'
+    _signal = pyqtSignal(QTreeWidgetItem)
+
+class RenameScript(ScriptAction):
+    _text = 'Rename script'
+    _shortcut = QKeySequence(Qt.Key_F2)
+    _icon = 'mdi.file-edit'
+    _signal = pyqtSignal(QTreeWidgetItem)
 
 class OpenScript(ScriptAction):
     _text = 'Open script'

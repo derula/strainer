@@ -8,5 +8,5 @@ from .base import MyActionWidget
 
 class Toolbar(MyActionWidget, QToolBar):
     _actions = [
-        ReloadAccount, None, OpenScript, SaveScript, ActivateScript,
+        EditAccount, ReloadAccount, None, NewScript, RenameScript, None, OpenScript, SaveScript, ActivateScript,
     ]

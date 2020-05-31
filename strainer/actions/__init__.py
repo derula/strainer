@@ -3,5 +3,5 @@ from .actions import *
 
 __all__ = (
     'AddAccount', 'EditAccount', 'RemoveAccount', 'ReloadAccount',
-    'NewScript', 'OpenScript', 'SaveScript', 'DeleteScript', 'ActivateScript',
+    'NewScript', 'RenameScript', 'DeleteScript', 'ActivateScript', 'OpenScript', 'SaveScript',
 )

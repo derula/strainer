@@ -1,11 +1,9 @@
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QApplication, QStyle
-from sievelib import managesieve
+from PyQt5.QtWidgets import QApplication, QInputDialog, QMessageBox, QStyle
 
 from . import actions
 from .sieve import SieveConnectionQueue
-from .windows import AccountDialog, ConfirmCloseMessage, MainWindow
-
+from .windows import *
 
 class Application(QApplication):
     def __init__(self, argv, accounts):
@@ -24,7 +22,8 @@ class Application(QApplication):
         self._openScript = None
         self._mainWindow = MainWindow(all_actions)
         self._sieveQueue = SieveConnectionQueue(self._mainWindow.tree)
-        self._accountWindow = AccountDialog(self._mainWindow)
+        self._accountDialog = AccountDialog(self._mainWindow)
+        self._scriptNameDialog = ScriptNameDialog(self._mainWindow)
         self._mainWindow.tree().addAccountItems(list(accounts.all))
         geometry = self.desktop().availableGeometry()
         size = geometry.size()
@@ -33,7 +32,7 @@ class Application(QApplication):
         self._mainWindow.show()
 
     def addAccount(self):
-        result = self._accountWindow.exec()
+        result = self._accountDialog.exec()
         if result is not None:
             item = self._mainWindow.tree().addAccountItem(result)
             self._accounts.add(item.value)
@@ -42,7 +41,7 @@ class Application(QApplication):
     def editAccount(self, item):
         item = item.parent() or item
         old_value = item.value
-        result = self._accountWindow.exec(old_value)
+        result = self._accountDialog.exec(old_value)
         if result is not None:
             item.value = result
             self._mainWindow.tree().setCurrentItem(item)
@@ -62,6 +61,32 @@ class Application(QApplication):
             if not self.closeScript():
                 return
         self._sieveQueue.enqueue(item, action=lambda client: item.replaceScriptItems(*client.listscripts()))
+
+    def newScript(self, item):
+        item = item.parent() or item
+        result = self._scriptNameDialog.exec(item)
+        if result is None:
+            return
+        def newScript(client):
+            if client.putscript(result, ''):
+                self._mainWindow.tree().setCurrentItem(item.addScriptItem(result))
+            else:
+                QMessageBox(QMessageBox.Critical, 'Script creation failed', client.errmsg, QMessageBox.Ok)
+        self._sieveQueue.enqueue(item, action=newScript)
+        self._mainWindow.tree().setFocus(Qt.PopupFocusReason)
+
+    def renameScript(self, item):
+        account = item.parent() or item
+        result = self._scriptNameDialog.exec(account, item.name)
+        if result is None:
+            return
+        def renameScript(client):
+            if client.renamescript(item.name, result):
+                item.name = result
+            else:
+                QMessageBox(QMessageBox.Critical, 'Script rename failed', client.errmsg, QMessageBox.Ok)
+        self._sieveQueue.enqueue(item, account.value, action=renameScript)
+        self._mainWindow.tree().setFocus(Qt.PopupFocusReason)
 
     def openScript(self, item):
         if not self.closeScript():

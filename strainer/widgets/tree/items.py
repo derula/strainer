@@ -33,6 +33,8 @@ class TreeItem(QTreeWidgetItem):
     @name.setter
     def name(self, newValue):
         self.setText(0, newValue)
+        if self.parent():
+            self.parent().sortChildren(0, Qt.AscendingOrder)
 
     @property
     def status(self):
@@ -51,6 +53,15 @@ class AccountItem(TreeItem):
     def value(self, value):
         self.name, *value = value
         self.setData(0, Qt.UserRole, value)
+
+    def scriptNames(self):
+        return set(self.child(i).name for i in range(self.childCount()))
+
+    def addScriptItem(self, scriptName):
+        newItem = ScriptItem(scriptName)
+        self.addChild(newItem)
+        self.sortChildren(0, Qt.AscendingOrder)
+        return newItem
 
     def replaceScriptItems(self, activeScript, inactiveScripts):
         self.takeChildren()
