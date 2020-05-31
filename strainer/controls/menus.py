@@ -18,18 +18,8 @@ class AccountMenu(MyMenu):
 
 class ScriptMenu(MyMenu):
     _text = 'Script'
-    _actions = [NewScript, RenameScript, DeleteScript, None, ActivateScript, OpenScript, SaveScript]
+    _actions = [NewScript, RenameScript, DeleteScript, None, OpenScript, SaveScript, ActivateScript]
 
-
-class ManageMenu(MyMenu):
-    _actions = [*AccountMenu._actions, None, *ScriptMenu._actions]
-
-    def update(self, currentItem=None):
-        for action in self.actions():
-            try:
-                action.update(currentItem)
-            except AttributeError:
-                pass
 
 class EditMenu(MyMenu):
     _text = 'Edit'
