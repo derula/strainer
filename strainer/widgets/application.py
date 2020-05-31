@@ -59,7 +59,7 @@ class Application(QApplication):
         item = item.parent() or item
         openScript = None
         if self._openScript and self._openScript.parent() == item:
-            if self.closeScript() == QMessageBox.Cancel:
+            if not self.closeScript():
                 return
         self._sieveQueue.enqueue(item, action=lambda client: item.replaceScriptItems(*client.listscripts()))
 
