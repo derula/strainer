@@ -32,9 +32,12 @@ class SieveConnection(QObject):
             self.success.emit(client)
         except managesieve.Error as e:
             self.failure.emit(e.args[0])
+        finally:
+            self._item.treeWidget().window().statusBar().clearMessage()
 
     def setLoading(self):
         self._item.setStatus(TreeItemStatus.Loading, 'Loading, please wait...')
+        self._item.treeWidget().window().statusBar().showMessage(f'Communicating with {self._account[1]}, please wait...')
 
     def setNormal(self, _):
         self._item.setStatus(TreeItemStatus.Normal)
