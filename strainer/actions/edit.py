@@ -1,7 +1,5 @@
-from PyQt5.Qsci import QsciScintilla
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeySequence
-from PyQt5.QtWidgets import QApplication
 
 from .base import *
 

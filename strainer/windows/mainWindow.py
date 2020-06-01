@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
         self.menuBar().addMenu(ManageMenu(self))
         self.menuBar().addMenu(EditMenu(self))
         self.addToolBar(ManageToolbar(self))
-        self.addToolBar(DocumentToolbar(self))
+        self.addToolBar(EditToolbar(self))
 
         self._tree = Tree(splitter)
         self._editor = Editor(splitter)

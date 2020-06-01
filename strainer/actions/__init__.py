@@ -1,5 +1,5 @@
 from .manage import *
-from .document import *
+from .edit import *
 
 
 __all__ = (

@@ -10,9 +10,10 @@ class MyToolBar(MyActionWidget, QToolBar):
     pass
 
 class ManageToolbar(MyToolBar):
-    _actions = [
-        EditAccount, ReloadAccount, None, NewScript, RenameScript, None, OpenScript, ActivateScript,
-    ]
+    _actions = [EditAccount, ReloadAccount, None, NewScript, RenameScript, None, OpenScript, ActivateScript]
+
+class EditToolbar(MyToolBar):
+    _actions = [SaveDocument, None, UndoEdit, RedoEdit, None, CutContent, CopyContent, PasteContent]
 
 class DocumentToolbar(MyToolBar):
     _actions = [
