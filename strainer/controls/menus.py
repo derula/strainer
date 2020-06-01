@@ -19,12 +19,14 @@ class AccountMenu(MyMenu):
     _text = 'Account'
     _actions = [AddAccount, EditAccount, RemoveAccount, None, ReloadAccount]
 
-
 class ScriptMenu(MyMenu):
     _text = 'Script'
     _actions = [NewScript, RenameScript, DeleteScript, None, OpenScript, ActivateScript]
 
+class ManageMenu(MyMenu):
+    _text = 'Manage'
+    _actions = [*AccountMenu._actions, None, *ScriptMenu._actions]
 
-class DocumentMenu(MyMenu):
-    _text = 'Document'
+class EditMenu(MyMenu):
+    _text = 'Edit'
     _actions = [SaveDocument, None, UndoEdit, RedoEdit, None, CutContent, CopyContent, PasteContent, DeleteContent, None, SelectAllContent]

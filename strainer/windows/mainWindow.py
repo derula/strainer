@@ -17,9 +17,8 @@ class MainWindow(QMainWindow):
         QHBoxLayout(self.centralWidget()).addWidget(splitter)
 
         self.setWindowIcon(icon('mdi.filter'))
-        self.menuBar().addMenu(AccountMenu(self))
-        self.menuBar().addMenu(ScriptMenu(self))
-        self.menuBar().addMenu(DocumentMenu(self))
+        self.menuBar().addMenu(ManageMenu(self))
+        self.menuBar().addMenu(EditMenu(self))
         self.addToolBar(ManageToolbar(self))
         self.addToolBar(DocumentToolbar(self))
 

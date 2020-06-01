@@ -3,7 +3,7 @@ from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import QApplication
 
 from ...actions import *
-from ...controls import DocumentMenu
+from ...controls import EditMenu
 from .lexer import SieveLexer
 from .styles import TagStyle
 
@@ -11,7 +11,7 @@ from .styles import TagStyle
 class Editor(QsciScintilla):
     def __init__(self, parent):
         super().__init__(parent)
-        self._menu = DocumentMenu(self.window())
+        self._menu = EditMenu(self.window())
         self.window().action(UndoEdit).triggered.connect(self.undo)
         self.window().action(RedoEdit).triggered.connect(self.redo)
         self.window().action(CutContent).triggered.connect(self.cut)
