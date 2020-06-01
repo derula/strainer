@@ -4,22 +4,24 @@ from PyQt5.QtWidgets import QApplication
 
 from ...actions import *
 from ...controls import EditMenu
+from ..base import *
 from .lexer import SieveLexer
 from .styles import TagStyle
 
 
-class Editor(QsciScintilla):
-    _actions = {
-        UndoEdit: 'undo', RedoEdit: 'redo',
-        CutContent: 'cut', CopyContent: 'copy', PasteContent: 'paste',
-        DeleteContent: 'removeSelectedText', SelectAllContent: 'selectAll',
-    }
+class Editor(MenuMixin, QsciScintilla):
+    _menu = Menu(
+        EditMenu,
+        {
+            UndoEdit: 'undo', RedoEdit: 'redo',
+            CutContent: 'cut', CopyContent: 'copy', PasteContent: 'paste',
+            DeleteContent: 'removeSelectedText', SelectAllContent: 'selectAll',
+        },
+        ('selectionChanged', 'textChanged')
+    )
 
     def __init__(self, parent):
         super().__init__(parent)
-        self._menu = EditMenu(self.window())
-        for action, reaction in self._actions.items():
-            self.window().action(action).triggered.connect(getattr(self, reaction))
         self.close()
 
         self.setMinimumSize(QSize(300, 200))
@@ -43,9 +45,7 @@ class Editor(QsciScintilla):
 
         self.setLexer(SieveLexer(self))
         self.SCN_HOTSPOTCLICK.connect(self.onHotspotClicked)
-        self.selectionChanged.connect(self.onChanged)
-        self.textChanged.connect(self.onChanged)
-        #QApplication.clipboard().dataChanged.connect(onChanged)  # doesn't seem to be working...?
+        #QApplication.clipboard().dataChanged.connect(updateMenu)  # doesn't seem to be working...?
 
     def onHotspotClicked(self, position, modifiers):
         position = self.SendScintilla(QsciScintilla.SCI_WORDSTARTPOSITION, position, True)
@@ -60,14 +60,8 @@ class Editor(QsciScintilla):
             self.window().reference().browse(category, page)
             break
 
-    def onChanged(self):
-        self._menu.update(self)
-
     def sizeHint(self):
         return QSize(750, 600)
-
-    def contextMenuEvent(self, event):
-        self._menu.popup(event.globalPos())
 
     def selectAll(self):
         super().selectAll(True)
@@ -77,10 +71,10 @@ class Editor(QsciScintilla):
         self.setReadOnly(False)
         self.setFocus(Qt.OtherFocusReason)
         self.setModified(False)
-        self.onChanged()
+        self.updateMenu()
 
     def close(self):
         self.setText('')
         self.setReadOnly(True)
         self.setModified(False)
-        self.onChanged()
+        self.updateMenu()
