@@ -6,40 +6,48 @@ from .base import *
 
 class HomePage(MyAction):
     _text = '&Home'
-    _shortcut = QKeySequence(Qt.ALT | Qt.Key_Home)
+    _info = 'Return to the Sieve Language Reference start page.'
     _icon = 'mdi.home'
+    _shortcut = QKeySequence(Qt.ALT | Qt.Key_Home)
 
     def _shouldEnable(self, reference):
         return not reference.isHome()
 
 class PreviousPage(MyAction):
     _text = '&Back'
-    _shortcut = QKeySequence(Qt.ALT | Qt.Key_Left)
+    _info = 'Go back to the last page in the browsing history.'
     _icon = 'mdi.arrow-left-bold-circle'
+    _shortcut = QKeySequence(Qt.ALT | Qt.Key_Left)
 
     def _shouldEnable(self, reference):
         return reference.history().canGoBack()
 
 class NextPage(MyAction):
     _text = '&Forward'
-    _shortcut = QKeySequence(Qt.ALT | Qt.Key_Right)
+    _info = 'Go forward to the next page in the browsing history.'
     _icon = 'mdi.arrow-right-bold-circle'
+    _shortcut = QKeySequence(Qt.ALT | Qt.Key_Right)
 
     def _shouldEnable(self, reference):
         return reference.history().canGoForward()
 
 class ReloadPage(MyStatefulAction):
     _texts = ('&Reload', '&Stop')
-    _shortcut = QKeySequence(Qt.ALT | Qt.Key_F5)
+    _infos = (
+        'Reload the page currently opened in the browser.',
+        'Cancel loading the page currently being accessed.',
+    )
     _icons = ('mdi.refresh', 'mdi.stop-circle')
+    _shortcut = QKeySequence(Qt.ALT | Qt.Key_F5)
 
     def _getState(self, reference):
         return bool(reference.isLoading())
 
 class CopyUrl(MyAction):
     _text = '&Copy URL'
-    _shortcut = QKeySequence(Qt.ALT | Qt.Key_C)
+    _info = 'Copy this URL (open or right-clicked) to the clipboard.'
     _icon = 'mdi.content-copy'
+    _shortcut = QKeySequence(Qt.ALT | Qt.Key_C)
 
     def _shouldEnable(self, reference):
         return True

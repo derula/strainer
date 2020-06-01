@@ -10,9 +10,10 @@ __all__ = (
 
 
 class MyAction(QAction):
-    _shortcut = None
+    _info = None
     _icon = None
     _signal = None
+    _shortcut = None
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -27,6 +28,8 @@ class MyAction(QAction):
         self.setText(self._text)
         if self._icon:
             self.setIcon(icon(self._icon))
+        if self._info:
+            self.setStatusTip(self._info)
 
     def setDefaultArgs(self, getArgs):
         self._defaultArgs = getArgs
@@ -51,6 +54,7 @@ class MyAction(QAction):
 
 class MyStatefulAction(MyAction):
     _texts = ()
+    _infos = ()
     _icons = ()
 
     def setState(self, state=None):
@@ -60,6 +64,13 @@ class MyStatefulAction(MyAction):
     @property
     def _text(self):
         return self._texts[self._state or 0]
+
+    @property
+    def _info(self):
+        try:
+            return self._infos[self._state or 0]
+        except IndexError:
+            return None
 
     @property
     def _icon(self):

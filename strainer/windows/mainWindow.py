@@ -23,6 +23,7 @@ class MainWindow(QMainWindow):
         self.addToolBar(ManageToolbar(self))
         self.addToolBar(EditToolbar(self))
         self.addToolBar(NavigateToolbar(self))
+        self.statusBar()
 
         self._tree = Tree(splitter)
         self._editor = Editor(splitter)
