@@ -28,21 +28,13 @@ class NextPage(MyAction):
     def _shouldEnable(self, reference):
         return reference.history().canGoForward()
 
-class ReloadPage(MyAction):
-    _text = '&Reload'
+class ReloadPage(MyStatefulAction):
+    _texts = ('&Reload', '&Stop')
     _shortcut = QKeySequence(Qt.ALT | Qt.Key_F5)
-    _icon = 'mdi.refresh'
+    _icons = ('mdi.refresh', 'mdi.stop-circle')
 
-    def _shouldEnable(self, reference):
-        return not reference.isLoading()
-
-class StopLoadingPage(MyAction):
-    _text = '&Stop'
-    _shortcut = QKeySequence(Qt.ALT | Qt.Key_Escape)
-    _icon = 'mdi.stop-circle'
-
-    def _shouldEnable(self, reference):
-        return reference.isLoading()
+    def _getState(self, reference):
+        return bool(reference.isLoading())
 
 class CopyUrl(MyAction):
     _text = '&Copy URL'

@@ -12,7 +12,7 @@ class Reference(MenuMixin, QWebEngineView):
         NavigateMenu,
         {
             HomePage: 'home', PreviousPage: 'back', NextPage: 'forward',
-            ReloadPage: 'reload', StopLoadingPage: 'stop', CopyUrl: 'copyUrl',
+            ReloadPage: 'stopOrReload', CopyUrl: 'copyUrl',
         },
         ('urlChanged',)
     )
@@ -39,6 +39,9 @@ class Reference(MenuMixin, QWebEngineView):
 
     def browse(self, category, page):
         self.setUrl(self._make_url(category, 'core', page))
+
+    def stopOrReload(self):
+        (self.stop if self._isLoading else self.reload)()
 
     def copyUrl(self):
         QApplication.clipboard().setText(self.url().toString())

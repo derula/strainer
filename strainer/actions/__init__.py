@@ -8,5 +8,5 @@ __all__ = (
     'NewScript', 'RenameScript', 'DeleteScript', 'ActivateScript', 'OpenScript',
     'SaveDocument', 'UndoEdit', 'RedoEdit',
     'CutContent', 'CopyContent', 'PasteContent', 'DeleteContent', 'SelectAllContent',
-    'HomePage', 'PreviousPage', 'NextPage', 'ReloadPage', 'StopLoadingPage', 'CopyUrl',
+    'HomePage', 'PreviousPage', 'NextPage', 'ReloadPage', 'CopyUrl',
 )

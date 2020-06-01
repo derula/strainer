@@ -33,4 +33,4 @@ class EditMenu(MyMenu):
 
 class NavigateMenu(MyMenu):
     _text = '&Navigate'
-    _actions = [HomePage, None, PreviousPage, NextPage, ReloadPage, StopLoadingPage, None, CopyUrl]
+    _actions = [HomePage, None, PreviousPage, NextPage, ReloadPage, None, CopyUrl]
