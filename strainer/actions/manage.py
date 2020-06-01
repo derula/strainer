@@ -64,10 +64,10 @@ class OpenScript(ScriptAction):
     def _shouldEnable(self, item):
         return super()._shouldEnable(item) and not item.open
 
-class ActivateScript(ScriptAction):
-    _text = '&Activate script'
-    _icon = 'mdi.file-check'
+class ActivateScript(MyStatefulAction):
+    _texts = ('&Activate script', 'De&activate script')
+    _icons = ('mdi.file-check', 'mdi.file')
     _signal = pyqtSignal(QTreeWidgetItem)
 
-    def _shouldEnable(self, item):
-        return super()._shouldEnable(item) and not item.active
+    def _getState(self, item):
+        return item and item.parent() and item.active

@@ -1,49 +1,14 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor, QFont
-from PyQt5.QtWidgets import QTreeWidgetItem
 
-from ...types import Account, TreeItemStatus
+from ...types import Account
+from .base import TreeItem, TreeItemStatus
 
-
-class TreeItem(QTreeWidgetItem):
-    _STATUSES = {
-        TreeItemStatus.Normal: ('', None),
-        TreeItemStatus.Loading: ('…', None),
-        TreeItemStatus.Error: ('!', 'red'),
-    }
-
-    def __init__(self, texts):
-        super().__init__(texts)
-        self.setStatus(TreeItemStatus.Normal)
-
-    def setStatus(self, status, toolTip=''):
-        text, color = self._STATUSES[status]
-        brush = self.foreground(0)
-        if color:
-            brush.setColor(QColor(color))
-        self.setText(1, text)
-        self.setForeground(1, brush)
-        self.setToolTip(1, toolTip)
-        self._status = status
-
-    @property
-    def name(self):
-        return self.text(0)
-
-    @name.setter
-    def name(self, newValue):
-        self.setText(0, newValue)
-        if self.parent():
-            self.parent().sortChildren(0, Qt.AscendingOrder)
-
-    @property
-    def status(self):
-        return self._status
 
 class AccountItem(TreeItem):
     def __init__(self, value):
         super().__init__(['', ''])
         self.value = value
+        self._activeScript = None
 
     @property
     def value(self):
@@ -53,6 +18,17 @@ class AccountItem(TreeItem):
     def value(self, value):
         self.name, *value = value
         self.setData(0, Qt.UserRole, value)
+
+    def activeScript(self):
+        return self._activeScript
+
+    def setActiveScript(self, script):
+        if self._activeScript:
+            self._activeScript.active = False
+            self._activeScript = None
+        if script:
+            self._activeScript = script
+            self._activeScript.active = True
 
     def scriptNames(self):
         return set(self.child(i).name for i in range(self.childCount()))
@@ -65,7 +41,11 @@ class AccountItem(TreeItem):
 
     def replaceScriptItems(self, activeScript, inactiveScripts):
         self.takeChildren()
-        self.addChild(ScriptItem(activeScript, True))
+        if activeScript:
+            self._activeScript = ScriptItem(activeScript, True)
+            self.addChild(self._activeScript)
+        else:
+            self._activeScript = None
         self.addChildren(ScriptItem(script) for script in inactiveScripts)
         self.sortChildren(0, Qt.AscendingOrder)
         self.setExpanded(True)
@@ -102,5 +82,5 @@ class ScriptItem(TreeItem):
         font = self.font(0)
         font.setItalic(self._open)
         self.setFont(0, font)
-        if self._active and self._status == TreeItemStatus.Normal:
-            self.setText(1, '*')
+        if self._status == TreeItemStatus.Normal:
+            self.setText(1, '*' if self._active else '')

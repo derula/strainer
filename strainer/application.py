@@ -100,6 +100,13 @@ class Application(QApplication):
                 lambda result: self._mainWindow.setOpenScript(item, result)
             ))
 
+    def activateScript(self, item):
+        itemName = '' if item.active else item.name
+        self._sieveQueue.enqueue(item, item.parent().value, SieveErrorChecker(
+            lambda client: client.setactive(item.name),
+            lambda _: item.parent().setActiveScript(item)
+        ))
+
     def saveDocument(self):
         script = self._mainWindow.openScript()
         text = self._mainWindow.editor().text()
