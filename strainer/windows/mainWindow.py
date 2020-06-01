@@ -19,8 +19,9 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(icon('mdi.filter'))
         self.menuBar().addMenu(AccountMenu(self))
         self.menuBar().addMenu(ScriptMenu(self))
-        self.menuBar().addMenu(EditMenu(self))
-        self.addToolBar(Toolbar(self))
+        self.menuBar().addMenu(DocumentMenu(self))
+        self.addToolBar(ManageToolbar(self))
+        self.addToolBar(DocumentToolbar(self))
 
         self._tree = Tree(splitter)
         self._editor = Editor(splitter)
@@ -58,7 +59,6 @@ class MainWindow(QMainWindow):
             self._editor.open(content)
             self._openScript = item
             self._openScript.open = True
-        self._editor.setModified(False)
         self.onModificationChanged(False)
         return True
 

@@ -5,6 +5,6 @@ from .toolbar import *
 
 __all__ = (
     'StringField', 'PasswordField', 'IntegerField', 'CheckboxField', 'OptionsField',
-    'AccountMenu', 'ScriptMenu', 'EditMenu',
-    'Toolbar',
+    'AccountMenu', 'ScriptMenu', 'DocumentMenu',
+    'ManageToolbar', 'DocumentToolbar',
 )

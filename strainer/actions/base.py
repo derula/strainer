@@ -2,7 +2,7 @@ from abc import abstractmethod
 from PyQt5.QtWidgets import QAction
 from qtawesome import icon
 
-__all__ = ('MyAction', 'AccountAction', 'ScriptAction', 'NonEmptyAction')
+__all__ = ('MyAction', 'AccountAction', 'ScriptAction', 'NonEmptyAction', 'EditorAction', 'SelectionAction')
 
 
 class MyAction(QAction):
@@ -10,8 +10,8 @@ class MyAction(QAction):
     _icon = None
     _signal = None
 
-    def __init__(self, tree):
-        super().__init__(self._text, tree)
+    def __init__(self, parent):
+        super().__init__(self._text, parent)
         if self._shortcut:
             self.setShortcut(self._shortcut)
         if self._icon:
@@ -52,3 +52,11 @@ class ScriptAction(MyAction):
 class NonEmptyAction(MyAction):
     def _shouldEnable(self, item):
         return bool(item)
+
+class EditorAction(MyAction):
+    def _shouldEnable(self, editor):
+        return not editor.isReadOnly()
+
+class SelectionAction(EditorAction):
+    def _shouldEnable(self, editor):
+        return super()._shouldEnable(editor) and editor.hasSelectedText()

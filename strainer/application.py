@@ -100,7 +100,7 @@ class Application(QApplication):
                 lambda result: self._mainWindow.setOpenScript(item, result)
             ))
 
-    def saveScript(self):
+    def saveDocument(self):
         script = self._mainWindow.openScript()
         text = self._mainWindow.editor().text()
         if script:

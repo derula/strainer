@@ -20,31 +20,29 @@ class Tree(QTreeWidget):
         self.setExpandsOnDoubleClick(False)
         self._accountMenu = AccountMenu(self.window())
         self._scriptMenu = ScriptMenu(self.window())
-        self._actions = []
         for action in (*self._accountMenu.actions(), *self._scriptMenu.actions()):
             try:
                 action.setDefaultArgs(lambda: (self.currentItem(),))
-                self._actions.append(action)
             except AttributeError:
                 pass
         self.currentItemChanged.connect(self.onCurrentItemChanged)
         self.itemActivated.connect(self.onItemActivated)
         self.itemChanged.connect(self.onItemChanged)
-        self.updateActions(None)
+        self._updateMenus()
 
     def sizeHint(self):
         return QSize(200, 600)
 
     def blockSignals(self, value):
         super().blockSignals(value)
-        self.updateActions(None if value else self.currentItem())
+        self._updateMenus(None if value else self.currentItem())
 
     def onCurrentItemChanged(self, next, previous):
-        self.updateActions(next)
+        self._updateMenus(next)
 
-    def updateActions(self, item):
-        for action in self._actions:
-            action.update(item)
+    def _updateMenus(self, item=None):
+        self._accountMenu.update(item)
+        self._scriptMenu.update(item)
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         item = self.itemAt(event.pos()) or self.currentItem()

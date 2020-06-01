@@ -6,7 +6,15 @@ from ..actions import *
 from .base import MyActionWidget
 
 
-class Toolbar(MyActionWidget, QToolBar):
+class MyToolBar(MyActionWidget, QToolBar):
+    pass
+
+class ManageToolbar(MyToolBar):
     _actions = [
-        EditAccount, ReloadAccount, None, NewScript, RenameScript, None, OpenScript, SaveScript, ActivateScript,
+        EditAccount, ReloadAccount, None, NewScript, RenameScript, None, OpenScript, ActivateScript,
+    ]
+
+class DocumentToolbar(MyToolBar):
+    _actions = [
+        SaveDocument, None, UndoEdit, RedoEdit, None, CutContent, CopyContent, PasteContent,
     ]
