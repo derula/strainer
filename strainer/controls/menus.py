@@ -16,17 +16,17 @@ class MyMenu(MyActionWidget, QMenu):
                 pass
 
 class AccountMenu(MyMenu):
-    _text = 'Account'
+    _text = '&Account'
     _actions = [AddAccount, EditAccount, RemoveAccount, None, ReloadAccount]
 
 class ScriptMenu(MyMenu):
-    _text = 'Script'
+    _text = '&Script'
     _actions = [NewScript, RenameScript, DeleteScript, None, OpenScript, ActivateScript]
 
 class ManageMenu(MyMenu):
-    _text = 'Manage'
+    _text = '&Manage'
     _actions = [*AccountMenu._actions, None, *ScriptMenu._actions]
 
 class EditMenu(MyMenu):
-    _text = 'Edit'
+    _text = '&Edit'
     _actions = [SaveDocument, None, UndoEdit, RedoEdit, None, CutContent, CopyContent, PasteContent, DeleteContent, None, SelectAllContent]
