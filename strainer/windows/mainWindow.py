@@ -19,8 +19,10 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(icon('mdi.filter'))
         self.menuBar().addMenu(ManageMenu(self))
         self.menuBar().addMenu(EditMenu(self))
+        self.menuBar().addMenu(NavigateMenu(self))
         self.addToolBar(ManageToolbar(self))
         self.addToolBar(EditToolbar(self))
+        self.addToolBar(NavigateToolbar(self))
 
         self._tree = Tree(splitter)
         self._editor = Editor(splitter)
