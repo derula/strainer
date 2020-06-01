@@ -30,3 +30,7 @@ class ManageMenu(MyMenu):
 class EditMenu(MyMenu):
     _text = '&Edit'
     _actions = [SaveDocument, None, UndoEdit, RedoEdit, None, CutContent, CopyContent, PasteContent, DeleteContent, None, SelectAllContent]
+
+class NavigateMenu(MyMenu):
+    _text = '&Navigate'
+    _actions = [HomePage, None, PreviousPage, NextPage, ReloadPage, StopLoadingPage, None, CopyUrl]

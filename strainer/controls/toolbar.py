@@ -15,7 +15,5 @@ class ManageToolbar(MyToolBar):
 class EditToolbar(MyToolBar):
     _actions = [SaveDocument, None, UndoEdit, RedoEdit, None, CutContent, CopyContent, PasteContent]
 
-class DocumentToolbar(MyToolBar):
-    _actions = [
-        SaveDocument, None, UndoEdit, RedoEdit, None, CutContent, CopyContent, PasteContent,
-    ]
+class NavigateToolbar(MyToolBar):
+    _actions = [HomePage, None, PreviousPage, NextPage, ReloadPage]
