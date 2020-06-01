@@ -24,9 +24,19 @@ class Reference(MenuMixin, QWebEngineView):
         def setLoading(value):
             self._isLoading = value
             self.updateMenu()
-        self.loadStarted.connect(lambda: setLoading(True))
-        self.loadFinished.connect(lambda ok: setLoading(False))
+        self.loadStarted.connect(self.onLoadStarted)
+        self.loadFinished.connect(self.onLoadFinished)
         self.home()
+
+    def onLoadStarted(self):
+        self._isLoading = True
+        self.window().statusBar().showMessage(f'Communicating with {self.url().host()}, please wait...')
+        self.updateMenu()
+
+    def onLoadFinished(self):
+        self._isLoading = False
+        self.window().statusBar().clearMessage()
+        self.updateMenu()
 
     def isHome(self):
         return self.url().matches(self._make_url(), QUrl.StripTrailingSlash | QUrl.NormalizePathSegments)
