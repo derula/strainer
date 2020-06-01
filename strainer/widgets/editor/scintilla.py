@@ -9,14 +9,17 @@ from .styles import TagStyle
 
 
 class Editor(QsciScintilla):
+    _actions = {
+        UndoEdit: 'undo', RedoEdit: 'redo',
+        CutContent: 'cut', CopyContent: 'copy', PasteContent: 'paste',
+        DeleteContent: 'removeSelectedText', SelectAllContent: 'selectAll',
+    }
+
     def __init__(self, parent):
         super().__init__(parent)
         self._menu = EditMenu(self.window())
-        self.window().action(UndoEdit).triggered.connect(self.undo)
-        self.window().action(RedoEdit).triggered.connect(self.redo)
-        self.window().action(CutContent).triggered.connect(self.cut)
-        self.window().action(CopyContent).triggered.connect(self.copy)
-        self.window().action(PasteContent).triggered.connect(self.paste)
+        for action, reaction in self._actions.items():
+            self.window().action(action).triggered.connect(getattr(self, reaction))
         self.close()
 
         self.setMinimumSize(QSize(300, 200))
@@ -44,9 +47,6 @@ class Editor(QsciScintilla):
         self.textChanged.connect(self.onChanged)
         #QApplication.clipboard().dataChanged.connect(onChanged)  # doesn't seem to be working...?
 
-    def contextMenuEvent(self, event):
-        self._menu.popup(event.globalPos())
-
     def onHotspotClicked(self, position, modifiers):
         position = self.SendScintilla(QsciScintilla.SCI_WORDSTARTPOSITION, position, True)
         if self.text(position - 1, position) == ':':
@@ -65,6 +65,12 @@ class Editor(QsciScintilla):
 
     def sizeHint(self):
         return QSize(750, 600)
+
+    def contextMenuEvent(self, event):
+        self._menu.popup(event.globalPos())
+
+    def selectAll(self):
+        super().selectAll(True)
 
     def open(self, text):
         self.setText(text)
