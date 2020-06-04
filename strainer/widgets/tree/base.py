@@ -1,15 +1,16 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QFont
 from PyQt5.QtWidgets import QTreeWidgetItem
+from qtawesome import icon, Spin
 
 from ...types import TreeItemStatus
 
 
 class TreeItem(QTreeWidgetItem):
     _STATUSES = {
-        TreeItemStatus.Normal: ('', None),
-        TreeItemStatus.Loading: ('…', None),
-        TreeItemStatus.Error: ('!', 'red'),
+        TreeItemStatus.Normal: (None, None),
+        TreeItemStatus.Loading: ('mdi.progress-clock', None),
+        TreeItemStatus.Error: ('mdi.alert', 'red'),
     }
 
     def __init__(self, texts):
@@ -17,12 +18,11 @@ class TreeItem(QTreeWidgetItem):
         self.setStatus(TreeItemStatus.Normal)
 
     def setStatus(self, status, toolTip=''):
-        text, color = self._STATUSES[status]
-        brush = self.foreground(0)
-        if color:
-            brush.setColor(QColor(color))
-        self.setText(1, text)
-        self.setForeground(1, brush)
+        name, color = self._STATUSES[status]
+        if not name:
+            self.setIcon(1, icon())
+        else:
+            self.setIcon(1, icon(name, color=color))
         self.setToolTip(1, toolTip)
         self._status = status
 

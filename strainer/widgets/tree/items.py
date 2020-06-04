@@ -1,4 +1,5 @@
 from PyQt5.QtCore import Qt
+from qtawesome import icon
 
 from ...types import Account
 from .base import TreeItem, TreeItemStatus
@@ -9,6 +10,7 @@ class AccountItem(TreeItem):
         super().__init__(['', ''])
         self.value = value
         self._activeScript = None
+        self.setIcon(0, icon('mdi.account'))
 
     @property
     def value(self):
@@ -55,6 +57,7 @@ class ScriptItem(TreeItem):
         self._open = False
         self._active = is_active
         super().__init__([value, ''])
+        self.setIcon(0, icon('mdi.file'))
 
     def setStatus(self, status, tooltip=''):
         super().setStatus(status, tooltip)
@@ -83,4 +86,7 @@ class ScriptItem(TreeItem):
         font.setItalic(self._open)
         self.setFont(0, font)
         if self._status == TreeItemStatus.Normal:
-            self.setText(1, '*' if self._active else '')
+            if self.active:
+                self.setIcon(1, icon('mdi.check-bold'))
+            else:
+                self.setIcon(1, icon())
