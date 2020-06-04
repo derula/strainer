@@ -11,6 +11,7 @@ class SieveConnection(QObject):
     connecting = pyqtSignal()
     success = pyqtSignal(managesieve.Client)
     failure = pyqtSignal(str)
+    cleanup = pyqtSignal()
 
     def __init__(self, item, account=None, action=None):
         super().__init__()
@@ -19,6 +20,7 @@ class SieveConnection(QObject):
         self.connecting.connect(self.setLoading, Qt.BlockingQueuedConnection)
         self.success.connect(self.setNormal, Qt.BlockingQueuedConnection)
         self.failure.connect(self.setError, Qt.BlockingQueuedConnection)
+        self.cleanup.connect(self.clearMessage, Qt.BlockingQueuedConnection)
         if action is not None:
             self.success.connect(action, Qt.BlockingQueuedConnection)
 
@@ -33,7 +35,7 @@ class SieveConnection(QObject):
         except managesieve.Error as e:
             self.failure.emit(e.args[0])
         finally:
-            self._item.treeWidget().window().statusBar().clearMessage()
+            self.cleanup.emit()
 
     def setLoading(self):
         self._item.setStatus(TreeItemStatus.Loading, 'Loading, please wait...')
@@ -44,6 +46,9 @@ class SieveConnection(QObject):
 
     def setError(self, message):
         self._item.setStatus(TreeItemStatus.Error, message)
+
+    def clearMessage(self):
+        self._item.treeWidget().window().statusBar().clearMessage()
 
 class SieveConnectionQueue(QThread):
     def __init__(self, tree):

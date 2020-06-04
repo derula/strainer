@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QMainWindow, QSplitter
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QMainWindow, QSplitter, QProgressBar, QLabel
 from qtawesome import icon
 
 from ..controls import *
@@ -20,15 +20,16 @@ class MainWindow(QMainWindow):
         self.menuBar().addMenu(ManageMenu(self))
         self.menuBar().addMenu(EditMenu(self))
         self.menuBar().addMenu(NavigateMenu(self))
-        self.addToolBar(ManageToolbar(self))
-        self.addToolBar(EditToolbar(self))
-        self.addToolBar(NavigateToolbar(self))
-        self.statusBar()
+        self.addToolBar(ManageToolBar(self))
+        self.addToolBar(EditToolBar(self))
+        self.addToolBar(NavigateToolBar(self))
+        self.setStatusBar(StatusBar(self))
 
         self._tree = Tree(splitter)
         self._editor = Editor(splitter)
         self._reference = Reference(splitter)
         self._editor.modificationChanged.connect(self.onModificationChanged)
+        self._editor.cursorPositionChanged.connect(self.statusBar().setCursorPosition)
         self._openScript = None
         self._confirmClose = ConfirmCloseMessage(self).exec
 
@@ -61,6 +62,7 @@ class MainWindow(QMainWindow):
             self._editor.open(content)
             self._openScript = item
             self._openScript.open = True
+        self.statusBar().setScript(self._openScript)
         self.onModificationChanged(False)
         return True
 
