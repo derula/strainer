@@ -3,7 +3,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
 from PyQt5.QtWidgets import QApplication
 
 from ..actions import *
-from ..controls.menus import NavigateMenu
+from ..controls import NavigateMenu
 from .base import *
 
 

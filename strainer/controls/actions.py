@@ -1,7 +1,4 @@
-import string
-
-from PyQt5.QtWidgets import QMenu
-from qtawesome import icon
+from PyQt5.QtWidgets import QMenu, QToolBar
 
 from ..actions import *
 from .base import MyActionWidget
@@ -34,3 +31,15 @@ class EditMenu(MyMenu):
 class NavigateMenu(MyMenu):
     _text = '&Navigate'
     _actions = [HomePage, None, PreviousPage, NextPage, ReloadPage, None, CopyUrl]
+
+class MyToolBar(MyActionWidget, QToolBar):
+    pass
+
+class ManageToolBar(MyToolBar):
+    _actions = [EditAccount, ReloadAccount, None, NewScript, RenameScript, None, OpenScript, ActivateScript]
+
+class EditToolBar(MyToolBar):
+    _actions = [SaveDocument, None, UndoEdit, RedoEdit, None, CutContent, CopyContent, PasteContent]
+
+class NavigateToolBar(MyToolBar):
+    _actions = [HomePage, None, PreviousPage, NextPage, ReloadPage]

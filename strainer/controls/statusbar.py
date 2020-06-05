@@ -1,24 +1,10 @@
-from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QHBoxLayout, QFrame, QLabel, QProgressBar, QSizePolicy, QStatusBar, QToolBar
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QFrame, QLabel, QStatusBar
 from qtawesome import IconWidget
 from sievelib.parser import Parser
 
 from ..actions import *
 from .base import MyActionWidget
 
-
-class MyToolBar(MyActionWidget, QToolBar):
-    pass
-
-class ManageToolBar(MyToolBar):
-    _actions = [EditAccount, ReloadAccount, None, NewScript, RenameScript, None, OpenScript, ActivateScript]
-
-class EditToolBar(MyToolBar):
-    _actions = [SaveDocument, None, UndoEdit, RedoEdit, None, CutContent, CopyContent, PasteContent]
-
-class NavigateToolBar(MyToolBar):
-    _actions = [HomePage, None, PreviousPage, NextPage, ReloadPage]
 
 class StatusBar(QStatusBar):
     def __init__(self, parent):
@@ -76,6 +62,7 @@ class ErrorPanel(StatusBarPanel):
         self.layout().insertWidget(1, self._errorIcon)
 
     def parseScript(self, text=None):
+        self._errorLineNo = None
         for widget in {self._icon, self._checkIcon, self._errorIcon}:
             widget.setVisible(False)
         if text is None:
