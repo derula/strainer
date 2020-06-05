@@ -82,12 +82,25 @@ class SieveErrorChecker:
     def __call__(self, client):
         result = self._action(client)
         if result is None or result is False:
-            SieveErrorMessage().exec()
+            SieveErrorMessage(client).exec()
         else:
             self._reaction(result)
 
 class SieveErrorMessage(QMessageBox):
-    _text = 'Failed to run given ManageSieve command.\nIf the problem persists, try reloading the account.'
+    _texts = (
+        'Failed to run given ManageSieve command.',
+        'If the problem persists, try reloading the account.'
+    )
 
-    def __init__(self):
-        super().__init__(QMessageBox.Critical, 'ManageSieve error', self._text, QMessageBox.Ok)
+    def __init__(self, client):
+        texts = list(self._texts)
+        try:
+            message = client.errmsg
+            try:
+                message = message.decode('utf-8')
+            except AttributeError:
+                pass
+            texts.insert(1, f'Reason: {message}')
+        except AttributeError:
+            pass
+        super().__init__(QMessageBox.Critical, 'ManageSieve error', '\n'.join(texts), QMessageBox.Ok)
