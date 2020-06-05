@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
     def setOpenScript(self, item, content='', *, force=False):
         if self._openScript:
             if not force and not self._confirmClose():
-                self.parent().editor().setFocus(Qt.OtherFocusReason)
+                self._editor.setFocus(Qt.OtherFocusReason)
                 return False
             self._openScript.open = False
             self._openScript = None

@@ -62,7 +62,6 @@ class ErrorPanel(StatusBarPanel):
         self.layout().insertWidget(1, self._errorIcon)
 
     def parseScript(self, text=None):
-        self._errorLineNo = None
         for widget in {self._icon, self._checkIcon, self._errorIcon}:
             widget.setVisible(False)
         if text is None:
