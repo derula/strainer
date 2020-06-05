@@ -1,6 +1,5 @@
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QMainWindow, QSplitter, QProgressBar, QLabel
-from qtawesome import icon
 
 from ..controls import *
 from ..widgets import *
@@ -16,7 +15,6 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(QFrame(self))
         QHBoxLayout(self.centralWidget()).addWidget(splitter)
 
-        self.setWindowIcon(icon('mdi.filter'))
         self.menuBar().addMenu(ManageMenu(self))
         self.menuBar().addMenu(EditMenu(self))
         self.menuBar().addMenu(NavigateMenu(self))

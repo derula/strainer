@@ -1,5 +1,6 @@
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QApplication, QInputDialog, QMessageBox, QStyle
+from qtawesome import icon
 
 from . import actions
 from .sieve import SieveConnectionQueue, SieveErrorChecker
@@ -19,6 +20,7 @@ class Application(QApplication):
                 pass
             all_actions[cls] = action
         self._accounts = accounts
+        self.setWindowIcon(icon('mdi.filter'))
         self._mainWindow = MainWindow(all_actions)
         self._sieveQueue = SieveConnectionQueue(self._mainWindow.tree)
         self._accountDialog = AccountDialog(self._mainWindow)
