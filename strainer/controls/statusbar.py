@@ -1,3 +1,4 @@
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QFrame, QLabel, QStatusBar
 from qtawesome import IconWidget
 from sievelib.parser import Parser
@@ -7,6 +8,8 @@ from .base import MyActionWidget
 
 
 class StatusBar(QStatusBar):
+    gotoError = pyqtSignal(int)
+
     def __init__(self, parent):
         super().__init__(parent)
         self._account = StatusBarPanel('{}', 'mdi.account')
@@ -17,6 +20,7 @@ class StatusBar(QStatusBar):
         self.addWidget(self._script)
         self.addWidget(self._error)
         self.addPermanentWidget(self._cursor)
+        self._error._caption.linkActivated.connect(lambda url: self.gotoError.emit(int(url)))
 
     def setScript(self, item):
         if item is None:
@@ -51,6 +55,8 @@ class StatusBarPanel(QFrame):
         self._caption.setText(self._addCaption(*newText, *defaultValues))
 
 class ErrorPanel(StatusBarPanel):
+    _makeLink = '<a href="{}"><span style="color:inherit;">{}</span></a>'.format
+
     def __init__(self):
         self._parser = Parser()
         super().__init__('{}', 'mdi.circle', color='gray')
@@ -72,4 +78,4 @@ class ErrorPanel(StatusBarPanel):
             self.setText('No errors found in open script.')
         else:
             self._errorIcon.setVisible(True)
-            self.setText(self._parser.error)
+            self.setText(self._makeLink(self._parser.lexer.curlineno(), self._parser.error))
