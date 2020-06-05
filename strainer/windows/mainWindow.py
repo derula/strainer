@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QMainWindow, QSplitter, QProgressBar, QLabel
 from qtawesome import icon
 
@@ -30,6 +30,7 @@ class MainWindow(QMainWindow):
         self._reference = Reference(splitter)
         self._editor.modificationChanged.connect(self.onModificationChanged)
         self._editor.cursorPositionChanged.connect(self.statusBar().setCursorPosition)
+        self._editor.textChanged.connect(lambda: self.statusBar().parseScript(self._editor.text()))
         self._openScript = None
         self._confirmClose = ConfirmCloseMessage(self).exec
 
@@ -69,7 +70,7 @@ class MainWindow(QMainWindow):
     def onModificationChanged(self, isModified=False):
         title = 'Strainer'
         if self._openScript:
-            title = f"{title} ({self._openScript.name}{'*' if isModified else ''})"
+            title = f"{title} ({self._openScript.parent().name}: {self._openScript.name}{'*' if isModified else ''})"
         self.setWindowTitle(title)
 
     def closeEvent(self, event):
