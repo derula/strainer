@@ -1,5 +1,5 @@
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QFrame, QLabel, QStatusBar
+from PyQt5.QtCore import pyqtSignal, QSize
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QStatusBar
 from qtawesome import IconWidget
 from sievelib.parser import Parser
 
@@ -13,10 +13,10 @@ class StatusBar(QStatusBar):
 
     def __init__(self, parent):
         super().__init__(parent)
-        self._account = StatusBarPanel('{}', 'mdi.account')
-        self._script = StatusBarPanel('{}', 'mdi.file')
+        self._account = StatusBarPanel('{}', 'Account: {}', 'mdi.account')
+        self._script = StatusBarPanel('{}', 'Script: {}', 'mdi.file')
         self._error = ErrorPanel(self.errorChanged, self.gotoError)
-        self._cursor = StatusBarPanel('{}:{}', 'mdi.cursor-text')
+        self._cursor = StatusBarPanel('{}:{}', 'Cursor position: Line {}, Column {}', 'mdi.cursor-text')
         self.addWidget(self._account)
         self.addWidget(self._script)
         self.addWidget(self._error)
@@ -38,11 +38,13 @@ class StatusBar(QStatusBar):
         self._cursor.setText(row + 1, col + 1)
 
 class StatusBarPanel(QFrame):
-    def __init__(self, format_str, *args, **kwargs):
+    def __init__(self, caption_format, tooltip_format, *args, **kwargs):
         super().__init__()
-        self._addCaption = format_str.format
-        self._numArgs = format_str.count('{}')
+        self._makeCaption = caption_format.format
+        self._makeTooltip = tooltip_format.format
+        self._numArgs = caption_format.count('{}')
         self._caption = QLabel()
+        self._caption.minimumSizeHint = lambda: QSize(0, 0)
         self._icon = IconWidget(*args, **kwargs)
         self.setLayout(QHBoxLayout())
         self.layout().setContentsMargins(8, 0, 8, 0)
@@ -51,13 +53,14 @@ class StatusBarPanel(QFrame):
         self.setText()
 
     def setText(self, *newText):
-        defaultValues = ('-' for _ in range(self._numArgs - len(newText)))
-        self._caption.setText(self._addCaption(*newText, *defaultValues))
+        defaultValues = tuple('-' for _ in range(self._numArgs - len(newText)))
+        self._caption.setText(self._makeCaption(*newText, *defaultValues))
+        self.setToolTip(self._makeTooltip(*newText, *defaultValues))
 
 class ErrorPanel(StatusBarPanel):
     def __init__(self, changeSignal, gotoSignal):
         self._parser = Parser()
-        super().__init__('{}', 'mdi.circle', color='gray')
+        super().__init__('{}', 'Syntax error check: {}', 'mdi.circle', color='gray')
         self._checkIcon = IconWidget('mdi.check-circle', color='green')
         self._errorIcon = IconWidget('mdi.close-circle', color='red')
         self._checkIcon.setVisible(False)
