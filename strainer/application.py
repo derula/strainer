@@ -1,5 +1,5 @@
-from PyQt5.QtCore import Qt, QSize, QSettings
-from PyQt5.QtWidgets import QApplication, QInputDialog, QMessageBox, QStyle
+from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtWidgets import QApplication
 from qtawesome import icon
 
 from . import actions
@@ -28,11 +28,7 @@ class Application(QApplication):
         self._sieveQueue = SieveConnectionQueue(self._mainWindow.tree())
         self._accountDialog = AccountDialog(self._mainWindow)
         self._scriptNameDialog = ScriptNameDialog(self._mainWindow)
-        geometry = self.desktop().availableGeometry()
-        size = geometry.size()
-        size = QSize(size.width() * 0.75, size.height() * 0.75)
-        self._mainWindow.setGeometry(QStyle.alignedRect(Qt.LeftToRight, Qt.AlignCenter, size, geometry))
-        self._mainWindow.show()
+        self._mainWindow.show(self.desktop())
         self._accounts = Accounts()
         self._mainWindow.tree().addAccountItems(list(self._accounts.all))
 
