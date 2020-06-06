@@ -22,7 +22,7 @@ class Application(QApplication):
         self._accounts = accounts
         self.setWindowIcon(icon('mdi.filter'))
         self._mainWindow = MainWindow(all_actions)
-        self._sieveQueue = SieveConnectionQueue(self._mainWindow.tree)
+        self._sieveQueue = SieveConnectionQueue(self._mainWindow.tree())
         self._accountDialog = AccountDialog(self._mainWindow)
         self._scriptNameDialog = ScriptNameDialog(self._mainWindow)
         self._mainWindow.tree().addAccountItems(list(accounts.all))
