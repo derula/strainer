@@ -33,13 +33,18 @@ class NavigateMenu(MyMenu):
     _actions = [HomePage, None, PreviousPage, NextPage, ReloadPage, None, CopyUrl]
 
 class MyToolBar(MyActionWidget, QToolBar):
-    pass
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setObjectName(self.__class__.__name__)
 
 class ManageToolBar(MyToolBar):
+    _text = 'Manage toolbar'
     _actions = [EditAccount, ReloadAccount, None, NewScript, RenameScript, None, OpenScript, ActivateScript]
 
 class EditToolBar(MyToolBar):
+    _text = 'Edit toolbar'
     _actions = [SaveDocument, None, UndoEdit, RedoEdit, None, CutContent, CopyContent, PasteContent]
 
 class NavigateToolBar(MyToolBar):
+    _text = 'Navigate toolbar'
     _actions = [HomePage, None, PreviousPage, NextPage, ReloadPage]
