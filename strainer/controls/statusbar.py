@@ -8,13 +8,14 @@ from .base import MyActionWidget
 
 
 class StatusBar(QStatusBar):
+    errorChanged = pyqtSignal(int, int)
     gotoError = pyqtSignal(int, int)
 
     def __init__(self, parent):
         super().__init__(parent)
         self._account = StatusBarPanel('{}', 'mdi.account')
         self._script = StatusBarPanel('{}', 'mdi.file')
-        self._error = ErrorPanel(self.gotoError)
+        self._error = ErrorPanel(self.errorChanged, self.gotoError)
         self._cursor = StatusBarPanel('{}:{}', 'mdi.cursor-text')
         self.addWidget(self._account)
         self.addWidget(self._script)
@@ -54,9 +55,7 @@ class StatusBarPanel(QFrame):
         self._caption.setText(self._addCaption(*newText, *defaultValues))
 
 class ErrorPanel(StatusBarPanel):
-    _makeLink = '<a href="{}"><span style="color:inherit;">{}</span></a>'.format
-
-    def __init__(self, signal):
+    def __init__(self, changeSignal, gotoSignal):
         self._parser = Parser()
         super().__init__('{}', 'mdi.circle', color='gray')
         self._checkIcon = IconWidget('mdi.check-circle', color='green')
@@ -65,11 +64,14 @@ class ErrorPanel(StatusBarPanel):
         self._errorIcon.setVisible(False)
         self.layout().insertWidget(1, self._checkIcon)
         self.layout().insertWidget(1, self._errorIcon)
-        self._caption.linkActivated.connect(lambda url: signal.emit(*map(int, url.split('/'))))
+        self._changeSignal = changeSignal
+        self._caption.linkActivated.connect(lambda url: gotoSignal.emit(*self._errorPos))
+        self._errorPos = (-1, -1)
 
     def parseScript(self, text=None):
         for widget in {self._icon, self._checkIcon, self._errorIcon}:
             widget.setVisible(False)
+        errorPos = (-1, -1)
         if text is None:
             self._icon.setVisible(True)
             self.setText()
@@ -77,5 +79,9 @@ class ErrorPanel(StatusBarPanel):
             self._checkIcon.setVisible(True)
             self.setText('No errors found in open script.')
         else:
+            errorPos = (x - 1 for x in self._parser.error_pos)
             self._errorIcon.setVisible(True)
-            self.setText(self._makeLink('/'.join(map(str, self._parser.error_pos)), self._parser.error))
+            self.setText(f'<a href="#"><span style="color:inherit;">{self._parser.error}</span></a>')
+        if self._errorPos != errorPos:
+            self._changeSignal.emit(*errorPos)
+            self._errorPos = errorPos

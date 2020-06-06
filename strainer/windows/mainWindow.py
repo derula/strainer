@@ -26,7 +26,9 @@ class MainWindow(QMainWindow):
         self._tree = Tree(splitter)
         self._editor = Editor(splitter)
         self._reference = Reference(splitter)
-        self.statusBar().gotoError.connect(self.onGotoError)
+        self.statusBar().gotoError.connect(self._editor.setCursorPosition)
+        self.statusBar().gotoError.connect(lambda *_: self._editor.setFocus(Qt.OtherFocusReason))
+        self.statusBar().errorChanged.connect(self._editor.setParseError)
         self._editor.modificationChanged.connect(self.onModificationChanged)
         self._editor.cursorPositionChanged.connect(self.statusBar().setCursorPosition)
         self._editor.textChanged.connect(lambda: self.statusBar().parseScript(self._editor.text()))
@@ -65,10 +67,6 @@ class MainWindow(QMainWindow):
         self.statusBar().setScript(self._openScript)
         self.onModificationChanged(False)
         return True
-
-    def onGotoError(self, line, col):
-        self._editor.setCursorPosition(line - 1, col - 1)
-        self._editor.setFocus(Qt.OtherFocusReason)
 
     def onModificationChanged(self, isModified=False):
         title = 'Strainer'

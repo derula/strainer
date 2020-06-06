@@ -63,15 +63,22 @@ class Editor(MenuMixin, QsciScintilla):
     def sizeHint(self):
         return QSize(750, 600)
 
-    def selectAll(self):
-        super().selectAll(True)
-
     def open(self, text):
         self.setText(text)
         self.setReadOnly(False)
         self.setFocus(Qt.OtherFocusReason)
         self.setModified(False)
         self.updateMenu()
+
+    def selectAll(self):
+        super().selectAll(True)
+
+    def setParseError(self, line, col, length=1):
+        self.SendScintilla(QsciScintilla.SCI_SETINDICATORCURRENT, 1)
+        self.SendScintilla(QsciScintilla.SCI_INDICATORCLEARRANGE, 0, self.length())
+        if line >= 0 and col >= 0:
+            start = self.positionFromLineIndex(line, col) - length
+            self.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, start, length)
 
     def close(self):
         self.setText('')
