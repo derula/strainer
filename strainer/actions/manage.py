@@ -12,7 +12,7 @@ class AddAccount(MyAction):
     _shortcut = QKeySequence(Qt.SHIFT | Qt.Key_Insert)
 
     def _shouldEnable(self, item):
-        return item is not None
+        return True  # always allow to add new account
 
 class EditAccount(NonEmptyAction):
     _text = 'Account &settings'
