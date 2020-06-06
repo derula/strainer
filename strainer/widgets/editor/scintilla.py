@@ -83,7 +83,8 @@ class Editor(MenuMixin, QsciScintilla):
         self.SendScintilla(QsciScintilla.SCI_SETINDICATORCURRENT, 1)
         self.SendScintilla(QsciScintilla.SCI_INDICATORCLEARRANGE, 0, self.length())
         if line >= 0 and col >= 0:
-            start = self.positionFromLineIndex(line, col) - length
+            # check if max() is still needed after sievelib #92 is merged
+            start = max(self.positionFromLineIndex(line, col) - length, 0)
             self.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, start, length)
 
     def close(self):
