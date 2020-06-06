@@ -1,5 +1,6 @@
 from PyQt5.Qsci import QsciScintilla
 from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QApplication
 
 from ...actions import *
@@ -46,6 +47,11 @@ class Editor(MenuMixin, QsciScintilla):
         self.setLexer(SieveLexer(self))
         self.SCN_HOTSPOTCLICK.connect(self.onHotspotClicked)
         #QApplication.clipboard().dataChanged.connect(updateMenu)  # doesn't seem to be working...?
+
+        self.indicatorDefine(QsciScintilla.IndicatorStyle.DotsIndicator, 0)
+        self.setIndicatorForegroundColor(QColor('red'), 0)
+        self.indicatorDefine(QsciScintilla.IndicatorStyle.TriangleCharacterIndicator, 1)
+        self.setIndicatorForegroundColor(QColor('red'), 1)
 
     def onHotspotClicked(self, position, modifiers):
         position = self.SendScintilla(QsciScintilla.SCI_WORDSTARTPOSITION, position, True)
