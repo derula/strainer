@@ -84,7 +84,11 @@ class ErrorPanel(StatusBarPanel):
         else:
             errorPos = (x - 1 for x in self._parser.error_pos)
             self._errorIcon.setVisible(True)
-            self.setText(f'<a href="#"><span style="color:inherit;">{self._parser.error}</span></a>')
+            # Workaround for sievelib bug #93
+            error = self._parser.error
+            if len(error) > 200:
+                error = error[:197] + ' [...]'
+            self.setText(f'<a href="#"><span style="color:inherit;">{error}</span></a>')
         if self._errorPos != errorPos:
             self._changeSignal.emit(*errorPos)
             self._errorPos = errorPos
