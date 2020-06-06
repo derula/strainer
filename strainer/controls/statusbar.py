@@ -8,19 +8,18 @@ from .base import MyActionWidget
 
 
 class StatusBar(QStatusBar):
-    gotoError = pyqtSignal(int)
+    gotoError = pyqtSignal(int, int)
 
     def __init__(self, parent):
         super().__init__(parent)
         self._account = StatusBarPanel('{}', 'mdi.account')
         self._script = StatusBarPanel('{}', 'mdi.file')
-        self._error = ErrorPanel()
+        self._error = ErrorPanel(self.gotoError)
         self._cursor = StatusBarPanel('{}:{}', 'mdi.cursor-text')
         self.addWidget(self._account)
         self.addWidget(self._script)
         self.addWidget(self._error)
         self.addPermanentWidget(self._cursor)
-        self._error._caption.linkActivated.connect(lambda url: self.gotoError.emit(int(url)))
 
     def setScript(self, item):
         if item is None:
@@ -57,7 +56,7 @@ class StatusBarPanel(QFrame):
 class ErrorPanel(StatusBarPanel):
     _makeLink = '<a href="{}"><span style="color:inherit;">{}</span></a>'.format
 
-    def __init__(self):
+    def __init__(self, signal):
         self._parser = Parser()
         super().__init__('{}', 'mdi.circle', color='gray')
         self._checkIcon = IconWidget('mdi.check-circle', color='green')
@@ -66,6 +65,7 @@ class ErrorPanel(StatusBarPanel):
         self._errorIcon.setVisible(False)
         self.layout().insertWidget(1, self._checkIcon)
         self.layout().insertWidget(1, self._errorIcon)
+        self._caption.linkActivated.connect(lambda url: signal.emit(*map(int, url.split('/'))))
 
     def parseScript(self, text=None):
         for widget in {self._icon, self._checkIcon, self._errorIcon}:
@@ -78,4 +78,4 @@ class ErrorPanel(StatusBarPanel):
             self.setText('No errors found in open script.')
         else:
             self._errorIcon.setVisible(True)
-            self.setText(self._makeLink(self._parser.lexer.curlineno(), self._parser.error))
+            self.setText(self._makeLink('/'.join(map(str, self._parser.error_pos)), self._parser.error))

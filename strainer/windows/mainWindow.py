@@ -66,8 +66,8 @@ class MainWindow(QMainWindow):
         self.onModificationChanged(False)
         return True
 
-    def onGotoError(self, line):
-        self._editor.setCursorPosition(line - 1, 0)
+    def onGotoError(self, line, col):
+        self._editor.setCursorPosition(line - 1, col - 1)
         self._editor.setFocus(Qt.OtherFocusReason)
 
     def onModificationChanged(self, isModified=False):
