@@ -1,6 +1,7 @@
-from base64 import b64decode, b64encode
 from enum import Enum, auto
 from typing import NamedTuple, Optional
+
+from PyQt5.QtCore import QByteArray
 
 
 def _get_int(coll, key, default):
@@ -25,7 +26,7 @@ class Account(NamedTuple):
         values.setdefault('authmech', None)
         if pw_key is not None:
             try:
-                values['passwd'] = pw_key.decrypt(b64decode(values['passwd'])).decode('utf-8')
+                values['passwd'] = pw_key.decrypt(bytes(values['passwd'])).decode('utf-8')
             except Exception:
                 values['passwd'] = ''
         return cls(**values)
@@ -37,7 +38,7 @@ class Account(NamedTuple):
             del result['authmech']
         result['starttls'] = int(self.starttls)
         if pw_key is not None:
-            result['passwd'] = b64encode(pw_key.encrypt(self.passwd.encode('utf-8'))).decode('ascii')
+            result['passwd'] = QByteArray(pw_key.encrypt(self.passwd.encode('utf-8')))
         return result
 
 class TreeItemStatus(Enum):
