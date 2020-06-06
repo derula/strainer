@@ -1,13 +1,14 @@
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QSettings
 from PyQt5.QtWidgets import QApplication, QInputDialog, QMessageBox, QStyle
 from qtawesome import icon
 
 from . import actions
+from .config import Accounts
 from .sieve import SieveConnectionQueue, SieveErrorChecker
 from .windows import *
 
 class Application(QApplication):
-    def __init__(self, argv, accounts):
+    def __init__(self, argv):
         super().__init__(argv)
         all_actions = {}
         for action in actions.__all__:
@@ -19,18 +20,21 @@ class Application(QApplication):
             except AttributeError:
                 pass
             all_actions[cls] = action
-        self._accounts = accounts
+        self.setOrganizationName('incertitu.de')
+        self.setApplicationName('strainer')
         self.setWindowIcon(icon('mdi.filter'))
+        QSettings.setDefaultFormat(QSettings.IniFormat)
         self._mainWindow = MainWindow(all_actions)
         self._sieveQueue = SieveConnectionQueue(self._mainWindow.tree())
         self._accountDialog = AccountDialog(self._mainWindow)
         self._scriptNameDialog = ScriptNameDialog(self._mainWindow)
-        self._mainWindow.tree().addAccountItems(list(accounts.all))
         geometry = self.desktop().availableGeometry()
         size = geometry.size()
         size = QSize(size.width() * 0.75, size.height() * 0.75)
         self._mainWindow.setGeometry(QStyle.alignedRect(Qt.LeftToRight, Qt.AlignCenter, size, geometry))
         self._mainWindow.show()
+        self._accounts = Accounts()
+        self._mainWindow.tree().addAccountItems(list(self._accounts.all))
 
     def addAccount(self):
         result = self._accountDialog.exec()
