@@ -82,7 +82,7 @@ class ErrorPanel(StatusBarPanel):
             self._checkIcon.setVisible(True)
             self.setText('No errors found in open script.')
         else:
-            errorPos = (x - 1 for x in self._parser.error_pos)
+            errorPos = tuple(x - 1 for x in self._parser.error_pos)
             self._errorIcon.setVisible(True)
             # Workaround for sievelib bug #93
             error = self._parser.error
