@@ -19,6 +19,6 @@ def error(self, msg):
 Lexer.curcolno = lambda self: self.pos - self.text.rfind(b'\n', 0, self.pos)
 Parser.error = error
 
-from .connection import SieveConnectionQueue, SieveErrorChecker
+from .connection import *
 
-__all__ = ('SieveConnectionQueue', 'SieveErrorChecker')
+__all__ = ('SieveConnectionQueue')
