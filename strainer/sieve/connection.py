@@ -52,7 +52,6 @@ class SieveConnection(QObject):
             self.cleanup.emit()
 
     def onConnecting(self):
-        print(1)
         self._tree.blockSignals(True)
         self._tree.window().statusBar().showMessage(f'Communicating with {self._info.account[1]}, please wait...')
         self._info.item.setStatus(TreeItemStatus.Loading, 'Loading, please wait...')
