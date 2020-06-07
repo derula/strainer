@@ -68,6 +68,9 @@ class Tree(QTreeWidget):
             if item.parent() is None:
                 self.window().action(ReloadAccount).trigger(item)
 
+    def illegalChildNames(self):
+        return {'', *(self.topLevelItem(i).name for i in range(self.topLevelItemCount()))}
+
     def addAccountItem(self, account):
         return self.addAccountItems([account])[0]
 

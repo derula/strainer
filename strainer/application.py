@@ -33,7 +33,7 @@ class Application(QApplication):
         self._mainWindow.tree().addAccountItems(list(self._accounts.all))
 
     def addAccount(self):
-        result = self._accountDialog.exec()
+        result = self._accountDialog.exec(self._mainWindow.tree().illegalChildNames())
         if result is not None:
             item = self._mainWindow.tree().addAccountItem(result)
             self._accounts.add(item.value)
@@ -42,7 +42,7 @@ class Application(QApplication):
     def editAccount(self, item):
         item = item.parent() or item
         old_value = item.value
-        result = self._accountDialog.exec(old_value)
+        result = self._accountDialog.exec(item.illegalNames(), old_value)
         if result is not None:
             item.value = result
             self._mainWindow.tree().setCurrentItem(item)
@@ -67,7 +67,7 @@ class Application(QApplication):
 
     def newScript(self, item):
         item = item.parent() or item
-        scriptName = self._scriptNameDialog.exec(item)
+        scriptName = self._scriptNameDialog.exec(item.illegalChildNames())
         self._mainWindow.tree().setFocus(Qt.PopupFocusReason)
         if scriptName is not None:
             self._sieveQueue.enqueue(item,
@@ -76,8 +76,7 @@ class Application(QApplication):
             )
 
     def renameScript(self, item):
-        account = item.parent() or item
-        scriptName = self._scriptNameDialog.exec(account, item.name)
+        scriptName = self._scriptNameDialog.exec(item.illegalNames(), item.name)
         self._mainWindow.tree().setFocus(Qt.PopupFocusReason)
         if scriptName is not None:
             self._sieveQueue.enqueue(item,

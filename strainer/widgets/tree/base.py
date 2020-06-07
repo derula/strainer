@@ -39,3 +39,10 @@ class TreeItem(QTreeWidgetItem):
     @property
     def status(self):
         return self._status
+
+    def illegalNames(self):
+        target = self.parent() or self.treeWidget()
+        return target.illegalChildNames() - {self.name}
+
+    def illegalChildNames(self):
+        return {'', *(self.child(i).name for i in range(self.childCount()))}

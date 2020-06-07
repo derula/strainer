@@ -32,9 +32,6 @@ class AccountItem(TreeItem):
             self._activeScript = script
             self._activeScript.active = True
 
-    def scriptNames(self):
-        return set(self.child(i).name for i in range(self.childCount()))
-
     def addScriptItem(self, scriptName):
         newItem = ScriptItem(scriptName)
         self.addChild(newItem)

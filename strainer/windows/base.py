@@ -49,11 +49,16 @@ class AddOrChangeDialog(DialogTitleMixin, QDialog):
         buttons.rejected.connect(self.reject)
         self.layout().addRow(buttons)
         self._buttons = buttons.buttons()
+        self._illegalNames = None
 
     def setInputValid(self, value = True):
         self._buttons[0].setEnabled(value)
 
-    def exec(self, oldValue = None):
+    def isNameLegal(self, newName):
+        return newName not in self._illegalNames
+
+    def exec(self, illegalNames, oldValue = None):
+        self._illegalNames = illegalNames
         self._applyTitle(self._changeTitle if oldValue else self._addTitle)
         self._setValue(oldValue or self._defaultValue)
         if super().exec() == QDialog.Accepted:
@@ -63,6 +68,10 @@ class AddOrChangeDialog(DialogTitleMixin, QDialog):
 
     def _addField(self, caption, field):
         self.layout().insertRow(self.layout().rowCount() - 1, caption, field)
+        return field
+
+    def _getField(self, index):
+        return self.layout().itemAt(index, QFormLayout.FieldRole).widget()
 
     @abstractmethod
     def _setValue(self, newValue):
