@@ -146,13 +146,13 @@
         },
         "qscintilla": {
             "hashes": [
-                "sha256:59f3ad5bda30701fb9ca3f7932cb5bcfff508eb87b7fee58929b9872dc9a0a9d",
-                "sha256:c3d0e27f00f5737eb4c8878b49f649d71992f25c48592d1e73ef62731294004f",
-                "sha256:d51169ccb9ba8a13a81560533632d3b159a8dd17fcea01297f969f671d0da128",
-                "sha256:f6741cf614e072802c900a96aeba175aaa901584f42a215774244ecbc3bb46ed"
+                "sha256:4cead28183719105c033b6dc67d12159ea0432fbbc175e94bf24ea3120cdfd74",
+                "sha256:586fc5710f386f67654217f98a5f450b45b72599ba22622b3da017a6f5e7f4ab",
+                "sha256:bf7989d2d07e3221ca0b5ca3461d7bbad15ffeb76c973725e39a85adb551ca13",
+                "sha256:d50e8ba3beb28565223b3d33a340e24ca8a4340e705f2dce854da090a53394f6"
             ],
             "index": "pypi",
-            "version": "==2.11.4"
+            "version": "==2.11.5"
         },
         "qtawesome": {
             "hashes": [
