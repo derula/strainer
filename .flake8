@@ -1,4 +1,6 @@
 [flake8]
 exclude = .git,.github,.vscode,build,dist,__pycache__,pyinstaller.py
+count = True
 max-complexity = 10
 max-line-length = 127
+statistics = True
