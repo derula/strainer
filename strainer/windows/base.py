@@ -12,10 +12,12 @@ class DialogTitle(NamedTuple):
     icon: str
     text: str
 
+
 class DialogTitleMixin:
     def _applyTitle(self, title):
         self.setWindowIcon(icon(title.icon))
         self.setWindowTitle(title.text)
+
 
 class ConfirmMessage(DialogTitleMixin, QMessageBox):
     _title: DialogTitle
@@ -36,6 +38,7 @@ class ConfirmMessage(DialogTitleMixin, QMessageBox):
         super().exec()
         return self.clickedButton() == self._confirm
 
+
 class AddOrChangeDialog(DialogTitleMixin, QDialog):
     _addTitle: DialogTitle
     _changeTitle: DialogTitle
@@ -51,13 +54,13 @@ class AddOrChangeDialog(DialogTitleMixin, QDialog):
         self._buttons = buttons.buttons()
         self._illegalNames = None
 
-    def setInputValid(self, value = True):
+    def setInputValid(self, value=True):
         self._buttons[0].setEnabled(value)
 
     def isNameLegal(self, newName):
         return newName not in self._illegalNames
 
-    def exec(self, illegalNames, oldValue = None):
+    def exec(self, illegalNames, oldValue=None):
         self._illegalNames = illegalNames
         self._applyTitle(self._changeTitle if oldValue else self._addTitle)
         self._setValue(oldValue or self._defaultValue)

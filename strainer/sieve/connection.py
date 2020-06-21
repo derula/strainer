@@ -1,11 +1,11 @@
-from collections import deque
 from dataclasses import dataclass
 
-from PyQt5.QtCore import pyqtSignal, QMutex, QObject, Qt, QThread
-from PyQt5.QtWidgets import QMessageBox, QTreeWidget, QTreeWidgetItem
+from PyQt5.QtCore import pyqtSignal, QObject, Qt, QThread
+from PyQt5.QtWidgets import QMessageBox, QTreeWidgetItem
 from sievelib import managesieve
 
 from ..types import Account, TreeItemStatus
+
 
 @dataclass
 class SieveConnectionInfo:
@@ -14,6 +14,7 @@ class SieveConnectionInfo:
     item: QTreeWidgetItem
     action: callable = None
     reaction: callable = None
+
 
 class SieveConnection(QObject):
     connecting = pyqtSignal()
@@ -37,7 +38,6 @@ class SieveConnection(QObject):
         server, port, login, passwd, starttls, authmech = self._info.account[1:]
         client = managesieve.Client(server, port)
         try:
-            tree = self._info.item.treeWidget()
             self.connecting.emit()
             if not client.connect(login, passwd, starttls=starttls, authmech=authmech):
                 raise managesieve.Error('Failed to authenticate to server')
@@ -70,6 +70,7 @@ class SieveConnection(QObject):
         self._tree.window().statusBar().clearMessage()
         self._tree.blockSignals(False)
 
+
 class SieveConnectionQueue(QThread):
     execSieve = pyqtSignal(SieveConnectionInfo)
 
@@ -87,6 +88,7 @@ class SieveConnectionQueue(QThread):
 
     def onExec(self, info):
         SieveConnection(self._tree, info).exec()
+
 
 class SieveErrorMessage(QMessageBox):
     _texts = (

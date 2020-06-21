@@ -1,6 +1,7 @@
-from .manage import *
-from .edit import *
-from .navigate import *
+from .manage import AddAccount, EditAccount, RemoveAccount, ReloadAccount, NewScript, RenameScript, DeleteScript, \
+                    ActivateScript, OpenScript
+from .edit import SaveDocument, UndoEdit, RedoEdit, CutContent, CopyContent, PasteContent, DeleteContent, SelectAllContent
+from .navigate import HomePage, PreviousPage, NextPage, ReloadPage, CopyUrl
 
 
 __all__ = (

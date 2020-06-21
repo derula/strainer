@@ -9,6 +9,7 @@ class Menu:
     actions: dict = field(default_factory=dict)
     updateSignals: tuple = ()
 
+
 class MenuMixin:
     _menu: Menu
 

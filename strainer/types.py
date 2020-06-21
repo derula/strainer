@@ -10,6 +10,7 @@ def _get_int(coll, key, default):
     except (KeyError, ValueError, TypeError):
         return default
 
+
 class Account(NamedTuple):
     name: str
     server: str
@@ -40,6 +41,7 @@ class Account(NamedTuple):
         if pw_key is not None:
             result['passwd'] = QByteArray(pw_key.encrypt(self.passwd.encode('utf-8')))
         return result
+
 
 class TreeItemStatus(Enum):
     Normal = auto()

@@ -1,11 +1,10 @@
 from PyQt5.Qsci import QsciScintilla
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QApplication
 
-from ...actions import *
+from ...actions import UndoEdit, RedoEdit, CutContent, CopyContent, PasteContent, DeleteContent, SelectAllContent
 from ...controls import EditMenu
-from ..base import *
+from ..base import Menu, MenuMixin
 from .lexer import SieveLexer
 from .styles import TagStyle
 
@@ -47,7 +46,7 @@ class Editor(MenuMixin, QsciScintilla):
 
         self.setLexer(SieveLexer(self))
         self.SCN_HOTSPOTCLICK.connect(self.onHotspotClicked)
-        #QApplication.clipboard().dataChanged.connect(updateMenu)  # doesn't seem to be working...?
+        # QApplication.clipboard().dataChanged.connect(updateMenu)  # doesn't seem to be working...?
 
         self.indicatorDefine(QsciScintilla.IndicatorStyle.DotsIndicator, 0)
         self.setIndicatorForegroundColor(QColor('red'), 0)

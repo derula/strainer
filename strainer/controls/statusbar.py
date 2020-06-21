@@ -3,9 +3,6 @@ from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QStatusBar
 from qtawesome import IconWidget
 from sievelib.parser import Parser
 
-from ..actions import *
-from .base import MyActionWidget
-
 
 class StatusBar(QStatusBar):
     errorChanged = pyqtSignal(int, int)
@@ -37,6 +34,7 @@ class StatusBar(QStatusBar):
     def setCursorPosition(self, row, col):
         self._cursor.setText(row + 1, col + 1)
 
+
 class StatusBarPanel(QFrame):
     def __init__(self, caption_format, tooltip_format, *args, **kwargs):
         super().__init__()
@@ -56,6 +54,7 @@ class StatusBarPanel(QFrame):
         defaultValues = tuple('-' for _ in range(self._numArgs - len(newText)))
         self._caption.setText(self._makeCaption(*newText, *defaultValues))
         self.setToolTip(self._makeTooltip(*newText, *defaultValues))
+
 
 class ErrorPanel(StatusBarPanel):
     def __init__(self, changeSignal, gotoSignal):

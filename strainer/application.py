@@ -5,7 +5,8 @@ from qtawesome import icon
 from . import actions
 from .config import Accounts
 from .sieve import SieveConnectionQueue
-from .windows import *
+from .windows import MainWindow, AccountDialog, ScriptNameDialog, ConfirmDeleteScript, ConfirmRemoveAccount
+
 
 class Application(QApplication):
     def __init__(self, argv):
@@ -60,7 +61,8 @@ class Application(QApplication):
         item = item.parent() or item
         openScript = self._mainWindow.openScript()
         if not openScript or openScript.parent() != item or self._mainWindow.setOpenScript(None):
-            self._sieveQueue.enqueue(item,
+            self._sieveQueue.enqueue(
+                item,
                 lambda client: client.listscripts(),
                 lambda result: item.replaceScriptItems(*result)
             )
@@ -70,7 +72,8 @@ class Application(QApplication):
         scriptName = self._scriptNameDialog.exec(item.illegalChildNames())
         self._mainWindow.tree().setFocus(Qt.PopupFocusReason)
         if scriptName is not None:
-            self._sieveQueue.enqueue(item,
+            self._sieveQueue.enqueue(
+                item,
                 lambda client: client.putscript(scriptName, ''),
                 lambda _: self._mainWindow.tree().setCurrentItem(item.addScriptItem(scriptName))
             )
@@ -79,7 +82,8 @@ class Application(QApplication):
         scriptName = self._scriptNameDialog.exec(item.illegalNames(), item.name)
         self._mainWindow.tree().setFocus(Qt.PopupFocusReason)
         if scriptName is not None:
-            self._sieveQueue.enqueue(item,
+            self._sieveQueue.enqueue(
+                item,
                 lambda client: client.renamescript(item.name, scriptName),
                 lambda _: item.setText(0, scriptName)  # because assignment is syntactically invalid in a lambda
             )
@@ -89,21 +93,23 @@ class Application(QApplication):
         if ConfirmDeleteScript(self._mainWindow).exec(item.name, account.name):
             if item == self._mainWindow.openScript():
                 self._mainWindow.setOpenScript(None, force=True)
-            self._sieveQueue.enqueue(item,
+            self._sieveQueue.enqueue(
+                item,
                 lambda client: client.deletescript(item.name),
                 lambda _: account.takeChild(account.indexOfChild(item))
             )
 
     def openScript(self, item):
         if self._mainWindow.setOpenScript(None):
-            self._sieveQueue.enqueue(item,
+            self._sieveQueue.enqueue(
+                item,
                 lambda client: client.getscript(item.name),
                 lambda result: self._mainWindow.setOpenScript(item, result)
             )
 
     def activateScript(self, item):
-        itemName = '' if item.active else item.name
-        self._sieveQueue.enqueue(item,
+        self._sieveQueue.enqueue(
+            item,
             lambda client: client.setactive(item.name),
             lambda _: item.parent().setActiveScript(item)
         )
@@ -112,7 +118,8 @@ class Application(QApplication):
         script = self._mainWindow.openScript()
         text = self._mainWindow.editor().text()
         if script:
-            self._sieveQueue.enqueue(script,
+            self._sieveQueue.enqueue(
+                script,
                 lambda client: client.putscript(script.name, text),
                 lambda _: self._mainWindow.editor().setModified(text != self._mainWindow.editor().text())
             )

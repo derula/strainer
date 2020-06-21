@@ -1,6 +1,3 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox
-
 from .base import DialogTitle, ConfirmMessage
 
 
@@ -19,6 +16,7 @@ class ConfirmCloseMessage(ConfirmMessage):
             return super().exec(script.name)
         return True
 
+
 class ConfirmRemoveAccount(ConfirmMessage):
     _title = DialogTitle('mdi.account-remove', 'Remove current account')
     _textTemplate = \
@@ -27,6 +25,7 @@ class ConfirmRemoveAccount(ConfirmMessage):
         'What do you want to do?'
     _acceptText = 'Remove account'
     _rejectText = 'Keep account'
+
 
 class ConfirmDeleteScript(ConfirmMessage):
     _title = DialogTitle('mdi.file-remove', 'Remove selected script')

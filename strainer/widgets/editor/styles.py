@@ -14,10 +14,12 @@ class Style(int, Enum):
     Tag = auto()
     Identifier = auto()
 
+
 class TagStyle(int, Enum):
     Comparator = max(Style) + 1
     AddressPart = auto()
     MatchType = auto()
+
 
 class IdentifierStyle(int, Enum):
     Control = max(TagStyle) + 1

@@ -2,12 +2,6 @@ from abc import abstractmethod
 from PyQt5.QtWidgets import QAction
 from qtawesome import icon
 
-__all__ = (
-    'MyAction', 'MyStatefulAction',
-    'AccountAction', 'ScriptAction', 'NonEmptyAction',
-    'EditorAction', 'SelectionAction',
-)
-
 
 class MyAction(QAction):
     _info = None
@@ -52,6 +46,7 @@ class MyAction(QAction):
     def _shouldEnable(self, target):
         pass
 
+
 class MyStatefulAction(MyAction):
     _texts = ()
     _infos = ()
@@ -90,21 +85,26 @@ class MyStatefulAction(MyAction):
     def _getState(self, target):
         pass
 
+
 class AccountAction(MyAction):
     def _shouldEnable(self, item):
         return bool(item and not item.parent())
+
 
 class ScriptAction(MyAction):
     def _shouldEnable(self, item):
         return bool(item and item.parent())
 
+
 class NonEmptyAction(MyAction):
     def _shouldEnable(self, item):
         return bool(item)
 
+
 class EditorAction(MyAction):
     def _shouldEnable(self, editor):
         return not editor.isReadOnly()
+
 
 class SelectionAction(EditorAction):
     def _shouldEnable(self, editor):

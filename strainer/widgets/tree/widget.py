@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QTreeWidget, QHeaderView
 
-from ...actions import *
+from ...actions import EditAccount, OpenScript, ReloadAccount
 from ...controls import AccountMenu, ScriptMenu
 from .items import AccountItem
 

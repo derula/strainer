@@ -14,10 +14,12 @@ class StringField(QLineEdit):
     def getValue(self):
         return self.text()
 
+
 class PasswordField(StringField):
     def __init__(self):
         super().__init__()
         self.setEchoMode(QLineEdit.Password)
+
 
 class IntegerField(QLineEdit):
     def __init__(self, min=0, max=65535):
@@ -30,6 +32,7 @@ class IntegerField(QLineEdit):
     def getValue(self):
         return int(self.text())
 
+
 class CheckboxField(QCheckBox):
     def __init__(self, text=''):
         super().__init__()
@@ -40,6 +43,7 @@ class CheckboxField(QCheckBox):
 
     def getValue(self):
         return bool(self.checkState())
+
 
 class OptionsField(QComboBox):
     def __init__(self, options=[], editable=False):

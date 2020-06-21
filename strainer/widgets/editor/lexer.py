@@ -3,10 +3,9 @@ from functools import partial
 from PyQt5.Qsci import QsciScintilla, QsciLexerCustom
 from PyQt5.QtGui import QFontDatabase, QFont, QColor
 from sievelib.parser import Parser, ParseError
-from sievelib.commands import UnknownCommand, ControlCommand, ActionCommand, TestCommand, \
-    comparator, address_part, match_type, get_command_instance
+from sievelib.commands import UnknownCommand, comparator, address_part, match_type, get_command_instance
 
-from .styles import *
+from .styles import Style, TagStyle, IdentifierStyle
 
 
 class SieveLexer(QsciLexerCustom):
@@ -125,7 +124,6 @@ class SieveLexer(QsciLexerCustom):
         return start, end
 
     def _doStyleText(self, start: int, end: int):
-        editor = self.parent()
         self._stylingPos = 0
         self.startStyling(start)
         for style, value in self.scan(start):
@@ -150,6 +148,7 @@ class SieveLexer(QsciLexerCustom):
                 value_start = start + self._lexer.pos - len(value)
                 editor.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, value_start, len(value))
             yield style, value
+
 
 # Fix a bug in sievelib (adhering to \r\n as per spec)
 for i, (key, _) in enumerate(Parser.lrules):

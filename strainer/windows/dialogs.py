@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QFormLayout
 
-from .base import *
-from ..controls import *
+from .base import AddOrChangeDialog, DialogTitle
+from ..controls import StringField, IntegerField, PasswordField, CheckboxField, OptionsField
 
 
 class AccountDialog(AddOrChangeDialog):
@@ -36,6 +36,7 @@ class AccountDialog(AddOrChangeDialog):
         name = self._getField(0).getValue()
         address = self._getField(1).getValue()
         self.setInputValid(self.isNameLegal(name) and bool(address))
+
 
 class ScriptNameDialog(AddOrChangeDialog):
     _addTitle = DialogTitle('mdi.file-plus', 'Add new script')

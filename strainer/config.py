@@ -31,6 +31,7 @@ class AccountSettings(QSettings):
         if self._accountName:
             self.endGroup()
 
+
 class Accounts:
     def __init__(self):
         self._key = self._get_key()

@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeySequence
 
-from .base import *
+from .base import MyAction, MyStatefulAction
 
 
 class HomePage(MyAction):
@@ -13,6 +13,7 @@ class HomePage(MyAction):
     def _shouldEnable(self, reference):
         return not reference.isHome()
 
+
 class PreviousPage(MyAction):
     _text = '&Back'
     _info = 'Go back to the last page in the browsing history.'
@@ -22,6 +23,7 @@ class PreviousPage(MyAction):
     def _shouldEnable(self, reference):
         return reference.history().canGoBack()
 
+
 class NextPage(MyAction):
     _text = '&Forward'
     _info = 'Go forward to the next page in the browsing history.'
@@ -30,6 +32,7 @@ class NextPage(MyAction):
 
     def _shouldEnable(self, reference):
         return reference.history().canGoForward()
+
 
 class ReloadPage(MyStatefulAction):
     _texts = ('&Reload', '&Stop')
@@ -42,6 +45,7 @@ class ReloadPage(MyStatefulAction):
 
     def _getState(self, reference):
         return bool(reference.isLoading())
+
 
 class CopyUrl(MyAction):
     _text = '&Copy URL'

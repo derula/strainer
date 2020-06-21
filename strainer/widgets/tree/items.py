@@ -49,6 +49,7 @@ class AccountItem(TreeItem):
         self.sortChildren(0, Qt.AscendingOrder)
         self.setExpanded(True)
 
+
 class ScriptItem(TreeItem):
     def __init__(self, value, is_active=False):
         self._open = False

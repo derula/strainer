@@ -2,9 +2,9 @@ from PyQt5.QtCore import QSize, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
 from PyQt5.QtWidgets import QApplication
 
-from ..actions import *
+from ..actions import HomePage, PreviousPage, NextPage, ReloadPage, CopyUrl
 from ..controls import NavigateMenu
-from .base import *
+from .base import Menu, MenuMixin
 
 
 class Reference(MenuMixin, QWebEngineView):
@@ -21,6 +21,7 @@ class Reference(MenuMixin, QWebEngineView):
     def __init__(self, parent):
         super().__init__(parent)
         self._isLoading = False
+
         def setLoading(value):
             self._isLoading = value
             self.updateMenu()

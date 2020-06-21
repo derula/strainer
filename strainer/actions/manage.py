@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QTreeWidgetItem
 
-from .base import *
+from .base import MyAction, NonEmptyAction, ScriptAction, MyStatefulAction
 
 
 class AddAccount(MyAction):
@@ -14,12 +14,14 @@ class AddAccount(MyAction):
     def _shouldEnable(self, item):
         return True  # always allow to add new account
 
+
 class EditAccount(NonEmptyAction):
     _text = 'Account &settings'
     _info = 'Change settings of this ManageSieve account.'
     _icon = 'mdi.account-edit'
     _signal = pyqtSignal(QTreeWidgetItem)
     _shortcut = QKeySequence(Qt.SHIFT | Qt.Key_Return)
+
 
 class RemoveAccount(NonEmptyAction):
     _text = '&Remove account'
@@ -28,12 +30,14 @@ class RemoveAccount(NonEmptyAction):
     _signal = pyqtSignal(QTreeWidgetItem)
     _shortcut = QKeySequence(Qt.SHIFT | Qt.Key_Delete)
 
+
 class ReloadAccount(NonEmptyAction):
     _text = 'Re&load account'
     _info = 'Reload the scripts list for this ManageSieve account.'
     _icon = 'mdi.account-convert'
     _signal = pyqtSignal(QTreeWidgetItem)
     _shortcut = QKeySequence(Qt.Key_F5)
+
 
 class NewScript(NonEmptyAction):
     _text = '&New script'
@@ -42,6 +46,7 @@ class NewScript(NonEmptyAction):
     _signal = pyqtSignal(QTreeWidgetItem)
     _shortcut = QKeySequence(Qt.Key_Insert)
 
+
 class RenameScript(ScriptAction):
     _text = '&Rename script'
     _info = "Change the name under which this script is stored in this ManageSieve account."
@@ -49,12 +54,14 @@ class RenameScript(ScriptAction):
     _signal = pyqtSignal(QTreeWidgetItem)
     _shortcut = QKeySequence(Qt.Key_F2)
 
+
 class DeleteScript(ScriptAction):
     _text = '&Delete script'
     _info = 'Permanently delete this script from this ManageSieve account.'
     _icon = 'mdi.file-remove'
     _signal = pyqtSignal(QTreeWidgetItem)
     _shortcut = QKeySequence(Qt.Key_Delete)
+
 
 class OpenScript(ScriptAction):
     _text = '&Open script'
@@ -65,6 +72,7 @@ class OpenScript(ScriptAction):
 
     def _shouldEnable(self, item):
         return super()._shouldEnable(item) and not item.open
+
 
 class ActivateScript(MyStatefulAction):
     _texts = ('&Activate script', 'De&activate script')

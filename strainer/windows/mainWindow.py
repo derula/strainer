@@ -1,8 +1,8 @@
 from PyQt5.QtCore import Qt, QSettings, QSize
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QMainWindow, QSplitter, QStyle
 
-from ..controls import *
-from ..widgets import *
+from ..controls import ManageMenu, EditMenu, NavigateMenu, ManageToolBar, EditToolBar, NavigateToolBar, StatusBar
+from ..widgets import Tree, Editor, Reference
 from .messages import ConfirmCloseMessage
 
 
