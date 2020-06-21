@@ -20,6 +20,7 @@ class Editor(MenuMixin, QsciScintilla):
         },
         ('selectionChanged', 'textChanged')
     )
+    _pageMap = {'elsif': 'if', 'else': 'if'}
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -63,6 +64,7 @@ class Editor(MenuMixin, QsciScintilla):
                 page, category = category, 'operators'
             else:
                 page = value.decode('ascii').lower()
+                page = self._pageMap.get(page, page)
             self.window().reference().browse(category, page)
             break
 
