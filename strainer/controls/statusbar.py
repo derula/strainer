@@ -74,21 +74,34 @@ class ErrorPanel(StatusBarPanel):
     def parseScript(self, text=None):
         for widget in {self._icon, self._checkIcon, self._errorIcon}:
             widget.setVisible(False)
-        errorPos = (-1, -1)
-        if text is None:
-            self._icon.setVisible(True)
-            self.setText()
-        elif self._parser.parse(text):
-            self._checkIcon.setVisible(True)
-            self.setText('No errors found in open script.')
-        else:
-            errorPos = tuple(x - 1 for x in self._parser.error_pos)
+        errorPos, error = self.getError(text)
+        if errorPos is not None:
+            error = f'<a href="#"><span style="color:inherit;">{error}</span></a>'
             self._errorIcon.setVisible(True)
-            # Workaround for sievelib bug #93
-            error = self._parser.error
-            if len(error) > 200:
-                error = error[:197] + ' [...]'
-            self.setText(f'<a href="#"><span style="color:inherit;">{error}</span></a>')
+        else:
+            if text is None:
+                self._icon.setVisible(True)
+            else:
+                self._checkIcon.setVisible(True)
+            errorPos = (-1, -1)
+        self.setText(error)
         if self._errorPos != errorPos:
             self._changeSignal.emit(*errorPos)
             self._errorPos = errorPos
+
+    def getError(self, text):
+        if text is None:
+            return None, tuple()
+        try:
+            parseResult = self._parser.parse(text)
+        except Exception:
+            # Workaround for sievelib bug #96
+            return (0, 0), ('Error occurred while trying to parse the script.')
+        if parseResult:
+            return None, ('No errors found in open script.',)
+        # Workaround for sievelib bug #93
+        errorPos = tuple(x - 1 for x in self._parser.error_pos)
+        error = self._parser.error
+        if len(error) > 200:
+            error = error[:197] + ' [...]'
+        return errorPos, error
