@@ -95,9 +95,9 @@ class ErrorPanel(StatusBarPanel):
             parseResult = self._parser.parse(text)
         except Exception:
             # Workaround for sievelib bug #96
-            return (0, 0), ('Error occurred while trying to parse the script.')
+            return (0, 0), 'Error occurred while trying to parse the script.'
         if parseResult:
-            return None, ('No errors found in open script.',)
+            return None, 'No errors found in open script.'
         # Workaround for sievelib bug #93
         errorPos = tuple(x - 1 for x in self._parser.error_pos)
         error = self._parser.error
