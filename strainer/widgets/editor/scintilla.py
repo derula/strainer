@@ -2,14 +2,15 @@ from PyQt5.Qsci import QsciScintilla
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QColor
 
-from ...actions import UndoEdit, RedoEdit, CutContent, CopyContent, PasteContent, DeleteContent, SelectAllContent
+from ...actions import UndoEdit, RedoEdit, CutContent, CopyContent, PasteContent, DeleteContent, FindContent, SelectAllContent
 from ...controls import EditMenu
-from ..base import Menu, MenuMixin
+from ...types import FindDirection, FindOptions, FindQuery
+from ..base import Menu, MenuMixin, Find, FindMixin
 from .lexer import SieveLexer
 from .styles import TagStyle
 
 
-class Editor(MenuMixin, QsciScintilla):
+class Editor(MenuMixin, FindMixin, QsciScintilla):
     _menu = Menu(
         EditMenu,
         {
@@ -19,6 +20,7 @@ class Editor(MenuMixin, QsciScintilla):
         },
         ('selectionChanged', 'textChanged')
     )
+    _find = Find(FindContent, FindOptions(True, True, True, True))
     _pageMap = {'elsif': 'if', 'else': 'if'}
 
     def __init__(self, parent):
@@ -93,3 +95,19 @@ class Editor(MenuMixin, QsciScintilla):
         self.setReadOnly(True)
         self.setModified(False)
         self.updateMenu()
+
+    def _findFirst(self, query: FindQuery):
+        opts = query.options
+        args = (query.expression, opts.regularExpression, opts.caseSensitive, opts.wholeWords)
+        kwargs = {'forward': query.direction == FindDirection.Forward, 'show': True, 'cxx11': True}
+        if opts.inSelection:
+            result = QsciScintilla.findFirstInSelection(self, *args, **kwargs)
+        else:
+            result = QsciScintilla.findFirst(self, *args, True, **kwargs)
+        query.callback(result)
+
+    def _findNext(self, query: FindQuery):
+        query.callback(QsciScintilla.findNext(self))
+
+    def _cancelFind(self):
+        QsciScintilla.cancelFind(self)

@@ -2,12 +2,13 @@ from PyQt5.QtCore import QSize, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
 from PyQt5.QtWidgets import QApplication
 
-from ..actions import HomePage, PreviousPage, NextPage, ReloadPage, CopyUrl
+from ..actions import HomePage, PreviousPage, NextPage, ReloadPage, CopyUrl, FindInPage
 from ..controls import NavigateMenu
-from .base import Menu, MenuMixin
+from ..types import FindDirection, FindOptions, FindQuery
+from .base import Menu, MenuMixin, Find, FindMixin
 
 
-class Reference(MenuMixin, QWebEngineView):
+class Reference(MenuMixin, FindMixin, QWebEngineView):
     _menu = Menu(
         NavigateMenu,
         {
@@ -16,6 +17,7 @@ class Reference(MenuMixin, QWebEngineView):
         },
         ('urlChanged',)
     )
+    _find = Find(FindInPage, FindOptions(True))
     __make_url = 'https://thsmi.github.io/sieve-reference/en/{}.html'.format
 
     def __init__(self, parent):
@@ -72,3 +74,14 @@ class Reference(MenuMixin, QWebEngineView):
         if not components:
             components = ('index',)
         return QUrl(self.__make_url('/'.join(components)))
+
+    def _findNext(self, query: FindQuery):
+        flags = 0
+        if query.direction == FindDirection.Backward:
+            flags |= QWebEnginePage.FindBackward
+        if query.options.caseSensitive:
+            flags |= QWebEnginePage.FindCaseSensitively
+        self.findText(query.expression, QWebEnginePage.FindFlags(flags), query.callback)
+
+    def _cancelFind(self):
+        self.findText('')
