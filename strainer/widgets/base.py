@@ -1,3 +1,4 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QVBoxLayout, QWidget
 from dataclasses import dataclass, field
 
@@ -61,8 +62,6 @@ class FindMixin:
         return self._find is not None
 
     def findFirst(self, query: FindQuery):
-        if not self.canFindNext():
-            self.cancelFind()
         self._find = query
         self._findFirst(query)
 
@@ -74,6 +73,7 @@ class FindMixin:
     def cancelFind(self):
         self._find = None
         self._cancelFind()
+        self.setFocus(Qt.PopupFocusReason)
 
     def _findFirst(self, query: FindQuery):
         self._findNext(query)
