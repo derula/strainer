@@ -55,3 +55,13 @@ class CopyUrl(MyAction):
 
     def _shouldEnable(self, reference):
         return True
+
+
+class FindInPage(MyAction):
+    _text = '&Find'
+    _info = 'Open the find panel to search for text in this page.'
+    _icon = 'mdi.file-document-box-search'
+    _shortcut = QKeySequence(Qt.ALT | Qt.Key_F)
+
+    def _shouldEnable(self, reference):
+        return not reference.isLoading()

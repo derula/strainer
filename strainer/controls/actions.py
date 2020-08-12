@@ -3,8 +3,8 @@ from PyQt5.QtWidgets import QMenu, QToolBar
 from ..actions import AddAccount, EditAccount, RemoveAccount, ReloadAccount, \
                       NewScript, RenameScript, DeleteScript, OpenScript, ActivateScript, \
                       SaveDocument, UndoEdit, RedoEdit, CutContent, CopyContent, \
-                      PasteContent, DeleteContent, SelectAllContent, \
-                      HomePage, PreviousPage, NextPage, ReloadPage, CopyUrl
+                      PasteContent, DeleteContent, FindContent, SelectAllContent, \
+                      HomePage, PreviousPage, NextPage, ReloadPage, CopyUrl, FindInPage
 from .base import MyActionWidget
 
 
@@ -35,14 +35,14 @@ class ManageMenu(MyMenu):
 class EditMenu(MyMenu):
     _text = '&Edit'
     _actions = [
-        SaveDocument, None, UndoEdit, RedoEdit, None, CutContent,
-        CopyContent, PasteContent, DeleteContent, None, SelectAllContent
+        SaveDocument, None, UndoEdit, RedoEdit, None, CutContent, CopyContent,
+        PasteContent, DeleteContent, None, FindContent, SelectAllContent
     ]
 
 
 class NavigateMenu(MyMenu):
     _text = '&Navigate'
-    _actions = [HomePage, None, PreviousPage, NextPage, ReloadPage, None, CopyUrl]
+    _actions = [HomePage, None, PreviousPage, NextPage, ReloadPage, None, CopyUrl, None, FindInPage]
 
 
 class MyToolBar(MyActionWidget, QToolBar):
@@ -58,7 +58,7 @@ class ManageToolBar(MyToolBar):
 
 class EditToolBar(MyToolBar):
     _text = 'Edit toolbar'
-    _actions = [SaveDocument, None, UndoEdit, RedoEdit, None, CutContent, CopyContent, PasteContent]
+    _actions = [SaveDocument, None, UndoEdit, RedoEdit, None, CutContent, CopyContent, PasteContent, None, FindContent]
 
 
 class NavigateToolBar(MyToolBar):

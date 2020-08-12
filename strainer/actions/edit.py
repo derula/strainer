@@ -68,6 +68,13 @@ class DeleteContent(SelectionAction):
     _shortcut = QKeySequence(Qt.Key_Delete)
 
 
+class FindContent(EditorAction):
+    _text = '&Find'
+    _info = 'Open the find panel to search for text in this script.'
+    _icon = 'mdi.file-document-box-search'
+    _shortcut = QKeySequence(Qt.CTRL | Qt.Key_F)
+
+
 class SelectAllContent(EditorAction):
     _text = 'Select &all'
     _info = "Select this script's entire content."
