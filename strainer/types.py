@@ -1,5 +1,6 @@
+from dataclasses import dataclass
 from enum import Enum, auto
-from typing import NamedTuple, Optional
+from typing import Callable, NamedTuple, Optional
 
 from PyQt5.QtCore import QByteArray
 
@@ -47,3 +48,23 @@ class TreeItemStatus(Enum):
     Normal = auto()
     Loading = auto()
     Error = auto()
+
+
+class FindDirection(Enum):
+    Forward = auto()
+    Backward = auto()
+
+
+class FindOptions(NamedTuple):
+    caseSensitive: bool = False
+    wholeWords: bool = False
+    regularExpression: bool = False
+    inSelection: bool = False
+
+
+@dataclass(frozen=True)
+class FindQuery:
+    expression: str
+    options: FindOptions = FindOptions()
+    direction: FindDirection = FindDirection.Forward
+    callback: Optional[Callable[[bool], None]] = None
