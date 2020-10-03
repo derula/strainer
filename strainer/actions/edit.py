@@ -71,7 +71,7 @@ class DeleteContent(SelectionAction):
 class FindContent(EditorAction):
     _text = '&Find'
     _info = 'Open the find panel to search for text in this script.'
-    _icon = 'mdi.file-document-box-search'
+    _icon = 'mdi.text-search'
     _shortcut = QKeySequence(Qt.CTRL | Qt.Key_F)
 
 
