@@ -92,12 +92,6 @@
             "index": "pypi",
             "version": "==3.1.1"
         },
-        "future": {
-            "hashes": [
-                "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"
-            ],
-            "version": "==0.18.2"
-        },
         "pycparser": {
             "hashes": [
                 "sha256:2d475327684562c3a96cc71adf7dc8c4f0565175cf86b6d7a404ff4c771f15f0",
@@ -114,10 +108,10 @@
         },
         "pyinstaller-hooks-contrib": {
             "hashes": [
-                "sha256:4935b2b48c2a38ab4f8f80d77147781642bff7d31748fca07d26dbdeeefb560d",
-                "sha256:71982f32883309e89675bfd10093cdcaca4f894bce11a91a34559b8224cf5e63"
+                "sha256:bf4543a16c9c6e9dd2d70ea3fee78b81d3357a68f706df471d990213892259d9",
+                "sha256:dd752c88c1c7bb6920f7de248c12d4411c0463877e5e64afdc4f7e93dff9fc94"
             ],
-            "version": "==2020.8"
+            "version": "==2020.10"
         },
         "pyqt5": {
             "hashes": [
@@ -193,11 +187,11 @@
         },
         "sievelib": {
             "hashes": [
-                "sha256:b6fe5d4239dab278def5eab9ece95463ea241c99b9ba6dc8ac452394a83f697b",
-                "sha256:bf1e684881483e33d4c37687d147ebbe85bd09fc3b0b6c7366aac992b97581ea"
+                "sha256:a34ffb27dffeebe4f540c85a0aaaa6588ff7fbeac11a81a0dba1ead54bf339c5",
+                "sha256:c98559705d7f8aa701d8a177120fea98f79e6d6dfecc076389738ab2d5ff05cb"
             ],
             "index": "pypi",
-            "version": "==1.1.1"
+            "version": "==1.2.0"
         },
         "six": {
             "hashes": [
@@ -247,10 +241,10 @@
         },
         "zipp": {
             "hashes": [
-                "sha256:43f4fa8d8bb313e65d8323a3952ef8756bf40f9a5c3ea7334be23ee4ec8278b6",
-                "sha256:b52f22895f4cfce194bc8172f3819ee8de7540aa6d873535a8668b730b8b411f"
+                "sha256:102c24ef8f171fd729d46599845e95c7ab894a4cf45f5de11a44cc7444fb1108",
+                "sha256:ed5eee1974372595f9e416cc7bbeeb12335201d8081ca8a0743c954d4446e5cb"
             ],
-            "version": "==3.2.0"
+            "version": "==3.4.0"
         }
     }
 }
