@@ -1,17 +1,11 @@
-from sievelib.commands import ExistsCommand
 from sievelib.parser import Lexer, Parser
 
 from .connection import SieveConnectionQueue
 
 __all__ = ('SieveConnectionQueue',)
 
-# Patch sievelib bug #90
-ExistsCommand.args_definition[0]['type'].append('string')
-
 
 # Save error line and column on error
-# Due to a problem in sievelib, column number is currently at the _end_ of a token, not the start.
-# Cf. tonioo/sievelib#92 for a fix.
 @property
 def error(self):
     return self._error
