@@ -127,10 +127,10 @@ class SieveLexer(QsciLexerCustom):
         self._stylingPos = 0
         self.startStyling(start)
         for style, value in self.scan(start):
-            self.setStyling(self._lexer.pos - self._stylingPos - len(value), 0)
+            self.setStyling(self._lexer.pos - self._stylingPos, 0)
             self.setStyling(len(value), style)
-            self._stylingPos = self._lexer.pos
-            if start + self._lexer.pos > end:
+            self._stylingPos = self._lexer.pos + len(value)
+            if start + self._stylingPos > end:
                 break
 
     def scan(self, start):
@@ -145,7 +145,7 @@ class SieveLexer(QsciLexerCustom):
                     command = get_command_instance(value.decode('ascii'), checkexists=False)
                     style = self._IDENTIFIER_STYLES[command.get_type()]
             except (UnknownCommand, NotImplementedError, KeyError):
-                value_start = start + self._lexer.pos - len(value)
+                value_start = start + self._lexer.pos
                 editor.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, value_start, len(value))
             yield style, value
 

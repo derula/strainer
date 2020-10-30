@@ -92,12 +92,6 @@
             "index": "pypi",
             "version": "==3.2.1"
         },
-        "future": {
-            "hashes": [
-                "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"
-            ],
-            "version": "==0.18.2"
-        },
         "pycparser": {
             "hashes": [
                 "sha256:2d475327684562c3a96cc71adf7dc8c4f0565175cf86b6d7a404ff4c771f15f0",
@@ -193,11 +187,11 @@
         },
         "sievelib": {
             "hashes": [
-                "sha256:b6fe5d4239dab278def5eab9ece95463ea241c99b9ba6dc8ac452394a83f697b",
-                "sha256:bf1e684881483e33d4c37687d147ebbe85bd09fc3b0b6c7366aac992b97581ea"
+                "sha256:a34ffb27dffeebe4f540c85a0aaaa6588ff7fbeac11a81a0dba1ead54bf339c5",
+                "sha256:c98559705d7f8aa701d8a177120fea98f79e6d6dfecc076389738ab2d5ff05cb"
             ],
             "index": "pypi",
-            "version": "==1.1.1"
+            "version": "==1.2.0"
         },
         "six": {
             "hashes": [
