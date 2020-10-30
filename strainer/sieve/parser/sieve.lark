@@ -1,0 +1,52 @@
+start: requires commands
+requires: "require" string_list ";"
+commands: _command*
+_command: stop | keep | discard | fileinto | redirect | if (elsif)* else?
+stop: "stop" ";"
+keep: "keep" ";"
+discard: "discard" ";"
+fileinto: "fileinto" string ";"
+redirect: "redirect" string ";"
+if: _IF _test _block
+elsif: _ELSIF _test _block
+else: "else" _block
+_test: true | false | not | allof | anyof | exists | size | header | address | envelope
+_block: "{" commands "}"
+true: "true"
+false: "false"
+not: _NOT _test
+allof: "allof" _test_list
+anyof: "anyof" _test_list
+exists: "exists" string_list
+size: "size" (OVER | UNDER) NUMBER
+header: "header" [comparator] _match
+address: "address" [comparator] _address_match
+envelope: "envelope" [comparator] _address_match
+?comparator: _COMPARATOR string
+_address_match: [ADDRESS_PART] _match
+_match: [MATCH_TYPE] string_list string_list
+_list{type}: type ("," type)*
+_test_list: "(" _list{_test} ")"
+string_list: "[" _list{string} "]" | string
+string: STRING | TEXT
+
+// Explicitly define because of \b (next token is an identifier)
+_IF: /if\b/
+_ELSIF: /elsif\b/
+OVER: /:over\b/
+UNDER: /:under\b/
+_NOT: /not\b/
+
+// Explicitly defined because automatic name would be something like __ANON_0
+_COMPARATOR: ":comparator"
+ADDRESS_PART: /:localpart|:domain|:all/
+MATCH_TYPE: /:is|:contains|:matches/
+NUMBER: /[0-9]+[KMG]/
+
+// Explicitly defined to allow ignoring of whitespace
+STRING: "\"" /\r\n|[^\0\r\n"\\]|\\[^\0\r\n]/* "\""
+TEXT: "text:" /[ \t]*/ /#[^\0\r\n]*/? "\r\n" (/[^\0\r\n.]|[^\0\r\n]{2,}/? "\r\n")* ".\r\n"
+COMMENT: /#[^\0\r\n]*\r\n/ | "/*" /\r\n|\*(?!\/)|[^\0\r\n*]/* "*/"
+WHITE_SPACE: /[ \t]|\r\n/
+%ignore COMMENT
+%ignore WHITE_SPACE
