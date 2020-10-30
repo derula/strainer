@@ -1,8 +1,9 @@
 from sievelib.parser import Lexer, Parser
 
 from .connection import SieveConnectionQueue
+from .parser import SieveScript
 
-__all__ = ('SieveConnectionQueue',)
+__all__ = ('SieveScript', 'SieveConnectionQueue')
 
 
 # Save error line and column on error
