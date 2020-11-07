@@ -37,14 +37,14 @@ def get_lexer_tokens(lark):
     for token in lark.lexer_conf.tokens:
         name = token.name.lstrip('_')
         if name != token.name:
-            token = TerminalDef(token.name, token.pattern, token.priority)
+            token = TerminalDef(name, token.pattern, token.priority)
         tokens.append(token)
     return tokens
 
 
 def get_lexer_from_tokens(tokens):
     # When lexing, we actually _want_ to match comments as tokens, but _ignore_ punctuation.
-    return TraditionalLexer(LexerConf(tokens, re, ignore=['WHITE_SPACE'], **_lark_args))
+    return TraditionalLexer(LexerConf(tokens, re, ignore=['WHITE_SPACE', 'PUNCTUATION'], **_lark_args))
 
 
 def build():
