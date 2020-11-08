@@ -52,7 +52,7 @@ class Editor(MenuMixin, FindMixin, QsciScintilla):
 
         self.indicatorDefine(QsciScintilla.IndicatorStyle.DotsIndicator, 0)
         self.setIndicatorForegroundColor(QColor('red'), 0)
-        self.indicatorDefine(QsciScintilla.IndicatorStyle.TriangleCharacterIndicator, 1)
+        self.indicatorDefine(QsciScintilla.IndicatorStyle.TriangleIndicator, 1)
         self.setIndicatorForegroundColor(QColor('red'), 1)
 
     def onHotspotClicked(self, position, modifiers):
@@ -83,7 +83,7 @@ class Editor(MenuMixin, FindMixin, QsciScintilla):
         self.SendScintilla(QsciScintilla.SCI_SETINDICATORCURRENT, 1)
         self.SendScintilla(QsciScintilla.SCI_INDICATORCLEARRANGE, 0, self.length())
         if line >= 0 and col >= 0:
-            start = max(self.positionFromLineIndex(line, col) - length, 0)
+            start = max(self.positionFromLineIndex(line, col + 1) - length, 0)
             self.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, start, length)
 
     def close(self):
