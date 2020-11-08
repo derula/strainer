@@ -93,4 +93,6 @@ class SemanticChecker():
 
     def _check_cap(self, token: Token, key: bytes, cap_type: str, cap_name: str = None):
         if key not in self._capabilities:
-            raise CapabilityError(token, cap_name or key, cap_type)
+            if cap_name is None:
+                cap_name = key
+            raise CapabilityError(token, cap_name, cap_type)
