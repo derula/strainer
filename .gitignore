@@ -2,6 +2,7 @@
 .vscode/
 
 # Byte-compiled / optimized / DLL files
+strainer/sieve/parser/sieve.bin
 __pycache__/
 *.pyc
 

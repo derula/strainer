@@ -1,7 +1,9 @@
+from lark.exceptions import LarkError, UnexpectedInput
 from PyQt5.QtCore import pyqtSignal, QSize
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QStatusBar
 from qtawesome import IconWidget
-from sievelib.parser import Parser
+
+from ..sieve import parser
 
 
 class StatusBar(QStatusBar):
@@ -58,7 +60,6 @@ class StatusBarPanel(QFrame):
 
 class ErrorPanel(StatusBarPanel):
     def __init__(self, changeSignal, gotoSignal):
-        self._parser = Parser()
         super().__init__('{}', 'Syntax error check: {}', 'mdi.circle', color='gray')
         self._checkIcon = IconWidget('mdi.check-circle', color='green')
         self._errorIcon = IconWidget('mdi.close-circle', color='red')
@@ -91,8 +92,11 @@ class ErrorPanel(StatusBarPanel):
     def getError(self, text):
         if text is None:
             return None, tuple()
-        parseResult = self._parser.parse(text)
-        if parseResult:
+        try:
+            parser.parse(text).check()
+        except (UnexpectedInput, parser.semantics.SemanticError) as e:
+            return (e.line - 1, e.column - 1), e.args[0]
+        except LarkError as e:
+            return (0, 0), e.args[0]
+        else:
             return None, 'No errors found in open script.'
-        errorPos = tuple(x - 1 for x in self._parser.error_pos)
-        return errorPos, self._parser.error

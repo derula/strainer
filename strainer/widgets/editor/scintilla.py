@@ -7,7 +7,7 @@ from ...controls import EditMenu
 from ...types import FindDirection, FindOptions, FindQuery
 from ..base import Menu, MenuMixin, Find, FindMixin
 from .lexer import SieveLexer
-from .styles import TagStyle
+from .styles import Style
 
 
 class Editor(MenuMixin, FindMixin, QsciScintilla):
@@ -52,22 +52,19 @@ class Editor(MenuMixin, FindMixin, QsciScintilla):
 
         self.indicatorDefine(QsciScintilla.IndicatorStyle.DotsIndicator, 0)
         self.setIndicatorForegroundColor(QColor('red'), 0)
-        self.indicatorDefine(QsciScintilla.IndicatorStyle.TriangleCharacterIndicator, 1)
+        self.indicatorDefine(QsciScintilla.IndicatorStyle.TriangleIndicator, 1)
         self.setIndicatorForegroundColor(QColor('red'), 1)
 
     def onHotspotClicked(self, position, modifiers):
-        position = self.SendScintilla(QsciScintilla.SCI_WORDSTARTPOSITION, position, True)
-        if self.text(position - 1, position) == ':':
-            position -= 1
-        for style, value in self.lexer().scan(position):
-            category = style.name.lower()
-            if isinstance(style, TagStyle):
-                page, category = category, 'operators'
-            else:
-                page = value.decode('ascii').lower()
-                page = self._pageMap.get(page, page)
-            self.window().reference().browse(category, page)
-            break
+        style = Style(self.SendScintilla(QsciScintilla.SCI_GETSTYLEAT, position))
+        value = self.wordAtLineIndex(*self.lineIndexFromPosition(position))
+        category = style.name.lower()
+        if style in Style.TAG_STYLES:
+            page, category = category, 'operators'
+        else:
+            page = value.lower()
+            page = self._pageMap.get(page, page)
+        self.window().reference().browse(category, page)
 
     def sizeHint(self):
         return QSize(750, 600)
@@ -86,7 +83,7 @@ class Editor(MenuMixin, FindMixin, QsciScintilla):
         self.SendScintilla(QsciScintilla.SCI_SETINDICATORCURRENT, 1)
         self.SendScintilla(QsciScintilla.SCI_INDICATORCLEARRANGE, 0, self.length())
         if line >= 0 and col >= 0:
-            start = max(self.positionFromLineIndex(line, col) - length, 0)
+            start = max(self.positionFromLineIndex(line, col + 1) - length, 0)
             self.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, start, length)
 
     def close(self):

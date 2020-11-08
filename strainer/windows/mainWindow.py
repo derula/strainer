@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QSettings, QSize
+from PyQt5.QtCore import Qt, QSettings, QSize, QTimer
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QMainWindow, QSplitter, QStyle
 
 from ..controls import ManageMenu, EditMenu, NavigateMenu, ManageToolBar, EditToolBar, NavigateToolBar, StatusBar
@@ -26,14 +26,16 @@ class MainWindow(QMainWindow):
         self._tree = Tree(self._splitter)
         self._editor = Editor(self._splitter)
         self._reference = Reference(self._splitter)
+        self._parseTimer = QTimer(interval=1000)
         self.statusBar().gotoError.connect(self._editor.setCursorPosition)
         self.statusBar().gotoError.connect(lambda *_: self._editor.setFocus(Qt.OtherFocusReason))
         self.statusBar().errorChanged.connect(self._editor.setParseError)
         self._editor.modificationChanged.connect(self.onModificationChanged)
         self._editor.cursorPositionChanged.connect(self.statusBar().setCursorPosition)
-        self._editor.textChanged.connect(lambda: self.statusBar().parseScript(self._editor.text()))
+        self._editor.textChanged.connect(self._parseTimer.start)
         self._openScript = None
         self._confirmClose = ConfirmCloseMessage(self).exec
+        self._parseTimer.timeout.connect(self.onParseTimer)
 
         self.onModificationChanged()
 
@@ -92,6 +94,9 @@ class MainWindow(QMainWindow):
         if self._openScript:
             title = f"{title} ({self._openScript.parent().name}: {self._openScript.name}{'*' if isModified else ''})"
         self.setWindowTitle(title)
+
+    def onParseTimer(self):
+        self.statusBar().parseScript(bytes(self._editor.bytes(0, self._editor.length())[:-1]))
 
     def closeEvent(self, event):
         if self._confirmClose():
