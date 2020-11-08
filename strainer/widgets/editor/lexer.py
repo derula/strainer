@@ -78,6 +78,7 @@ class SieveLexer(QsciLexerCustom):
             return
         last_token_end = tokens[0].pos_in_stream
         editor.SendScintilla(QsciScintilla.SCI_SETINDICATORCURRENT, 0)
+        editor.SendScintilla(QsciScintilla.SCI_INDICATORCLEARRANGE, 0, editor.length())
         self.startStyling(last_token_end)
         for token in tokens:
             token_start, token_length = token.pos_in_stream, len(token.value)
@@ -87,12 +88,10 @@ class SieveLexer(QsciLexerCustom):
             try:
                 # Valid tokens
                 self.setStyling(token_length, self._TOKEN_STYLES[token.type])
-                send = QsciScintilla.SCI_INDICATORCLEARRANGE
             except KeyError:
                 # Error tokens
                 self.setStyling(token_length, 0)
-                send = QsciScintilla.SCI_INDICATORFILLRANGE
-            editor.SendScintilla(send, token_start, token_length)
+                editor.SendScintilla(QsciScintilla.SCI_INDICATORFILLRANGE, token_start, token_length)
             last_token_end = token_start + token_length
 
     def _getRelevantTokens(self, start, end, tokens):
