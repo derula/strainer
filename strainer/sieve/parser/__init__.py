@@ -1,3 +1,5 @@
+from lark.lexer import LexerState, LineCounter
+
 from .semantics import SieveScript
 
 __all__ = ('lex', 'parse', 'SieveScript')
@@ -10,4 +12,7 @@ except FileNotFoundError:
     parser, lexer = build()
 
 parse = parser.parse
-lex = lexer.lex
+
+
+def lex(text):
+    return lexer.lex(LexerState(text, LineCounter(b'\r\n')), ...)

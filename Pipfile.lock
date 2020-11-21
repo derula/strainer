@@ -220,10 +220,11 @@
         },
         "lark-parser": {
             "hashes": [
-                "sha256:42f367612a1bbc4cf9d8c8eb1b209d8a9b397d55af75620c9e6f53e502235996"
+                "sha256:20bdefdf1b6e9bcb38165ea5cc4f27921a99c6f4c35264a3a953fd60335f1f8c",
+                "sha256:8b747e1f544dcc2789e3feaddd2a50c6a73bed69d62e9c69760c1e1f7d23495f"
             ],
             "index": "pypi",
-            "version": "==0.10.1"
+            "version": "==0.11.1"
         },
         "mccabe": {
             "hashes": [
