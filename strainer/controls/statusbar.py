@@ -74,7 +74,8 @@ class ErrorPanel(StatusBarPanel):
     def parseScript(self, text=None):
         for widget in {self._icon, self._checkIcon, self._errorIcon}:
             widget.setVisible(False)
-        errorPos, error = self.getError(text)
+        errorPos, fullError = self.getError(text)
+        error = fullError[:fullError.find('\n')]
         if errorPos is not None:
             error = f'<a href="#"><span style="color:inherit;">{error}</span></a>'
             self._errorIcon.setVisible(True)
@@ -91,7 +92,7 @@ class ErrorPanel(StatusBarPanel):
 
     def getError(self, text):
         if text is None:
-            return None, tuple()
+            return None, ''
         try:
             parser.parse(text).check()
         except (UnexpectedInput, parser.semantics.SemanticError) as e:
