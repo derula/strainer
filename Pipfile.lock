@@ -149,14 +149,14 @@
         },
         "pyqtwebengine": {
             "hashes": [
-                "sha256:211e5b10667181dec74f2ef0fd56b94b3cdabaa3e0bdc0a477220b3a19ec92c1",
-                "sha256:79fcbf3321457e2acc3b0010e80f987efb611fe7c9216a529f1e71f8f741fb4d",
-                "sha256:9d03d85a7a4ca3c1e751ff87f9b830c36be94dd87cadede6defad9639a79333f",
-                "sha256:d2f0785b3b9d0779cb7db4c05e15d630bc4fd7f202c7a4cad37dcc45580b3b2f",
-                "sha256:f0ca7915ee206ba5d703168c6ca40b0aad62c67360328fae4af5359cdbcee439"
+                "sha256:4d72fea774071ce6f76e341a3d2c5d595886c9906a9b9493239c841cce54a634",
+                "sha256:8ba247d0873bbeaee70f273cafbfa985a93947b2b8df23059607ec3595fee128",
+                "sha256:db99bdf6c01c84bcc7369b0c49702e40451bc48372d4281777e17dbb84874c1a",
+                "sha256:e9f4a09cce6d8ab8b6c7e7a11e21f606ae713ff275c749839aa4d871a799fccc",
+                "sha256:fe5a02d4cf2327b6a930f8146589842b7664ac703cfddf1f83172423a32e3164"
             ],
             "index": "pypi",
-            "version": "==5.15.1"
+            "version": "==5.15.2"
         },
         "qscintilla": {
             "hashes": [
