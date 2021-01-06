@@ -55,6 +55,14 @@ class Editor(MenuMixin, FindMixin, QsciScintilla):
         self.indicatorDefine(QsciScintilla.IndicatorStyle.TriangleIndicator, 1)
         self.setIndicatorForegroundColor(QColor('red'), 1)
 
+    def keyPressEvent(self, event):
+        if not self._updateHotspots(event, True):
+            super().keyPressEvent(event)
+
+    def keyReleaseEvent(self, event):
+        if not self._updateHotspots(event, False):
+            super().keyReleaseEvent(event)
+
     def onHotspotClicked(self, position, modifiers):
         style = Style(self.SendScintilla(QsciScintilla.SCI_GETSTYLEAT, position))
         value = self.wordAtLineIndex(*self.lineIndexFromPosition(position))
@@ -91,6 +99,11 @@ class Editor(MenuMixin, FindMixin, QsciScintilla):
         self.setReadOnly(True)
         self.setModified(False)
         self.updateMenu()
+
+    def _updateHotspots(self, event, desired_status):
+        if event.key() == Qt.Key_Control:
+            for style in Style.TAG_STYLES | Style.IDENTIFIER_STYLES:
+                self.SendScintilla(QsciScintilla.SCI_STYLESETHOTSPOT, style, desired_status)
 
     def _findFirst(self, query: FindQuery):
         opts = query.options

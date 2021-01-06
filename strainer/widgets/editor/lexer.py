@@ -54,8 +54,6 @@ class SieveLexer(QsciLexerCustom):
         for style, (color, font_kwargs) in self._STYLE_SETTINGS.items():
             self.setColor(QColor(color), style)
             self.setFont(QFont(font.family(), font.pointSize(), **font_kwargs), style)
-        for style in Style.TAG_STYLES | Style.IDENTIFIER_STYLES:
-            parent.SendScintilla(QsciScintilla.SCI_STYLESETHOTSPOT, style, True)
         self.getStyling = partial(parent.SendScintilla, QsciScintilla.SCI_GETSTYLEAT)
 
     def language(self):
