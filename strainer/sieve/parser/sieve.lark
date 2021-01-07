@@ -47,7 +47,7 @@ NUMBER: /[0-9]+[KMG]/
 // Explicitly defined to allow ignoring of whitespace
 STRING: "\"" /\r\n|[^\0\r\n"\\]|\\[^\0\r\n]/* "\""
 TEXT: "text:" /[ \t]*/ /#[^\0\r\n]*/? "\r\n" (/[^\0\r\n.]|[^\0\r\n]{2,}/? "\r\n")* ".\r\n"
-COMMENT: /#[^\0\r\n]*\r\n/ | "/*" /\r\n|\*(?!\/)|[^\0\r\n*]/* "*/"
+COMMENT: /#[^\0\r\n]*(?=\r\n|$)/ | "/*" /\r\n|\*(?!\/)|[^\0\r\n*]/* "*/"
 WHITE_SPACE: /[ \t]|\r\n/
 %ignore COMMENT
 %ignore WHITE_SPACE
