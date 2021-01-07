@@ -1,5 +1,6 @@
 start: requires commands
-requires: "require" string_list ";"
+requires: _require*
+_require: "require" string_list ";"
 commands: _command*
 _command: stop | keep | discard | fileinto | redirect | if (elsif)* else?
 stop: "stop" ";"
