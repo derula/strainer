@@ -76,10 +76,7 @@ def _load(data=None):
     lark_data, lexer_terminals = data
     return (
         Lark.load(BytesIO(lark_data)).parser,
-        get_lexer_from_tokens(
-            TerminalDef.deserialize(token, {})
-            for token in lexer_terminals
-        )
+        get_lexer_from_tokens([TerminalDef.deserialize(token, {}) for token in lexer_terminals])
     )
 
 
