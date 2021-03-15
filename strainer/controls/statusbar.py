@@ -96,7 +96,7 @@ class ErrorPanel(StatusBarPanel):
         try:
             parser.parse(text).check()
         except (UnexpectedInput, parser.semantics.SemanticError) as e:
-            return (e.line - 1, e.column - 1), e.args[0]
+            return (e.line - 1, e.column - 1), str(e)
         except LarkError as e:
             return (0, 0), e.args[0]
         else:
