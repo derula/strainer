@@ -5,7 +5,6 @@ verify_ssl = true
 
 [dev-packages]
 flake8 = "*"
-lark-parser = "*"
 
 [packages]
 cryptography = "*"
@@ -14,6 +13,7 @@ PyInstaller = "*"
 QScintilla = "*"
 PyQtWebEngine = "*"
 qtawesome = "*"
+lark-parser = "*"
 
 [requires]
 python_version = "3.7"
