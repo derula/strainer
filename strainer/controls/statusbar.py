@@ -86,6 +86,7 @@ class ErrorPanel(StatusBarPanel):
                 self._checkIcon.setVisible(True)
             errorPos = (-1, -1)
         self.setText(error)
+        self.setToolTip(fullError)
         if self._errorPos != errorPos:
             self._changeSignal.emit(*errorPos)
             self._errorPos = errorPos
