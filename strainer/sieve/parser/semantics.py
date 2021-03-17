@@ -73,22 +73,37 @@ class SemanticChecker():
             if isinstance(child, Tree):
                 self.check(child)
 
-    def require(self, tokens: list):
-        self._capabilities.update(token.value for token in tokens)
-
     def fileinto(self, tokens: list):
         self._check_cap(tokens[-1], b'fileinto', 'command')
 
-    def header(self, tokens: list):
-        self._check_comparator(tokens[0])
+    def size(self, tokens: list):
+        self._check_tags(tokens, {'OVER_UNDER'})
 
-    address = header
+    def header(self, tokens: list):
+        self._check_tags(tokens, {'COMPARATOR', 'MATCH_TYPE'})
+
+    def address(self, tokens: list):
+        self._check_tags(tokens, {'COMPARATOR', 'MATCH_TYPE', 'ADDRESS_PART'})
 
     def envelope(self, tokens: list):
         self._check_cap(tokens[-1].children[-1], b'envelope', 'test')
-        self._check_comparator(tokens[0])
+        self.address(tokens)
 
-    def _check_comparator(self, token: list):
+    def _check_tags(self, arguments: list, allowed: set):
+        used = set()
+        for argument in arguments:
+            if not isinstance(argument, Tree) or argument.data != 'tag':
+                break
+            key, *values = argument.children
+            if key.type not in allowed:
+                raise SemanticError(key, f'{key.type} tag is not allowed here.')
+            if key.type in used:
+                raise SemanticError(key, f'Only one {key.type} tag may be specified.')
+            if key.type == 'COMPARATOR':
+                self._check_comparator(values[0])
+            used.add(key.type)
+
+    def _check_comparator(self, token: Token):
         if token:
             comparator = token.value
             self._check_cap(token, b'comparator-' + comparator, 'comparator', comparator)
