@@ -19,10 +19,12 @@ class SieveScript:
 
 class Capabilities(frozenset):
     def __new__(cls, requires: list):
-        return super().__new__(cls, (
-            b'comparator-i;ascii-casemap', b'comparator-i;octet',
-            *(cap.value for node in requires for cap in node.children)
-        ))
+        if requires and isinstance(requires[0], Tree):
+            requires = (
+                b'comparator-i;ascii-casemap', b'comparator-i;octet',
+                *(cap.value for node in requires for cap in node.children)
+            )
+        return super().__new__(cls, requires)
 
 
 class SemanticTransformer(Transformer):
