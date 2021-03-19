@@ -3,7 +3,7 @@ from PyQt5.QtCore import pyqtSignal, QSize
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QStatusBar
 from qtawesome import IconWidget
 
-from ..sieve import parser
+from ..sieve import parser, semantics
 
 
 class StatusBar(QStatusBar):
@@ -100,7 +100,7 @@ class ErrorPanel(StatusBarPanel):
             return None, ''
         try:
             parser.parse(text).check()
-        except (UnexpectedInput, parser.semantics.SemanticError) as e:
+        except (UnexpectedInput, semantics.SemanticError) as e:
             return (e.line - 1, e.column - 1), str(e)
         except LarkError as e:
             return (0, 0), e.args[0]
