@@ -18,10 +18,9 @@ class SieveLexer(QsciLexerCustom):
         'COMPARATOR': Style.Comparator,
         'ADDRESS_PART': Style.AddressPart,
         'MATCH_TYPE': Style.MatchType,
-        **{token: Style.Control for token in ('IF', 'ELSIF', 'ELSE', 'REQUIRE', 'STOP')},
-        **{token: Style.Action for token in ('FILEINTO', 'REDIRECT', 'KEEP', 'DISCARD')},
-        **{token: Style.Test for token in ('ADDRESS', 'ALLOF', 'ANYOF', 'ENVELOPE', 'EXISTS', 'FALSE', 'HEADER',
-                                           'NOT', 'SIZE', 'TRUE')},
+        'CONTROL': Style.Control,
+        'ACTION': Style.Action,
+        'TEST': Style.Test,
     }
     _STYLE_SETTINGS = {
         Style.Comment: ('#007f00', {}),

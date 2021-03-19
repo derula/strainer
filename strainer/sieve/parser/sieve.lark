@@ -1,44 +1,29 @@
-start: requires commands
-requires: _require*
-_require: "require" string_list ";"
-commands: _command*
-_command: stop | keep | discard | fileinto | redirect | if (elsif)* else?
-stop: "stop" ";"
-keep: "keep" ";"
-discard: "discard" ";"
-fileinto: "fileinto" string ";"
-redirect: "redirect" string ";"
-if: _IF _test _block
-elsif: _ELSIF _test _block
-else: "else" _block
-_test: true | false | not | allof | anyof | exists | size | header | address | envelope
-_block: "{" commands "}"
-true: "true"
-false: "false"
-not: _NOT _test
-allof: "allof" _test_list
-anyof: "anyof" _test_list
-exists: "exists" string_list
-size: "size" tag+
-header: "header" tag* string_list string_list
-address: "address" tag* string_list string_list
-envelope: "envelope" tag* string_list string_list
-tag: OVER_UNDER NUMBER | COMPARATOR string | ADDRESS_PART | MATCH_TYPE
+start: commands
+commands: command*
+command: command_name arguments block
+command_name: CONTROL | ACTION | IDENTIFIER
+block: ";" | "{" commands "}"
+test: test_name arguments
+test_name: TEST | IDENTIFIER
+arguments: (string_list | string | NUMBER | tag)* [test | test_list]
+tag: OVER_UNDER | COMPARATOR | ADDRESS_PART | MATCH_TYPE | TAG
 _list{type}: type ("," type)*
-_test_list: "(" _list{_test} ")"
-string_list: "[" _list{string} "]" | string
+test_list: "(" _list{test} ")"
+string_list: "[" _list{string} "]"
 string: STRING | TEXT
 
-// Explicitly define because of \b (next token is an identifier)
-_IF: /if\b/
-_ELSIF: /elsif\b/
+// Explicitly define to allow separate styling
+ACTION: /keep|discard|fileinto|redirect/
+CONTROL: /if\b|elsif\b|else|require|stop/
+TEST: /true|false|not\b|allof|anyof|exists|size|header|address|envelope/
 OVER_UNDER: /:over\b|:under\b/
-_NOT: /not\b/
-
-// Explicitly defined because automatic name would be something like __ANON_0
 COMPARATOR: ":comparator"
 ADDRESS_PART: /:localpart|:domain|:all/
 MATCH_TYPE: /:is|:contains|:matches/
+
+// Explicitly defined because automatic name would be something like __ANON_0
+IDENTIFIER.0: /[a-z_][a-z0-9_]*/
+TAG.0: ":" IDENTIFIER
 NUMBER: /[0-9]+[KMG]/
 
 // Explicitly defined to allow ignoring of whitespace
