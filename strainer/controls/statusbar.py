@@ -75,7 +75,11 @@ class ErrorPanel(StatusBarPanel):
         for widget in {self._icon, self._checkIcon, self._errorIcon}:
             widget.setVisible(False)
         errorPos, fullError = self.getError(text)
-        error = fullError[:fullError.find('\n')]
+        n_pos = fullError.find('\n')
+        if n_pos > 0:
+            error = fullError[:n_pos]
+        else:
+            error = fullError
         if errorPos is not None:
             error = f'<a href="#"><span style="color:inherit;">{error}</span></a>'
             self._errorIcon.setVisible(True)
