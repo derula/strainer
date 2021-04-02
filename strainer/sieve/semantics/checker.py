@@ -25,30 +25,24 @@ class SemanticChecker(IssueCollector):
     def commands(self, commands: Sequence[Tree], last_command):
         for command in commands:
             command_name, *_ = command.children
-            try:
-                command_spec, arguments = self.command('control / action', self._commands, *command.children)
-            except SemanticError as e:
-                self.add_issue(e, e.args[0])
-                continue
-            if command_spec.must_follow is not None and last_command not in command_spec.must_follow:
+            command_spec, arguments = self.command('control / action', self._commands, *command.children)
+            if command_spec and command_spec.must_follow is not None and last_command not in command_spec.must_follow:
                 self.add_issue(command_name, f'Command {command_name} is not allowed here.')
             last_command = command_name.value
             if last_command == b'require':
-                try:
-                    self.require(arguments.positional_arguments[0].children)
-                except SemanticError as e:
-                    self.add_issue(e, e.args[0])
+                self.require(arguments.positional_arguments[0].children)
 
     def command(self, command_type: str, domain: dict, command_name: Token, arguments: Tree,
                 block: Optional[Tree] = None):
         try:
             command_spec = domain[command_name.value]
         except KeyError:
-            raise SemanticError(command_name, f'Unknown {command_type} `{command_name}`. Are you missing a `require`?')
+            self.add_issue(command_name, f'Unknown {command_type} `{command_name}`. Are you missing a `require`?')
+            return None, None  # TODO: still check block in this case!
         arguments = Arguments(command_spec, command_name, arguments, block)
         comparator = arguments.tagged_arguments.get(b':comparator')
         if comparator is not None and comparator[0].value not in self._comparators:
-            raise SemanticError(comparator[0], 'Comparator missing respective `require`.')
+            self.add_issue(comparator[0], 'Comparator missing respective `require`.')
         for test in arguments.tests:
             self.command('test', self._tests, *test.children)
         if arguments.block is not None:
@@ -61,7 +55,8 @@ class SemanticChecker(IssueCollector):
                 self._comparators.add(cap.value[11:])
                 continue
             if cap.value not in spec.capabilities:
-                raise SemanticError(cap, f'Capability `{cap}` not supported.')
+                self.add_issue(cap, f'Capability `{cap}` not supported.')
+                continue
             cap = spec.capabilities[cap.value]
             self._commands.update(cap.commands)
             self._tests.update(cap.tests)
