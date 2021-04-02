@@ -13,19 +13,30 @@ class SemanticChecker:
         self._commands = spec.core_commands.copy()
         self._tests = spec.core_tests.copy()
         self._comparators = {b'i;ascii-casemap', b'i;octet'}
+        self._issues = []
 
     def check(self, ast: Tree):
+        self._issues.clear()
         self.commands(ast.children, spec.document_start)
+        if self._issues:
+            raise self._issues[0]
 
     def commands(self, commands: Sequence[Tree], last_command):
         for command in commands:
             command_name, *_ = command.children
-            command_spec, arguments = self.command('control / action', self._commands, *command.children)
+            try:
+                command_spec, arguments = self.command('control / action', self._commands, *command.children)
+            except SemanticError as e:
+                self._issues.append(e)
+                continue
             if command_spec.must_follow is not None and last_command not in command_spec.must_follow:
-                raise SemanticError(command_name, f'Command {command_name} is not allowed here.')
+                self._issues.append(SemanticError(command_name, f'Command {command_name} is not allowed here.'))
             last_command = command_name.value
             if last_command == b'require':
-                self.require(arguments.positional_arguments[0].children)
+                try:
+                    self.require(arguments.positional_arguments[0].children)
+                except SemanticError as e:
+                    self._issues.append(e)
 
     def command(self, command_type: str, domain: dict, command_name: Token, arguments: Tree,
                 block: Optional[Tree] = None):
