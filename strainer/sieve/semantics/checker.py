@@ -4,7 +4,7 @@ from typing import Optional, Sequence
 from lark import Token, Tree
 
 from .arguments import Arguments
-from .errors import SemanticError, ParentSemanticError
+from .issues import SemanticError, ParentSemanticError
 from . import spec
 
 

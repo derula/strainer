@@ -1,4 +1,4 @@
 from .checker import SemanticChecker
-from .errors import SemanticError
+from .issues import SemanticError
 
 __all__ = ('SemanticChecker', 'SemanticError')

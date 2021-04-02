@@ -2,7 +2,7 @@ from typing import ClassVar, Optional, Sequence
 
 from lark import Token, Tree
 
-from .errors import SemanticError, ParentSemanticError
+from .issues import SemanticError, ParentSemanticError
 from .spec import CommandSpec, TaggedArgumentSpec
 
 
