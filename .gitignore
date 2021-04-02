@@ -1,4 +1,5 @@
 # IDE settings files
+.idea/
 .vscode/
 
 # Byte-compiled / optimized / DLL files

@@ -20,7 +20,8 @@ class Arguments:
         self._arg_stack = []
         self._current_tag = None
         self._parse_arguments(arguments.children[:-1])
-        self._parse_special_arguments(arguments.children[-1], block)
+        self._parse_tests(arguments.children[-1])
+        self._parse_block(block)
 
     def _parse_arguments(self, arguments: list):
         for argument in arguments:
@@ -43,7 +44,7 @@ class Arguments:
                 raise ParentSemanticError(f'One of {spec.one_of} must be specified.')
         self._consume_args('positional arguments.py', self.command.positional_args)
 
-    def _parse_special_arguments(self, tests: Optional[Tree], block: Optional[Tree]):
+    def _parse_tests(self, tests: Optional[Tree]):
         if self.command.test_type is None:
             if tests is not None:
                 raise ParentSemanticError('Command does not allow specifying tests.')
@@ -55,6 +56,8 @@ class Arguments:
             self.tests = [tests]
         else:
             self.tests = []
+
+    def _parse_block(self, block: Optional[Tree]):
         try:
             self.block = block.children[0].children
         except (AttributeError, IndexError):

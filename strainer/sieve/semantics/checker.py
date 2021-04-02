@@ -39,7 +39,7 @@ class SemanticChecker:
             raise e.emit(command_name)
         comparator = arguments.tagged_arguments.get(b':comparator')
         if comparator is not None and comparator[0].value not in self._comparators:
-            raise SemanticError(comparator[0], f'Comparator missing respective `require`.')
+            raise SemanticError(comparator[0], 'Comparator missing respective `require`.')
         for test in arguments.tests:
             self.command('test', self._tests, *test.children)
         if arguments.block is not None:
