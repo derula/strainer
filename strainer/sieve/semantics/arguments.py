@@ -33,7 +33,7 @@ class Arguments:
                 if argument_type not in self.command.tagged_args:
                     raise SemanticError(argument, f'Argument `{argument.value}` not allowed for this command.')
                 if self._arg_stack:
-                    raise SemanticError(argument, 'Tagged arguments.py must be placed at the start.')
+                    raise SemanticError(argument, 'Tagged arguments must be placed at the start.')
                 self._current_tag = (argument_type, argument)
             else:
                 self._arg_stack.append((argument_type, argument))
@@ -43,7 +43,7 @@ class Arguments:
             spec = self.TAGS[tag_type]
             if spec.required and not self.tagged_arguments.keys() & spec.one_of:
                 raise SemanticError(self._parent, f'One of {spec.one_of} must be specified.')
-        self._consume_args('positional arguments.py', self.command.positional_args, self._parent)
+        self._consume_args('positional arguments', self.command.positional_args, self._parent)
 
     def _parse_tests(self, tests: Optional[Tree]):
         if self.command.test_type is None:
