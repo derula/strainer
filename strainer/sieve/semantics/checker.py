@@ -4,7 +4,7 @@ from typing import Optional, Sequence
 from lark import Token, Tree
 
 from .arguments import Arguments
-from .issues import SemanticError, ParentSemanticError
+from .issues import SemanticError
 from . import spec
 
 
@@ -44,10 +44,7 @@ class SemanticChecker:
             command_spec = domain[command_name.value]
         except KeyError:
             raise SemanticError(command_name, f'Unknown {command_type} `{command_name}`. Are you missing a `require`?')
-        try:
-            arguments = Arguments(command_spec, arguments, block)
-        except ParentSemanticError as e:
-            raise e.emit(command_name)
+        arguments = Arguments(command_spec, command_name, arguments, block)
         comparator = arguments.tagged_arguments.get(b':comparator')
         if comparator is not None and comparator[0].value not in self._comparators:
             raise SemanticError(comparator[0], 'Comparator missing respective `require`.')
