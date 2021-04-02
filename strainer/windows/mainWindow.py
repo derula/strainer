@@ -96,6 +96,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(title)
 
     def onParseTimer(self):
+        self._parseTimer.stop()
         self.statusBar().parseScript(bytes(self._editor.bytes(0, self._editor.length())[:-1]))
 
     def closeEvent(self, event):
