@@ -7,7 +7,7 @@ from lark import Lark
 from lark.common import LexerConf
 from lark.lexer import PatternRE, PatternStr, TerminalDef, TraditionalLexer
 
-from .semantics import SemanticTransformer
+from .ast import Transformer
 
 
 __path__ = path.join(path.dirname(__file__), 'sieve.')
@@ -17,7 +17,7 @@ _lark_args = {'use_bytes': True, 'g_regex_flags': re.IGNORECASE.value}
 def get_lark():
     with open(__path__ + 'lark', 'r') as f:
         larkfile = f.read()
-    return Lark(larkfile, parser='lalr', transformer=SemanticTransformer(), maybe_placeholders=True, **_lark_args)
+    return Lark(larkfile, parser='lalr', transformer=Transformer(), maybe_placeholders=True, **_lark_args)
 
 
 def get_lexer_from_lark(lark):

@@ -1,6 +1,6 @@
 from lark.lexer import LexerState, LineCounter
 
-from .semantics import SieveScript
+from .ast import SieveScript
 
 __all__ = ('lex', 'parse', 'SieveScript')
 

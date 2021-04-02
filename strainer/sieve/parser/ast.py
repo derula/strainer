@@ -18,7 +18,7 @@ class SieveScript:
         return getattr(self.ast, attr)
 
 
-class SemanticTransformer(Transformer):
+class Transformer(Transformer):
     ESCAPED_CHARACTER = compile(br'\\(.)')
     start = v_args(inline=True)(SieveScript)
 
