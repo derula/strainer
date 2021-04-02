@@ -4,22 +4,23 @@ from typing import Optional, Sequence
 from lark import Token, Tree
 
 from .arguments import Arguments
-from .issues import SemanticError
+from .issues import IssueCollector, SemanticError
 from . import spec
 
 
-class SemanticChecker:
+class SemanticChecker(IssueCollector):
     def __init__(self):
+        super().__init__()
         self._commands = spec.core_commands.copy()
         self._tests = spec.core_tests.copy()
         self._comparators = {b'i;ascii-casemap', b'i;octet'}
-        self._issues = []
 
     def check(self, ast: Tree):
-        self._issues.clear()
+        self.issues.clear()
         self.commands(ast.children, spec.document_start)
-        if self._issues:
-            raise self._issues[0]
+        if self.issues:
+            issue = self.issues[0]
+            raise SemanticError(Token('', '', line=issue.line, column=issue.column), issue.message)
 
     def commands(self, commands: Sequence[Tree], last_command):
         for command in commands:
@@ -27,16 +28,16 @@ class SemanticChecker:
             try:
                 command_spec, arguments = self.command('control / action', self._commands, *command.children)
             except SemanticError as e:
-                self._issues.append(e)
+                self.add_issue(e, e.args[0])
                 continue
             if command_spec.must_follow is not None and last_command not in command_spec.must_follow:
-                self._issues.append(SemanticError(command_name, f'Command {command_name} is not allowed here.'))
+                self.add_issue(command_name, f'Command {command_name} is not allowed here.')
             last_command = command_name.value
             if last_command == b'require':
                 try:
                     self.require(arguments.positional_arguments[0].children)
                 except SemanticError as e:
-                    self._issues.append(e)
+                    self.add_issue(e, e.args[0])
 
     def command(self, command_type: str, domain: dict, command_name: Token, arguments: Tree,
                 block: Optional[Tree] = None):
