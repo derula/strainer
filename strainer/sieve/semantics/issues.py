@@ -51,4 +51,4 @@ class IssueCollector:
         if self.__dirty:
             self.__issues = sorted(self.__issues)
             self.__dirty = False
-        return sorted(self.__issues)
+        return self.__issues
