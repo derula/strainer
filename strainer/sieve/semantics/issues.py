@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from enum import Enum
+from re import compile
 from string import Formatter
-from typing import AnyStr, List
+from typing import AnyStr, ClassVar, List
 
 from lark import Token
 
@@ -13,10 +14,15 @@ class IssueType(str, Enum):
 
 @dataclass(order=True)
 class Issue:
+    MD_REGEX: ClassVar = compile(r'`[^`]*`')
     type: IssueType
     line: int
     column: int
     message: str = field(compare=False)
+
+    @property
+    def html_message(self):
+        return self.MD_REGEX.sub(lambda match: f'<code>{match[0][1:-1]}</code>', self.message)
 
 
 @dataclass

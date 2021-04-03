@@ -106,6 +106,6 @@ class ErrorPanel(StatusBarPanel):
             return (0, 0), e.args[0]
         errors = script.check()
         if errors:
-            return (errors[0].line - 1, errors[0].column - 1), errors[0].message
+            return (errors[0].line - 1, errors[0].column - 1), errors[0].html_message
         else:
             return None, 'No errors found in open script.'
