@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import AnyStr, List, Iterable
+from string import Formatter
+from typing import AnyStr, List
 
 from lark import Token
 
@@ -31,8 +32,7 @@ class IssueCollector:
         self.add(IssueType.WARNING, source, message, *args)
 
     def add(self, issue_type: IssueType, source: Token, message: str, *args: AnyStr):
-        # noinspection StrFormat
-        self.__issues.append(Issue(issue_type, source.line, source.column, message.format(*self.__fix_tokens(args))))
+        self.__issues.append(Issue(issue_type, source.line, source.column, _format(message, *args)))
         self.__dirty = True
 
     def extend(self, other: 'IssueCollector'):
@@ -64,13 +64,25 @@ class IssueCollector:
             self.__by_type[issue.type].append(issue)
         self.__dirty = False
 
-    @staticmethod
-    def __fix_tokens(args: Iterable[AnyStr]):
-        for arg in args:
-            # Token class gets confused when the value is actually `bytes`
-            # instead of `str`, so we manually need to get the value.
-            if isinstance(arg, Token):
-                arg = arg.value
-            if isinstance(arg, bytes):
-                arg = arg.decode('utf-8')
-            yield arg
+
+class IssueFormatter(Formatter):
+    def get_field(self, field_name, args, kwargs):
+        # Only allow to get data directly from args / kwargs
+        try:
+            key = int(field_name)
+        except ValueError:
+            key = field_name
+        return self.get_value(key, args, kwargs), key
+
+    def get_value(self, key, args, kwargs):
+        value = super().get_value(key, args, kwargs)
+        # Token class gets confused when the value is actually `bytes`
+        # instead of `str`, so we manually need to get the value.
+        if isinstance(value, Token):
+            value = value.value
+        if isinstance(value, bytes):
+            value = value.decode('utf-8')
+        return value
+
+
+_format = IssueFormatter().format
