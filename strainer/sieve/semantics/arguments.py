@@ -33,9 +33,9 @@ class Arguments(IssueCollector):
                 if self._current_tag:
                     self._consume_tag()
                 if argument_type not in self.command.tagged_args:
-                    self.append(argument, f'Argument `{argument.value}` not allowed for this command.')
+                    self.add_error(argument, f'Argument `{argument.value}` not allowed for this command.')
                 if self._arg_stack:
-                    self.append(argument, 'Tagged arguments must be placed at the start.')
+                    self.add_error(argument, 'Tagged arguments must be placed at the start.')
                     runaway_positionals.extend(self._arg_stack)
                     self._arg_stack.clear()
                 self._current_tag = (argument_type, argument)
@@ -46,7 +46,7 @@ class Arguments(IssueCollector):
         for tag_type in self.command.tagged_args:
             spec = self.TAGS[tag_type]
             if spec.required and not self.tagged_arguments.keys() & spec.one_of:
-                self.append(self._parent, f'One of {spec.one_of} must be specified.')
+                self.add_error(self._parent, f'One of {spec.one_of} must be specified.')
         self._arg_stack = [*runaway_positionals, *self._arg_stack]
         self.positional_arguments = self._consume_args('positional arguments', self.command.positional_args,
                                                        self._parent, True)
@@ -54,9 +54,9 @@ class Arguments(IssueCollector):
     def _parse_tests(self, tests: Optional[Tree]):
         if self.command.test_type is None:
             if tests is not None:
-                self.append(self._parent, 'Command does not allow specifying tests.')
+                self.add_error(self._parent, 'Command does not allow specifying tests.')
         elif tests is None or tests.data != self.command.test_type:
-            self.append(self._parent, f'Command requires a {self.command.test_type}.')
+            self.add_error(self._parent, f'Command requires a {self.command.test_type}.')
         if self.command.test_type == 'test_list':
             self.tests = tests.children
         elif self.command.test_type == 'test':
@@ -71,9 +71,9 @@ class Arguments(IssueCollector):
             self.block = None
         if not self.command.has_block:
             if self.block is not None:
-                self.append(self._parent, 'Command does not allow specifying a block.')
+                self.add_error(self._parent, 'Command does not allow specifying a block.')
         elif self.block is None:
-            self.append(self._parent, 'Command requires a block.')
+            self.add_error(self._parent, 'Command requires a block.')
 
     def _consume_tag(self):
         tag_type, token = self._current_tag
@@ -82,9 +82,9 @@ class Arguments(IssueCollector):
         except KeyError:
             spec = TaggedArgumentSpec()
         if token.value in self.tagged_arguments:
-            self.append(token, f'Parameter `{token.value}` was specified twice.')
+            self.add_error(token, f'Parameter `{token.value}` was specified twice.')
         elif self.tagged_arguments.keys() & spec.one_of:
-            self.append(token, f'Only one `{tag_type}` may be specified.')
+            self.add_error(token, f'Only one `{tag_type}` may be specified.')
         self.tagged_arguments[token.value] = self._consume_args(f'values for tag {token.value}', spec.value_tokens,
                                                                 token)
         self._current_tag = None
@@ -93,9 +93,9 @@ class Arguments(IssueCollector):
         actual_len = len(self._arg_stack)
         expected_len = len(expected_types)
         if actual_len < expected_len:
-            self.append(token, f'Missing {category} (got {actual_len}, expected {expected_len}).')
+            self.add_error(token, f'Missing {category} (got {actual_len}, expected {expected_len}).')
         elif exact and actual_len > expected_len:
-            self.append(token, f'Too many {category} (got {actual_len}, expected {expected_len}).')
+            self.add_error(token, f'Too many {category} (got {actual_len}, expected {expected_len}).')
         for i, (expected_type, (actual_type, value)) in enumerate(zip(expected_types, self._arg_stack)):
             if expected_type == 'string_list' and actual_type == 'string':
                 # Commands accepting string lists always accept strings as well.
@@ -105,8 +105,8 @@ class Arguments(IssueCollector):
                 self._arg_stack[i] = ('string_list', Tree('string_list', [value]))
                 continue
             if expected_type != actual_type:
-                self.append(token, f'Incorrect value type at position {i+1} '
-                                   f'(got {actual_type}, expected {expected_type}).')
+                self.add_error(token, f'Incorrect value type at position {i + 1} '
+                                      f'(got {actual_type}, expected {expected_type}).')
         args = [arg[1] for arg in self._arg_stack[:expected_len]]
         self._arg_stack = self._arg_stack[expected_len:]
         return args

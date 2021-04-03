@@ -25,7 +25,7 @@ class SemanticChecker(IssueCollector):
             command_name, *_ = command.children
             command_spec, arguments = self.command('control / action', self._commands, *command.children)
             if command_spec and command_spec.must_follow is not None and last_command not in command_spec.must_follow:
-                self.append(command_name, f'Command {command_name} is not allowed here.')
+                self.add_error(command_name, f'Command {command_name} is not allowed here.')
             last_command = command_name.value
             if last_command == b'require' and arguments.positional_arguments:
                 self.require(arguments.positional_arguments[0].children)
@@ -35,13 +35,13 @@ class SemanticChecker(IssueCollector):
         try:
             command_spec = domain[command_name.value]
         except KeyError:
-            self.append(command_name, f'Unknown {command_type} `{command_name}`. Are you missing a `require`?')
+            self.add_error(command_name, f'Unknown {command_type} `{command_name}`. Are you missing a `require`?')
             return None, None  # TODO: still check block in this case!
         arguments = Arguments(command_spec, command_name, arguments, block)
         self.extend(arguments)
         comparator = arguments.tagged_arguments.get(b':comparator')
         if comparator and comparator[0].value not in self._comparators:
-            self.append(comparator[0], 'Comparator missing respective `require`.')
+            self.add_error(comparator[0], 'Comparator missing respective `require`.')
         for test in arguments.tests:
             self.command('test', self._tests, *test.children)
         if arguments.block is not None:
@@ -54,7 +54,7 @@ class SemanticChecker(IssueCollector):
                 self._comparators.add(cap.value[11:])
                 continue
             if cap.value not in spec.capabilities:
-                self.append(cap, f'Capability `{cap}` not supported.')
+                self.add_error(cap, f'Capability `{cap}` not supported.')
                 continue
             cap = spec.capabilities[cap.value]
             self._commands.update(cap.commands)
