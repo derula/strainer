@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from functools import partial
 from typing import List
 
 from lark import Token
