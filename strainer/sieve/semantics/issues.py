@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List
+from typing import AnyStr, List
 
 from lark import Token
 
@@ -24,14 +24,24 @@ class IssueCollector:
     __issues: list = field(default_factory=list, init=False)
     __by_type: dict = field(default_factory=lambda: {key: [] for key in IssueType}, init=False)
 
-    def add_error(self, source: Token, message: str):
-        self.add(IssueType.ERROR, source, message)
+    def add_error(self, source: Token, message: str, *args: AnyStr):
+        self.add(IssueType.ERROR, source, message, *args)
 
-    def add_warning(self, source: Token, message: str):
-        self.add(IssueType.WARNING, source, message)
+    def add_warning(self, source: Token, message: str, *args: AnyStr):
+        self.add(IssueType.WARNING, source, message, *args)
 
-    def add(self, issue_type: IssueType, source: Token, message: str):
-        self.__issues.append(Issue(issue_type, source.line, source.column, message))
+    def add(self, issue_type: IssueType, source: Token, message: str, *args: AnyStr):
+        def _args():
+            for arg in args:
+                # Token class gets confused when the value is actually `bytes`
+                # instead of `str`, so we manually need to get the value.
+                if isinstance(arg, Token):
+                    arg = arg.value
+                if isinstance(arg, bytes):
+                    arg = arg.decode('utf-8')
+                yield arg
+        # noinspection StrFormat
+        self.__issues.append(Issue(issue_type, source.line, source.column, message.format(*_args())))
         self.__dirty = True
 
     def extend(self, other: 'IssueCollector'):
