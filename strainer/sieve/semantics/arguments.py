@@ -8,10 +8,11 @@ from .spec import CommandSpec, TaggedArgumentSpec
 
 class Arguments(IssueCollector):
     TAGS: ClassVar = {
-        'over_under': TaggedArgumentSpec((b':over', b':under',), ('number',), True),
-        'comparator': TaggedArgumentSpec((b':comparator',), ('string',)),
-        'match_type': TaggedArgumentSpec((b':is', b':contains', b':matches',)),
-        'address_part': TaggedArgumentSpec((b':localpart', b':domain', b':all')),
+        'over_under': TaggedArgumentSpec('`:over` or `:under`', (b':over', b':under',), ('number',), True),
+        'comparator': TaggedArgumentSpec('comparator', (b':comparator',), ('string',)),
+        'match_type': TaggedArgumentSpec('match type', (b':is', b':contains', b':matches',)),
+        'address_part': TaggedArgumentSpec('address part', (b':localpart', b':domain', b':all')),
+        ...: TaggedArgumentSpec('unknown tag'),
     }
 
     def __init__(self, command: CommandSpec, parent_token: Token, arguments: Tree):
@@ -32,9 +33,9 @@ class Arguments(IssueCollector):
                 if self._current_tag:
                     self._consume_tag()
                 if argument_type not in self.command.tagged_args:
-                    self.add_error(argument, 'Argument {} not allowed for this command.', argument)
+                    self.add_error(argument, 'Command `{}` takes no `{}` argument.', self._parent, argument)
                 if self._arg_stack:
-                    self.add_error(argument, 'Tagged arguments must be placed at the start.')
+                    self.add_error(argument, 'Tagged arguments must be placed at the beginning.')
                     runaway_positionals.extend(self._arg_stack)
                     self._arg_stack.clear()
                 self._current_tag = (argument_type, argument)
@@ -45,7 +46,7 @@ class Arguments(IssueCollector):
         for tag_type in self.command.tagged_args:
             spec = self.TAGS[tag_type]
             if spec.required and not self.tagged_arguments.keys() & spec.one_of:
-                self.add_error(self._parent, 'Argument {} must be specified.', tag_type)
+                self.add_command_error('requires {}', spec.name)
         self._arg_stack = [*runaway_positionals, *self._arg_stack]
         self.positional_arguments = self._consume_args('positional arguments', self.command.positional_args,
                                                        self._parent, True)
@@ -53,9 +54,9 @@ class Arguments(IssueCollector):
     def _parse_tests(self, tests: Optional[Tree]):
         if self.command.test_type is None:
             if tests is not None:
-                self.add_error(self._parent, 'Command does not allow specifying tests.')
+                self.add_command_error('does not allow specifying tests')
         elif tests is None or tests.data != self.command.test_type:
-            self.add_error(self._parent, 'Command requires a {}.', self.command.test_type)
+            self.add_command_error('requires a {}', self.command.test_type)
         if self.command.test_type == 'test_list':
             self.tests = tests.children
         elif self.command.test_type == 'test':
@@ -68,11 +69,11 @@ class Arguments(IssueCollector):
         try:
             spec = self.TAGS[tag_type]
         except KeyError:
-            spec = TaggedArgumentSpec()
+            spec = self.TAGS[...]
         if token.value in self.tagged_arguments:
-            self.add_error(token, 'Parameter `{}` was specified twice.', token)
+            self.add_error(token, 'Argument `{}` was specified twice.', token)
         elif self.tagged_arguments.keys() & spec.one_of:
-            self.add_error(token, 'Only one {} may be specified.', tag_type)
+            self.add_error(token, 'Only one {} may be specified.', spec.name)
         token_value = token.value.decode('utf-8')  # Because Token is subclass of str, but gets confused
         self.tagged_arguments[token.value] = self._consume_args(f'values for tag {token_value}', spec.value_tokens,
                                                                 token)
@@ -99,3 +100,6 @@ class Arguments(IssueCollector):
         args = [arg[1] for arg in self._arg_stack[:expected_len]]
         self._arg_stack = self._arg_stack[expected_len:]
         return args
+
+    def add_command_error(self, message: str, *args):
+        self.add_error(self._parent, f'Command `{{}}` {message}.', self._parent, *args)

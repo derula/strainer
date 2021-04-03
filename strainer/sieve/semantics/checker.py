@@ -25,7 +25,7 @@ class SemanticChecker(IssueCollector):
             command_name, *_ = command.children
             command_spec, arguments = self.command('control / action', self._commands, *command.children)
             if command_spec and command_spec.must_follow is not None and last_command not in command_spec.must_follow:
-                self.add_error(command_name, 'Command {} is not allowed here.', command_name)
+                self.add_error(command_name, 'Command `{}` is not allowed here.', command_name)
             last_command = command_name.value
             if last_command == b'require' and arguments.positional_arguments:
                 self.require(arguments.positional_arguments[0].children)
@@ -44,9 +44,9 @@ class SemanticChecker(IssueCollector):
         for test in arguments.tests:
             self.command('test', self._tests, *test.children)
         if not command_spec.has_block and found_block:
-            self.add_error(command_name, 'Command does not allow specifying a block.')
+            self.add_error(command_name, 'Command `{}` does not allow specifying a block.', command_name)
         elif command_spec.has_block and not found_block:
-            self.add_error(command_name, 'Command requires a block.')
+            self.add_error(command_name, 'Command `{}` requires a block.', command_name)
         return command_spec, arguments
 
     def require(self, caps: Sequence[Token]):

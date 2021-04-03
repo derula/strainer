@@ -21,6 +21,7 @@ class Capability:
 
 @dataclass
 class TaggedArgumentSpec:
+    name: str
     one_of: Sequence[bytes] = ()
     value_tokens: Sequence[str] = ()
     required: bool = False
