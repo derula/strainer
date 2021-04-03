@@ -51,10 +51,15 @@ class SemanticChecker(IssueCollector):
     def require(self, caps: Sequence[Token]):
         for cap in caps:
             if cap.value.startswith(b'comparator-'):
-                self._comparators.add(cap.value[11:])
+                comp = cap.value[11:]
+                if comp in self._comparators:
+                    self.add_warning(cap, f'Comparator `{comp}` required twice.')
+                elif comp not in self._comparators:
+                    self.add_warning(cap, f'Comparator `{comp}` not supported.')
+                self._comparators.add(comp)
                 continue
             if cap.value not in spec.capabilities:
-                self.add_error(cap, f'Capability `{cap}` not supported.')
+                self.add_warning(cap, f'Capability `{cap}` not supported.')
                 continue
             cap = spec.capabilities[cap.value]
             self._commands.update(cap.commands)
