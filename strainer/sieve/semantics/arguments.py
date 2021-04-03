@@ -52,18 +52,21 @@ class Arguments(IssueCollector):
                                                        self._parent, True)
 
     def _parse_tests(self, tests: Optional[Tree]):
-        if self.command.test_type is None:
-            if tests is not None:
-                self.add_command_error('does not allow specifying tests')
-        elif tests is None or tests.data != self.command.test_type:
-            self.add_command_error('requires a {}', self.command.test_type)
         self.tests = []
         if tests is None:
-            pass
-        elif tests.data == 'test_list':
-            self.tests = tests.children
-        elif tests.data == 'test':
-            self.tests = [tests]
+            if self.command.test_type is None:
+                return
+        else:
+            if tests.data == 'test_list':
+                self.tests = tests.children
+            elif tests.data == 'test':
+                self.tests = [tests]
+            if tests.data == self.command.test_type:
+                return
+        if self.command.test_type is None:
+            self.add_command_error('does not allow specifying tests')
+        else:
+            self.add_command_error('requires a {}', self.command.test_type)
 
     def _consume_tag(self):
         tag_type, token = self._current_tag
