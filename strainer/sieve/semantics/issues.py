@@ -23,6 +23,7 @@ class Issue:
 class IssueCollector:
     __dirty: bool = field(default=False, init=False)
     __issues: list = field(default_factory=list, init=False)
+    __by_type: dict = field(default_factory=lambda: {key: [] for key in IssueType}, init=False)
 
     def add_error(self, source: Token, message: str):
         self.add(IssueType.ERROR, source, message)
@@ -40,15 +41,25 @@ class IssueCollector:
 
     @property
     def errors(self) -> List[Issue]:
-        return [issue for issue in self.issues if issue.type is IssueType.ERROR]
+        self.__clean()
+        return self.__by_type[IssueType.ERROR]
 
     @property
     def warnings(self) -> List[Issue]:
-        return [issue for issue in self.issues if issue.type is IssueType.WARNING]
+        self.__clean()
+        return self.__by_type[IssueType.WARNING]
 
     @property
     def issues(self) -> List[Issue]:
-        if self.__dirty:
-            self.__issues = sorted(self.__issues)
-            self.__dirty = False
+        self.__clean()
         return self.__issues
+
+    def __clean(self):
+        if not self.__dirty:
+            return
+        self.__issues = sorted(self.__issues)
+        for key in IssueType:
+            self.__by_type[key].clear()
+        for issue in self.__issues:
+            self.__by_type[issue.type].append(issue)
+        self.__dirty = False
