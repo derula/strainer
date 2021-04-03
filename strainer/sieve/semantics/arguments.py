@@ -26,6 +26,7 @@ class Arguments(IssueCollector):
         self._parse_block(block)
 
     def _parse_arguments(self, arguments: list):
+        runaway_positionals = []
         for argument in arguments:
             argument_type = argument.type.lower() if isinstance(argument, Token) else 'string_list'
             if argument_type in self.TAGS or argument_type == 'tag':
@@ -35,6 +36,8 @@ class Arguments(IssueCollector):
                     self.append(argument, f'Argument `{argument.value}` not allowed for this command.')
                 if self._arg_stack:
                     self.append(argument, 'Tagged arguments must be placed at the start.')
+                    runaway_positionals.extend(self._arg_stack)
+                    self._arg_stack.clear()
                 self._current_tag = (argument_type, argument)
             else:
                 self._arg_stack.append((argument_type, argument))
@@ -44,6 +47,7 @@ class Arguments(IssueCollector):
             spec = self.TAGS[tag_type]
             if spec.required and not self.tagged_arguments.keys() & spec.one_of:
                 self.append(self._parent, f'One of {spec.one_of} must be specified.')
+        self._arg_stack = [*runaway_positionals, *self._arg_stack]
         self.positional_arguments = self._consume_args('positional arguments', self.command.positional_args,
                                                        self._parent, True)
 
@@ -92,8 +96,7 @@ class Arguments(IssueCollector):
             self.append(token, f'Missing {category} (got {actual_len}, expected {expected_len}).')
         elif exact and actual_len > expected_len:
             self.append(token, f'Too many {category} (got {actual_len}, expected {expected_len}).')
-        for i, expected_type in enumerate(expected_types):
-            actual_type, value = self._arg_stack[i]
+        for i, (expected_type, (actual_type, value)) in enumerate(zip(expected_types, self._arg_stack)):
             if expected_type == 'string_list' and actual_type == 'string':
                 # Commands accepting string lists always accept strings as well.
                 # In the official grammar, this is expressed by allowing string_lists to be a string as well,

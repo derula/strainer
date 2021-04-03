@@ -29,7 +29,7 @@ class SemanticChecker(IssueCollector):
             if command_spec and command_spec.must_follow is not None and last_command not in command_spec.must_follow:
                 self.append(command_name, f'Command {command_name} is not allowed here.')
             last_command = command_name.value
-            if last_command == b'require':
+            if last_command == b'require' and arguments.positional_arguments:
                 self.require(arguments.positional_arguments[0].children)
 
     def command(self, command_type: str, domain: dict, command_name: Token, arguments: Tree,
@@ -42,7 +42,7 @@ class SemanticChecker(IssueCollector):
         arguments = Arguments(command_spec, command_name, arguments, block)
         self.extend(arguments)
         comparator = arguments.tagged_arguments.get(b':comparator')
-        if comparator is not None and comparator[0].value not in self._comparators:
+        if comparator and comparator[0].value not in self._comparators:
             self.append(comparator[0], 'Comparator missing respective `require`.')
         for test in arguments.tests:
             self.command('test', self._tests, *test.children)
