@@ -1,14 +1,6 @@
 from dataclasses import dataclass, field
-from typing import Union
 
 from lark import Token
-
-
-class SemanticError(Exception):
-    def __init__(self, token: Token, message: str):
-        self.line = token.line
-        self.column = token.column
-        super().__init__(f'Semantic error in line {token.line}, column {token.column}: {message}')
 
 
 @dataclass(order=True)
@@ -23,7 +15,7 @@ class IssueCollector:
     __dirty: bool = field(default=False, init=False)
     __issues: list = field(default_factory=list, init=False)
 
-    def append(self, source: Union[Token, SemanticError], message: str):
+    def append(self, source: Token, message: str):
         self.__issues.append(Issue(source.line, source.column, message))
         self.__dirty = True
 

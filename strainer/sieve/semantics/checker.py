@@ -4,7 +4,7 @@ from typing import Optional, Sequence
 from lark import Token, Tree
 
 from .arguments import Arguments
-from .issues import IssueCollector, SemanticError
+from .issues import IssueCollector
 from . import spec
 
 
@@ -18,9 +18,7 @@ class SemanticChecker(IssueCollector):
     def check(self, ast: Tree):
         self.issues.clear()
         self.commands(ast.children, spec.document_start)
-        if self.issues:
-            issue = self.issues[0]
-            raise SemanticError(Token('', '', line=issue.line, column=issue.column), issue.message)
+        return self
 
     def commands(self, commands: Sequence[Tree], last_command):
         for command in commands:

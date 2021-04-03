@@ -3,7 +3,7 @@ from PyQt5.QtCore import pyqtSignal, QSize
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QStatusBar
 from qtawesome import IconWidget
 
-from ..sieve import parser, semantics
+from ..sieve import parser
 
 
 class StatusBar(QStatusBar):
@@ -99,10 +99,13 @@ class ErrorPanel(StatusBarPanel):
         if text is None:
             return None, ''
         try:
-            parser.parse(text).check()
-        except (UnexpectedInput, semantics.SemanticError) as e:
+            script = parser.parse(text)
+        except UnexpectedInput as e:
             return (e.line - 1, e.column - 1), str(e)
         except LarkError as e:
             return (0, 0), e.args[0]
+        issues = script.check()
+        if issues:
+            return (issues[0].line - 1, issues[0].column - 1), issues[0].message
         else:
             return None, 'No errors found in open script.'

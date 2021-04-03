@@ -12,7 +12,7 @@ class SieveScript:
     ast: Tree
 
     def check(self):
-        SemanticChecker().check(self.ast)
+        return SemanticChecker().check(self.ast).issues
 
     def __getattr__(self, attr):
         return getattr(self.ast, attr)
