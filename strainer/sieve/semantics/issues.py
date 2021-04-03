@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import AnyStr, List
+from typing import AnyStr, List, Iterable
 
 from lark import Token
 
@@ -31,17 +31,8 @@ class IssueCollector:
         self.add(IssueType.WARNING, source, message, *args)
 
     def add(self, issue_type: IssueType, source: Token, message: str, *args: AnyStr):
-        def _args():
-            for arg in args:
-                # Token class gets confused when the value is actually `bytes`
-                # instead of `str`, so we manually need to get the value.
-                if isinstance(arg, Token):
-                    arg = arg.value
-                if isinstance(arg, bytes):
-                    arg = arg.decode('utf-8')
-                yield arg
         # noinspection StrFormat
-        self.__issues.append(Issue(issue_type, source.line, source.column, message.format(*_args())))
+        self.__issues.append(Issue(issue_type, source.line, source.column, message.format(*self.__fix_tokens(args))))
         self.__dirty = True
 
     def extend(self, other: 'IssueCollector'):
@@ -72,3 +63,14 @@ class IssueCollector:
         for issue in self.__issues:
             self.__by_type[issue.type].append(issue)
         self.__dirty = False
+
+    @staticmethod
+    def __fix_tokens(args: Iterable[AnyStr]):
+        for arg in args:
+            # Token class gets confused when the value is actually `bytes`
+            # instead of `str`, so we manually need to get the value.
+            if isinstance(arg, Token):
+                arg = arg.value
+            if isinstance(arg, bytes):
+                arg = arg.decode('utf-8')
+            yield arg
