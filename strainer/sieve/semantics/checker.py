@@ -3,7 +3,7 @@ from typing import Optional, Sequence
 
 from lark import Token, Tree
 
-from .arguments import Arguments, Block
+from .arguments import Arguments
 from .issues import IssueCollector
 from . import spec
 
@@ -33,19 +33,22 @@ class SemanticChecker(IssueCollector):
     def command(self, command_type: str, domain: dict, command_name: Token, arguments: Tree,
                 block: Optional[Tree] = None):
         command_spec, block = domain.get(command_name.value), Block(block)
-        if command_spec is None:
-            arguments = None
-            self.add_error(command_name, f'Unknown {command_type} `{command_name}`. Are you missing a `require`?')
-        else:
-            arguments = Arguments(command_spec, command_name, arguments, block)
-            self.extend(arguments)
-            comparator = arguments.tagged_arguments.get(b':comparator')
-            if comparator and comparator[0].value not in self._comparators:
-                self.add_error(comparator[0], 'Comparator missing respective `require`.')
-            for test in arguments.tests:
-                self.command('test', self._tests, *test.children)
         if block:
             self.commands(block.body, spec.block_start)
+        if command_spec is None:
+            self.add_error(command_name, f'Unknown {command_type} `{command_name}`. Are you missing a `require`?')
+            return None, None
+        arguments = Arguments(command_spec, command_name, arguments)
+        self.extend(arguments)
+        comparator = arguments.tagged_arguments.get(b':comparator')
+        if comparator and comparator[0].value not in self._comparators:
+            self.add_error(comparator[0], 'Comparator missing respective `require`.')
+        for test in arguments.tests:
+            self.command('test', self._tests, *test.children)
+        if not command_spec.has_block and block:
+            self.add_error(command_name, 'Command does not allow specifying a block.')
+        elif command_spec.has_block and not block:
+            self.add_error(command_name, 'Command requires a block.')
         return command_spec, arguments
 
     def require(self, caps: Sequence[Token]):
@@ -64,3 +67,14 @@ class SemanticChecker(IssueCollector):
             cap = spec.capabilities[cap.value]
             self._commands.update(cap.commands)
             self._tests.update(cap.tests)
+
+
+class Block:
+    def __init__(self, block: Optional[Tree]):
+        try:
+            self.body = block.children[0].children
+        except (AttributeError, IndexError):
+            self.body = None
+
+    def __bool__(self):
+        return self.body is not None
