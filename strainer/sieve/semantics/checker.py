@@ -3,7 +3,7 @@ from typing import Optional, Sequence
 
 from lark import Token, Tree
 
-from .arguments import Arguments
+from .arguments import Arguments, Block
 from .issues import IssueCollector
 from . import spec
 
@@ -32,20 +32,20 @@ class SemanticChecker(IssueCollector):
 
     def command(self, command_type: str, domain: dict, command_name: Token, arguments: Tree,
                 block: Optional[Tree] = None):
-        try:
-            command_spec = domain[command_name.value]
-        except KeyError:
+        command_spec, block = domain.get(command_name.value), Block(block)
+        if command_spec is None:
+            arguments = None
             self.add_error(command_name, f'Unknown {command_type} `{command_name}`. Are you missing a `require`?')
-            return None, None  # TODO: still check block in this case!
-        arguments = Arguments(command_spec, command_name, arguments, block)
-        self.extend(arguments)
-        comparator = arguments.tagged_arguments.get(b':comparator')
-        if comparator and comparator[0].value not in self._comparators:
-            self.add_error(comparator[0], 'Comparator missing respective `require`.')
-        for test in arguments.tests:
-            self.command('test', self._tests, *test.children)
-        if arguments.block is not None:
-            self.commands(arguments.block, spec.block_start)
+        else:
+            arguments = Arguments(command_spec, command_name, arguments, block)
+            self.extend(arguments)
+            comparator = arguments.tagged_arguments.get(b':comparator')
+            if comparator and comparator[0].value not in self._comparators:
+                self.add_error(comparator[0], 'Comparator missing respective `require`.')
+            for test in arguments.tests:
+                self.command('test', self._tests, *test.children)
+        if block:
+            self.commands(block.body, spec.block_start)
         return command_spec, arguments
 
     def require(self, caps: Sequence[Token]):

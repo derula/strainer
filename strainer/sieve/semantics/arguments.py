@@ -6,6 +6,17 @@ from .issues import IssueCollector
 from .spec import CommandSpec, TaggedArgumentSpec
 
 
+class Block:
+    def __init__(self, block: Optional[Tree]):
+        try:
+            self.body = block.children[0].children
+        except (AttributeError, IndexError):
+            self.body = None
+
+    def __bool__(self):
+        return self.body is not None
+
+
 class Arguments(IssueCollector):
     TAGS: ClassVar = {
         'over_under': TaggedArgumentSpec((b':over', b':under',), ('number',), True),
@@ -14,16 +25,16 @@ class Arguments(IssueCollector):
         'address_part': TaggedArgumentSpec((b':localpart', b':domain', b':all')),
     }
 
-    def __init__(self, command: CommandSpec, parent_token: Token, arguments: Tree, block: Optional[Tree] = None):
+    def __init__(self, command: CommandSpec, parent_token: Token, arguments: Tree, block: Block):
         super().__init__()
         self.command = command
         self._parent = parent_token
         self.tagged_arguments = {}
+        self.block = block
         self._arg_stack = []
         self._current_tag = None
         self._parse_arguments(arguments.children[:-1])
-        self._parse_tests(arguments.children[-1])
-        self._parse_block(block)
+        self._parse_special_arguments(arguments.children[-1])
 
     def _parse_arguments(self, arguments: list):
         runaway_positionals = []
@@ -51,7 +62,7 @@ class Arguments(IssueCollector):
         self.positional_arguments = self._consume_args('positional arguments', self.command.positional_args,
                                                        self._parent, True)
 
-    def _parse_tests(self, tests: Optional[Tree]):
+    def _parse_special_arguments(self, tests: Optional[Tree]):
         if self.command.test_type is None:
             if tests is not None:
                 self.add_error(self._parent, 'Command does not allow specifying tests.')
@@ -63,16 +74,10 @@ class Arguments(IssueCollector):
             self.tests = [tests]
         else:
             self.tests = []
-
-    def _parse_block(self, block: Optional[Tree]):
-        try:
-            self.block = block.children[0].children
-        except (AttributeError, IndexError):
-            self.block = None
         if not self.command.has_block:
-            if self.block is not None:
+            if self.block:
                 self.add_error(self._parent, 'Command does not allow specifying a block.')
-        elif self.block is None:
+        elif not self.block:
             self.add_error(self._parent, 'Command requires a block.')
 
     def _consume_tag(self):

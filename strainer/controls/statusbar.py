@@ -104,8 +104,8 @@ class ErrorPanel(StatusBarPanel):
             return (e.line - 1, e.column - 1), str(e)
         except LarkError as e:
             return (0, 0), e.args[0]
-        issues = script.check()
-        if issues:
-            return (issues[0].line - 1, issues[0].column - 1), issues[0].message
+        errors = script.check()
+        if errors:
+            return (errors[0].line - 1, errors[0].column - 1), errors[0].message
         else:
             return None, 'No errors found in open script.'
