@@ -1,4 +1,5 @@
 from lark.lexer import LexerState, LineCounter
+from typing import Callable
 
 from .ast import SieveScript
 
@@ -11,7 +12,7 @@ except FileNotFoundError:
     from .builder import build
     parser, lexer = build()
 
-parse = parser.parse
+parse: Callable[[bytes], SieveScript] = parser.parse
 
 
 def lex(text):

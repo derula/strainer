@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import List
 
 from lark import Token
 
@@ -24,7 +25,7 @@ class IssueCollector:
         self.__dirty = True
 
     @property
-    def issues(self):
+    def issues(self) -> List[Issue]:
         if self.__dirty:
             self.__issues = sorted(self.__issues)
             self.__dirty = False
