@@ -43,7 +43,8 @@ class Arguments:
             spec = self.TAGS[tag_type]
             if spec.required and not self.tagged_arguments.keys() & spec.one_of:
                 raise SemanticError(self._parent, f'One of {spec.one_of} must be specified.')
-        self._consume_args('positional arguments', self.command.positional_args, self._parent)
+        self.positional_arguments = self._consume_args('positional arguments', self.command.positional_args,
+                                                       self._parent, True)
 
     def _parse_tests(self, tests: Optional[Tree]):
         if self.command.test_type is None:
@@ -80,15 +81,16 @@ class Arguments:
         for other_name in spec.one_of:
             if other_name in self.tagged_arguments:
                 raise SemanticError(token, f'Only one of `{token.value}` or `{other_name}` may be specified.')
-        self._consume_args(f'values for tag {token.value}', spec.value_tokens, token, token.value)
+        self.tagged_arguments[token.value] = self._consume_args(f'values for tag {token.value}', spec.value_tokens,
+                                                                token)
         self._current_tag = None
 
-    def _consume_args(self, category: str, expected_types: Sequence[str], token: Token, key: Optional[bytes] = None):
+    def _consume_args(self, category: str, expected_types: Sequence[str], token: Token, exact: bool = False):
         actual_len = len(self._arg_stack)
         expected_len = len(expected_types)
         if actual_len < expected_len:
             raise SemanticError(token, f'Missing {category} (got {actual_len}, expected {expected_len}).')
-        if key is None and actual_len > expected_len:
+        if exact and actual_len > expected_len:
             raise SemanticError(token, f'Too many {category} (got {actual_len}, expected {expected_len}).')
         for i, expected_type in enumerate(expected_types):
             actual_type, value = self._arg_stack[i]
@@ -104,7 +106,4 @@ class Arguments:
                                            f'(got {actual_type}, expected {expected_type}).')
         args = [arg[1] for arg in self._arg_stack[:expected_len]]
         self._arg_stack = self._arg_stack[expected_len:]
-        if key is not None:
-            self.tagged_arguments[key] = args
-        else:
-            self.positional_arguments = args
+        return args
