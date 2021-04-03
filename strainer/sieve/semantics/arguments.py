@@ -57,12 +57,13 @@ class Arguments(IssueCollector):
                 self.add_command_error('does not allow specifying tests')
         elif tests is None or tests.data != self.command.test_type:
             self.add_command_error('requires a {}', self.command.test_type)
-        if self.command.test_type == 'test_list':
+        self.tests = []
+        if tests is None:
+            pass
+        elif tests.data == 'test_list':
             self.tests = tests.children
-        elif self.command.test_type == 'test':
+        elif tests.data == 'test':
             self.tests = [tests]
-        else:
-            self.tests = []
 
     def _consume_tag(self):
         tag_type, token = self._current_tag
