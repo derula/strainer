@@ -2,11 +2,11 @@ from typing import ClassVar, Optional, Sequence
 
 from lark import Token, Tree
 
-from .issues import SemanticError
+from .issues import IssueCollector
 from .spec import CommandSpec, TaggedArgumentSpec
 
 
-class Arguments:
+class Arguments(IssueCollector):
     TAGS: ClassVar = {
         'over_under': TaggedArgumentSpec((b':over', b':under',), ('number',), True),
         'comparator': TaggedArgumentSpec((b':comparator',), ('string',)),
@@ -15,6 +15,7 @@ class Arguments:
     }
 
     def __init__(self, command: CommandSpec, parent_token: Token, arguments: Tree, block: Optional[Tree] = None):
+        super().__init__()
         self.command = command
         self._parent = parent_token
         self.tagged_arguments = {}
@@ -31,9 +32,9 @@ class Arguments:
                 if self._current_tag:
                     self._consume_tag()
                 if argument_type not in self.command.tagged_args:
-                    raise SemanticError(argument, f'Argument `{argument.value}` not allowed for this command.')
+                    self.append(argument, f'Argument `{argument.value}` not allowed for this command.')
                 if self._arg_stack:
-                    raise SemanticError(argument, 'Tagged arguments must be placed at the start.')
+                    self.append(argument, 'Tagged arguments must be placed at the start.')
                 self._current_tag = (argument_type, argument)
             else:
                 self._arg_stack.append((argument_type, argument))
@@ -42,16 +43,16 @@ class Arguments:
         for tag_type in self.command.tagged_args:
             spec = self.TAGS[tag_type]
             if spec.required and not self.tagged_arguments.keys() & spec.one_of:
-                raise SemanticError(self._parent, f'One of {spec.one_of} must be specified.')
+                self.append(self._parent, f'One of {spec.one_of} must be specified.')
         self.positional_arguments = self._consume_args('positional arguments', self.command.positional_args,
                                                        self._parent, True)
 
     def _parse_tests(self, tests: Optional[Tree]):
         if self.command.test_type is None:
             if tests is not None:
-                raise SemanticError(self._parent, 'Command does not allow specifying tests.')
+                self.append(self._parent, 'Command does not allow specifying tests.')
         elif tests is None or tests.data != self.command.test_type:
-            raise SemanticError(self._parent, f'Command requires a {self.command.test_type}.')
+            self.append(self._parent, f'Command requires a {self.command.test_type}.')
         if self.command.test_type == 'test_list':
             self.tests = tests.children
         elif self.command.test_type == 'test':
@@ -66,9 +67,9 @@ class Arguments:
             self.block = None
         if not self.command.has_block:
             if self.block is not None:
-                raise SemanticError(self._parent, 'Command does not allow specifying a block.')
+                self.append(self._parent, 'Command does not allow specifying a block.')
         elif self.block is None:
-            raise SemanticError(self._parent, 'Command requires a block.')
+            self.append(self._parent, 'Command requires a block.')
 
     def _consume_tag(self):
         tag_type, token = self._current_tag
@@ -77,10 +78,9 @@ class Arguments:
         except KeyError:
             spec = TaggedArgumentSpec()
         if token.value in self.tagged_arguments:
-            raise SemanticError(token, f'Parameter `{token.value}` was specified twice.')
-        for other_name in spec.one_of:
-            if other_name in self.tagged_arguments:
-                raise SemanticError(token, f'Only one of `{token.value}` or `{other_name}` may be specified.')
+            self.append(token, f'Parameter `{token.value}` was specified twice.')
+        elif self.tagged_arguments.keys() & spec.one_of:
+            self.append(token, f'Only one `{tag_type}` may be specified.')
         self.tagged_arguments[token.value] = self._consume_args(f'values for tag {token.value}', spec.value_tokens,
                                                                 token)
         self._current_tag = None
@@ -89,9 +89,9 @@ class Arguments:
         actual_len = len(self._arg_stack)
         expected_len = len(expected_types)
         if actual_len < expected_len:
-            raise SemanticError(token, f'Missing {category} (got {actual_len}, expected {expected_len}).')
-        if exact and actual_len > expected_len:
-            raise SemanticError(token, f'Too many {category} (got {actual_len}, expected {expected_len}).')
+            self.append(token, f'Missing {category} (got {actual_len}, expected {expected_len}).')
+        elif exact and actual_len > expected_len:
+            self.append(token, f'Too many {category} (got {actual_len}, expected {expected_len}).')
         for i, expected_type in enumerate(expected_types):
             actual_type, value = self._arg_stack[i]
             if expected_type == 'string_list' and actual_type == 'string':
@@ -102,8 +102,8 @@ class Arguments:
                 self._arg_stack[i] = ('string_list', Tree('string_list', [value]))
                 continue
             if expected_type != actual_type:
-                raise SemanticError(token, f'Incorrect value type at position {i+1} '
-                                           f'(got {actual_type}, expected {expected_type}).')
+                self.append(token, f'Incorrect value type at position {i+1} '
+                                   f'(got {actual_type}, expected {expected_type}).')
         args = [arg[1] for arg in self._arg_stack[:expected_len]]
         self._arg_stack = self._arg_stack[expected_len:]
         return args

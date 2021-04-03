@@ -23,8 +23,12 @@ class IssueCollector:
     __dirty: bool = field(default=False, init=False)
     __issues: list = field(default_factory=list, init=False)
 
-    def add_issue(self, source: Union[Token, SemanticError], message: str):
+    def append(self, source: Union[Token, SemanticError], message: str):
         self.__issues.append(Issue(source.line, source.column, message))
+        self.__dirty = True
+
+    def extend(self, other: 'IssueCollector'):
+        self.__issues.extend(other.__issues)
         self.__dirty = True
 
     @property
