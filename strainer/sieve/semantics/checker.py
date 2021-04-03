@@ -32,13 +32,7 @@ class SemanticChecker(IssueCollector):
 
     def command(self, command_type: str, domain: dict, command_name: Token, arguments: Tree,
                 block: Optional[Tree] = None):
-        command_spec = domain.get(command_name.value)
-        try:
-            block = block.children[0].children
-        except (AttributeError, IndexError):
-            block = None
-        else:
-            self.commands(block, spec.block_start)
+        command_spec, found_block = domain.get(command_name.value), self.block(block)
         if command_spec is None:
             self.add_error(command_name, f'Unknown {command_type} `{command_name}`. Are you missing a `require`?')
             return None, None
@@ -49,9 +43,9 @@ class SemanticChecker(IssueCollector):
             self.add_error(comparator[0], 'Comparator missing respective `require`.')
         for test in arguments.tests:
             self.command('test', self._tests, *test.children)
-        if not command_spec.has_block and block is not None:
+        if not command_spec.has_block and found_block:
             self.add_error(command_name, 'Command does not allow specifying a block.')
-        elif command_spec.has_block and block is None:
+        elif command_spec.has_block and not found_block:
             self.add_error(command_name, 'Command requires a block.')
         return command_spec, arguments
 
@@ -71,3 +65,11 @@ class SemanticChecker(IssueCollector):
             cap = spec.capabilities[cap.value]
             self._commands.update(cap.commands)
             self._tests.update(cap.tests)
+
+    def block(self, block: Optional[Tree]):
+        try:
+            block = block.children[0].children
+        except (AttributeError, IndexError):
+            return False
+        self.commands(block, spec.block_start)
+        return True
