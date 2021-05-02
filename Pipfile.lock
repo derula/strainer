@@ -85,10 +85,10 @@
         },
         "importlib-metadata": {
             "hashes": [
-                "sha256:742add720a20d0467df2f444ae41704000f50e1234f46174b51f9c6031a1bd71",
-                "sha256:b74159469b464a99cb8cc3e21973e4d96e05d3024d337313fedb618a6e86e6f4"
+                "sha256:8c501196e49fb9df5df43833bdb1e4328f64847763ec8a50703148b73784d581",
+                "sha256:d7eb1dea6d6a6086f8be21784cc9e3bcfa55872b52309bc5fad53a8ea444465d"
             ],
-            "version": "==3.7.3"
+            "version": "==4.0.1"
         },
         "lark-parser": {
             "hashes": [
@@ -106,10 +106,10 @@
         },
         "pyinstaller": {
             "hashes": [
-                "sha256:f5c0eeb2aa663cce9a5404292c0195011fa500a6501c873a466b2e8cad3c950c"
+                "sha256:5ecf8bbc230d7298a796e52bb745b95eee12878d141f1645612c99246ecd23f2"
             ],
             "index": "pypi",
-            "version": "==4.2"
+            "version": "==4.3"
         },
         "pyinstaller-hooks-contrib": {
             "hashes": [
@@ -245,10 +245,10 @@
         },
         "importlib-metadata": {
             "hashes": [
-                "sha256:742add720a20d0467df2f444ae41704000f50e1234f46174b51f9c6031a1bd71",
-                "sha256:b74159469b464a99cb8cc3e21973e4d96e05d3024d337313fedb618a6e86e6f4"
+                "sha256:8c501196e49fb9df5df43833bdb1e4328f64847763ec8a50703148b73784d581",
+                "sha256:d7eb1dea6d6a6086f8be21784cc9e3bcfa55872b52309bc5fad53a8ea444465d"
             ],
-            "version": "==3.7.3"
+            "version": "==4.0.1"
         },
         "mccabe": {
             "hashes": [
