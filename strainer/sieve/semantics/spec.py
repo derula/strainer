@@ -16,6 +16,7 @@ class CommandSpec:
 class Capability:
     commands: Mapping[bytes, CommandSpec] = field(default_factory=dict)
     tests: Mapping[bytes, CommandSpec] = field(default_factory=dict)
+    tags: Mapping[str, TaggedArgumentSpec] = field(default_factory=dict)
     comparators: Sequence[bytes] = ()
 
 
@@ -29,6 +30,12 @@ class TaggedArgumentSpec:
 
 document_start = object()
 block_start = object()
+core_tags = {
+    'over_under': TaggedArgumentSpec('`:over` or `:under`', (b':over', b':under',), ('number',), True),
+    'comparator': TaggedArgumentSpec('comparator', (b':comparator',), ('string',)),
+    'match_type': TaggedArgumentSpec('match type', (b':is', b':contains', b':matches',)),
+    'address_part': TaggedArgumentSpec('address part', (b':localpart', b':domain', b':all')),
+}
 core_commands = {
     b'keep': CommandSpec(),
     b'stop': CommandSpec(),
