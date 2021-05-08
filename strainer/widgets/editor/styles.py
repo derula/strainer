@@ -15,6 +15,7 @@ class Style(int, Enum):
     Control = auto()
     Action = auto()
     Test = auto()
+    Tag = auto()
 
 
 Style.TAG_STYLES = {Style.OverUnder, Style.Comparator, Style.AddressPart, Style.MatchType}

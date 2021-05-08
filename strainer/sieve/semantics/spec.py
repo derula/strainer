@@ -67,4 +67,7 @@ capabilities = {
     b'fileinto': Capability(commands={b'fileinto': CommandSpec(('string',))}),
     b'envelope': Capability(tests={b'envelope': CommandSpec(('string_list', 'string_list'),
                                                             ('comparator', 'match_type', 'address_part'))}),
+    b'body': Capability(tests={b'body': CommandSpec(('string_list',), ('comparator', 'match_type', 'body_transform'))},
+                        tags={'body_transform': TaggedArgumentSpec('body transform', (b':raw', b':content', b':text'),
+                                                                   {b':content': ('string_list',)})})
 }
