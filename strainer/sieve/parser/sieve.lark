@@ -5,7 +5,7 @@ command_name: CONTROL | ACTION | IDENTIFIER
 block: ";" | "{" commands "}"
 test: test_name arguments
 test_name: TEST | IDENTIFIER
-arguments: (string_list | string | NUMBER | TAG)* [test | test_list]
+arguments: (string_list | string | NUMBER | KNOWN_TAG | TAG)* [test | test_list]
 _list{type}: type ("," type)*
 test_list: "(" _list{test} ")"
 string_list: "[" _list{string} "]"
@@ -14,7 +14,8 @@ string: STRING | TEXT
 // Explicitly define to allow separate styling
 ACTION: /keep|discard|fileinto|redirect/
 CONTROL: /if\b|elsif\b|else|require|stop/
-TEST: /true|false|not\b|allof|anyof|exists|size|header|address|envelope|body/
+TEST: /true|false|not\b|allof|anyof|exists|size|header|address|envelope/
+KNOWN_TAG: /:over\b|:under\b|:comparator|:localpart|:domain|:all|:is|:contains|:matches/
 
 // Explicitly defined because automatic name would be something like __ANON_0
 IDENTIFIER.0: /[a-z_][a-z0-9_]*/

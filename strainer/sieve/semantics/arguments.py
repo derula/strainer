@@ -24,7 +24,7 @@ class Arguments(IssueCollector):
         runaway_positionals = []
         for argument in arguments:
             argument_type = argument.type.lower() if isinstance(argument, Token) else 'string_list'
-            if argument_type == 'tag':
+            if argument_type in ('known_tag', 'tag'):
                 if self._current_tag:
                     self._consume_tag()
                 if argument.value.lower() not in self.command.tags:
