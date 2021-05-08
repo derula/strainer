@@ -13,7 +13,6 @@ class SemanticChecker(IssueCollector):
         super().__init__()
         self._commands = spec.core_commands.copy()
         self._tests = spec.core_tests.copy()
-        self._tags = spec.core_tags.copy()
         self._comparators = {b'i;ascii-casemap', b'i;octet'}
 
     def check(self, ast: Tree):
@@ -37,7 +36,7 @@ class SemanticChecker(IssueCollector):
         if command_spec is None:
             self.add_error(command_name, 'Unknown {} `{}`. Are you missing a `require`?', command_type, command_name)
             return None, None
-        arguments = Arguments(command_spec, command_name, arguments, self._tags)
+        arguments = Arguments(command_spec, command_name, arguments)
         self.extend(arguments)
         comparator = arguments.tagged_arguments.get(b':comparator')
         if comparator and comparator[0].value not in self._comparators:
@@ -66,7 +65,6 @@ class SemanticChecker(IssueCollector):
             cap = spec.capabilities[cap.value]
             self._commands.update(cap.commands)
             self._tests.update(cap.tests)
-            self._tags.update(cap.tags)
 
     def block(self, block: Optional[Tree]):
         try:

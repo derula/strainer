@@ -21,7 +21,9 @@ class Editor(MenuMixin, FindMixin, QsciScintilla):
         ('selectionChanged', 'textChanged')
     )
     _find = Find(FindContent, FindOptions(True, True, True, True))
-    _pageMap = {'elsif': 'if', 'else': 'if'}
+    _pageMap = {'elsif': 'if', 'else': 'if',
+                'localpart': 'addresspart', 'domain': 'addresspart', 'all': 'addresspart',
+                'is': 'matchtype', 'contains': 'matchtype', 'matches': 'matchtype'}
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -66,13 +68,10 @@ class Editor(MenuMixin, FindMixin, QsciScintilla):
     def onHotspotClicked(self, position, modifiers):
         style = Style(self.SendScintilla(QsciScintilla.SCI_GETSTYLEAT, position))
         value = self.wordAtLineIndex(*self.lineIndexFromPosition(position))
-        category = style.name.lower()
+        page, category = value.lower(), style.name.lower()
         if style in Style.TAG_STYLES:
-            page, category = category, 'operators'
-        else:
-            page = value.lower()
-            page = self._pageMap.get(page, page)
-        self.window().reference().browse(category, page)
+            category = 'operators'
+        self.window().reference().browse(category, self._pageMap.get(page, page))
 
     def sizeHint(self):
         return QSize(750, 600)

@@ -8,15 +8,11 @@ class Style(int, Enum):
     Comment = auto()
     String = auto()
     Number = auto()
-    OverUnder = auto()
-    Comparator = auto()
-    AddressPart = auto()
-    MatchType = auto()
+    Tag = auto()
     Control = auto()
     Action = auto()
     Test = auto()
-    Tag = auto()
 
 
-Style.TAG_STYLES = {Style.OverUnder, Style.Comparator, Style.AddressPart, Style.MatchType}
+Style.TAG_STYLES = {Style.Tag}
 Style.IDENTIFIER_STYLES = {Style.Control, Style.Action, Style.Test}

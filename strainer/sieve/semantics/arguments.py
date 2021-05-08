@@ -1,19 +1,19 @@
-from typing import Dict, Optional, Sequence
+from typing import Optional, Sequence
 
 from lark import Token, Tree
 
 from .issues import IssueCollector
-from .spec import CommandSpec, TaggedArgumentSpec
+from .spec import CommandSpec
+from .tags import Tag
 
 
 class Arguments(IssueCollector):
-    UNKNOWN_TAG = TaggedArgumentSpec('unknown tag')
+    UNKNOWN_TAG = Tag('unknown tag')
 
-    def __init__(self, command: CommandSpec, parent_token: Token, arguments: Tree, tags: Dict[str, TaggedArgumentSpec]):
+    def __init__(self, command: CommandSpec, parent_token: Token, arguments: Tree):
         super().__init__()
         self.command = command
         self._parent = parent_token
-        self._tags = tags
         self.tagged_arguments = {}
         self._arg_stack = []
         self._current_tag = None
@@ -24,10 +24,10 @@ class Arguments(IssueCollector):
         runaway_positionals = []
         for argument in arguments:
             argument_type = argument.type.lower() if isinstance(argument, Token) else 'string_list'
-            if argument_type in self._tags or argument_type == 'tag':
+            if argument_type == 'tag':
                 if self._current_tag:
                     self._consume_tag()
-                if argument_type not in self.command.tagged_args:
+                if argument.value.lower() not in self.command.tags:
                     self.add_error(argument, 'Command `{}` takes no `{}` argument.', self._parent, argument)
                 if self._arg_stack:
                     self.add_error(argument, 'Tagged arguments must be placed at the beginning.')
@@ -38,8 +38,7 @@ class Arguments(IssueCollector):
                 self._arg_stack.append((argument_type, argument))
         if self._current_tag:
             self._consume_tag()
-        for tag_type in self.command.tagged_args:
-            spec = self._tags[tag_type]
+        for spec in self.command.tags:
             if spec.required and not self.tagged_arguments.keys() & spec.one_of:
                 self.add_command_error('requires {}', spec.name)
         self._arg_stack = [*runaway_positionals, *self._arg_stack]
@@ -66,7 +65,7 @@ class Arguments(IssueCollector):
     def _consume_tag(self):
         tag_type, token = self._current_tag
         try:
-            spec = self._tags[tag_type]
+            spec = self.command.tags[token.value]
         except KeyError:
             spec = self.UNKNOWN_TAG
         if token.value in self.tagged_arguments:
