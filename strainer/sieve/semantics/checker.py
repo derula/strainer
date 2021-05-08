@@ -32,7 +32,7 @@ class SemanticChecker(IssueCollector):
 
     def command(self, command_type: str, domain: dict, command_name: Token, arguments: Tree,
                 block: Optional[Tree] = None):
-        command_spec, found_block = domain.get(command_name.value), self.block(block)
+        command_spec, found_block = domain.get(command_name.value.lower()), self.block(block)
         if command_spec is None:
             self.add_error(command_name, 'Unknown {} `{}`. Are you missing a `require`?', command_type, command_name)
             return None, None
