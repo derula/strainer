@@ -74,8 +74,8 @@ class Arguments(IssueCollector):
         elif self.tagged_arguments.keys() & spec.one_of:
             self.add_error(token, 'Only one {} may be specified.', spec.name)
         token_value = token.value.decode('utf-8')  # Because Token is subclass of str, but gets confused
-        self.tagged_arguments[token.value] = self._consume_args(f'values for tag {token_value}', spec.value_tokens,
-                                                                token)
+        self.tagged_arguments[token.value] = self._consume_args(f'values for tag {token_value}',
+                                                                spec.value_tokens[token.value], token)
         self._current_tag = None
 
     def _consume_args(self, category: str, expected_types: Sequence[str], token: Token, exact: bool = False):

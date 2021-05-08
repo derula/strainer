@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Mapping, Optional, Sequence
+from typing import Mapping, Optional, Sequence, Union
 
 
 @dataclass
@@ -24,8 +24,14 @@ class Capability:
 class TaggedArgumentSpec:
     name: str
     one_of: Sequence[bytes] = ()
-    value_tokens: Sequence[str] = ()
+    value_tokens: Union[Sequence[str], Mapping[bytes, Sequence[str]]] = ()
     required: bool = False
+
+    def __post_init__(self):
+        if isinstance(self.value_tokens, (list, tuple)):
+            self.value_tokens = dict.fromkeys(self.one_of, self.value_tokens)
+        else:
+            self.value_tokens = {**dict.fromkeys(self.one_of, ()), **self.value_tokens}
 
 
 document_start = object()
