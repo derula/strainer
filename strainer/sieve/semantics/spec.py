@@ -53,4 +53,6 @@ capabilities = {
                                                                       tags.address_part))}),
     b'body': Capability(tests={b'body': CommandSpec(('string_list',),
                                                     tags.Tags(tags.comparator, tags.match_type, tags.body_transform))}),
+    b'convert': Capability(commands={b'convert': CommandSpec(('string', 'string', 'string_list'))},
+                           tests={b'convert': CommandSpec(('string', 'string', 'string_list'))}),
 }
