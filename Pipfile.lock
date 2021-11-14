@@ -217,14 +217,14 @@
         },
         "qscintilla": {
             "hashes": [
-                "sha256:7495fce5a71baf8ce7d078da4ec793f6c22cad5e187ad7af129587c4ac046161",
-                "sha256:86233910e6c87c66f24f7fa2762d72346d05dac1bff726fb8e65ffe0a5e95b84",
-                "sha256:9d558c6643c41a539836007943e4b9580e8e692a667ff69c7a1d6564a34de0e2",
-                "sha256:b3ccf6b9ff9515bb466c0f5a0307d08cc4c5af62fc82f0b98f79131518b6f644",
-                "sha256:d0291fe77a3fc8c077445c1b34ee13cb3e1005742d19fb488eb590f29dbd2bb6"
+                "sha256:5557d316fef16edb17b6f162eefdfc02c621abb6340da3f61ddac4c677adfe96",
+                "sha256:83b613acd8c91b6663c9725358b94dbcd2c1d0c946b638f919a13c501a829f64",
+                "sha256:a0e13196dc624d2ad5e89551e35e1d350245e65b5de572a575ae1b4f364f9095",
+                "sha256:d4eef7ee8e5e24403b5d362c13e43407b8d8719a79d3b2881d20810fe81373e6",
+                "sha256:f7f8df8f201d359657c4d6b72698d7b2e0b65b6a899311261770ff38ccd43eac"
             ],
             "index": "pypi",
-            "version": "==2.13.0"
+            "version": "==2.13.1"
         },
         "qtawesome": {
             "hashes": [
