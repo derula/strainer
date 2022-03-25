@@ -147,11 +147,11 @@
         },
         "pyinstaller-hooks-contrib": {
             "hashes": [
-                "sha256:7605e440ccb55904cb2a87d72e83642ef176fb7030c77e52ac4d9679bb3d1537",
-                "sha256:ab1d14fe053016fff7b0c6aea51d980bac6d02114b04063b46ef7dac70c70e1e"
+                "sha256:9765e68552803327d58f6c5eca970bb245b7cdf073e2f912a2a3cb50360bc2d8",
+                "sha256:9fa4ca03d058cba676c3cc16005076ce6a529f144c08b87c69998625fbd84e0a"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==2022.2"
+            "version": "==2022.3"
         },
         "pyparsing": {
             "hashes": [
@@ -230,14 +230,14 @@
         },
         "qscintilla": {
             "hashes": [
-                "sha256:5557d316fef16edb17b6f162eefdfc02c621abb6340da3f61ddac4c677adfe96",
-                "sha256:83b613acd8c91b6663c9725358b94dbcd2c1d0c946b638f919a13c501a829f64",
-                "sha256:a0e13196dc624d2ad5e89551e35e1d350245e65b5de572a575ae1b4f364f9095",
-                "sha256:d4eef7ee8e5e24403b5d362c13e43407b8d8719a79d3b2881d20810fe81373e6",
-                "sha256:f7f8df8f201d359657c4d6b72698d7b2e0b65b6a899311261770ff38ccd43eac"
+                "sha256:355ad3d5375ae3ced454446971aa1f084a2c95613979f1ad204052079b7145dc",
+                "sha256:4da5ab5c6874e6f7d5a013cb48a66aa4e4e86ca8219ebe98efafe8f61243c9bd",
+                "sha256:c5cc8c8a08b73ac70bb3257ce5c64b28109227542da947742b912c6860239ac0",
+                "sha256:f3131805e78050ddb6cd47cf4702b13203a5c8202119585b0c5d50f028562858",
+                "sha256:fca69611b3bde90bba180b5d3fa8819de439a7b0627e5d8c592e0895d71461ab"
             ],
             "index": "pypi",
-            "version": "==2.13.1"
+            "version": "==2.13.2"
         },
         "qtawesome": {
             "hashes": [
@@ -254,6 +254,14 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==2.0.1"
+        },
+        "setuptools": {
+            "hashes": [
+                "sha256:6221e37dc86fcdc9dad9d9eb2002e9f9798fe4aca1bf18f280e66e50c0eb7fca",
+                "sha256:ad88b13f3dc60420259c9877486908ddad12c7befaff0d624c7190f742abd64f"
+            ],
+            "markers": "python_version >= '3.7'",
+            "version": "==61.0.0"
         },
         "sievelib": {
             "hashes": [
