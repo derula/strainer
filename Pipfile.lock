@@ -149,19 +149,19 @@
         },
         "pyinstaller-hooks-contrib": {
             "hashes": [
-                "sha256:b57a90bb8520d6e1dbbaaae416875e28fa5a3b74d2e40e330d02d1ccadacc38c",
-                "sha256:b7f7da20e5b83c22219a21b8f849525e5f735197975313208f4e07ff9549cdaf"
+                "sha256:9dc611cf6667301e95384b4a0631b032bbffa16a0688f4cfa014d0c1e751d276",
+                "sha256:e38bf9266c57be19647762ee63b012683beb6919c6bc2ecdc66ca174edec44a0"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==2022.4"
+            "version": "==2022.6"
         },
         "pyparsing": {
             "hashes": [
-                "sha256:7bf433498c016c4314268d95df76c81b842a4cb2b276fa3312cfb1e1d85f6954",
-                "sha256:ef7b523f6356f763771559412c0d7134753f037822dad1b16945b7b846f7ad06"
+                "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb",
+                "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"
             ],
             "markers": "python_full_version >= '3.6.8'",
-            "version": "==3.0.8"
+            "version": "==3.0.9"
         },
         "pyqt5": {
             "hashes": [
@@ -228,14 +228,14 @@
         },
         "qscintilla": {
             "hashes": [
-                "sha256:5557d316fef16edb17b6f162eefdfc02c621abb6340da3f61ddac4c677adfe96",
-                "sha256:83b613acd8c91b6663c9725358b94dbcd2c1d0c946b638f919a13c501a829f64",
-                "sha256:a0e13196dc624d2ad5e89551e35e1d350245e65b5de572a575ae1b4f364f9095",
-                "sha256:d4eef7ee8e5e24403b5d362c13e43407b8d8719a79d3b2881d20810fe81373e6",
-                "sha256:f7f8df8f201d359657c4d6b72698d7b2e0b65b6a899311261770ff38ccd43eac"
+                "sha256:332147584af3f0f584384cc133e5fb32bafba317cdbfb9b53b944ff28665db9d",
+                "sha256:747ea02fc9ac8e9ad1c3c82528e6d5f7d83abad823c221d2a4bcc9f41cf04e5a",
+                "sha256:92ae5bf066e0bcb79f0c1df255882189b66c200f92f08ca14f09b82479469dce",
+                "sha256:c8db00dc1498e6a86c885bf75c628208dea21ec051eaaeb25946323567959975",
+                "sha256:fa48d5e0684c1183cc41cacacf5b180f22dcf29bcc8bafe2cd373832947e4179"
             ],
             "index": "pypi",
-            "version": "==2.13.1"
+            "version": "==2.13.3"
         },
         "qtawesome": {
             "hashes": [
@@ -255,11 +255,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:26ead7d1f93efc0f8c804d9fafafbe4a44b179580a7105754b245155f9af05a8",
-                "sha256:47c7b0c0f8fc10eec4cf1e71c6fdadf8decaa74ffa087e68cd1c20db7ad6a592"
+                "sha256:68e45d17c9281ba25dc0104eadd2647172b3472d9e01f911efa57965e8d51a36",
+                "sha256:a43bdedf853c670e5fed28e5623403bad2f73cf02f9a2774e91def6bda8265a7"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==62.1.0"
+            "version": "==62.3.2"
         },
         "sievelib": {
             "hashes": [
