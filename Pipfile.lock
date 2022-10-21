@@ -258,11 +258,11 @@
         },
         "qtawesome": {
             "hashes": [
-                "sha256:27d2e2bcb34cb5c9a7f61c29f34b24bf89ef50c79ffff7a76effe59bf781fcee",
-                "sha256:ec02e200231fa68a146a93845890aa0432a7edcba14bf811ff6975cf9acdab5d"
+                "sha256:1b3f48ffc933856cdc7ef9cdbab59e6270d91f42589cbadc5d7eb2b0af6cceb5",
+                "sha256:b431dfee46ccbe43aa5d40d5b187749e2bf052ca16b8fbdf98b7778a8beb1063"
             ],
             "index": "pypi",
-            "version": "==1.1.1"
+            "version": "==1.2.0"
         },
         "qtpy": {
             "hashes": [
