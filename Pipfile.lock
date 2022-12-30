@@ -134,11 +134,11 @@
         },
         "packaging": {
             "hashes": [
-                "sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb",
-                "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"
+                "sha256:2198ec20bd4c017b8f9717e00f0c8714076fc2fd93816750ab48e2c41de2cfd3",
+                "sha256:957e2148ba0e1a3b282772e791ef1d8083648bc131c8ab0c1feba110ce1146c3"
             ],
-            "markers": "python_version >= '3.6'",
-            "version": "==21.3"
+            "markers": "python_version >= '3.7'",
+            "version": "==22.0"
         },
         "pycparser": {
             "hashes": [
@@ -167,19 +167,11 @@
         },
         "pyinstaller-hooks-contrib": {
             "hashes": [
-                "sha256:91ecb30db757a8db8b6661d91d5df99e0998245f05f5cfaade0550922c7030a3",
-                "sha256:e06d0881e599d94dc39c6ed1917f0ad9b1858a2478b9892faac18bd48bcdc2de"
+                "sha256:1a125838a22d7b35a18993c6e56d3c5cc3ad7da00954f95bc5606523939203f2",
+                "sha256:5ae8da3a92cf20e37b3e00604d0c3468896e7d746e5c1449473597a724331b0b"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==2022.13"
-        },
-        "pyparsing": {
-            "hashes": [
-                "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb",
-                "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"
-            ],
-            "markers": "python_full_version >= '3.6.8'",
-            "version": "==3.0.9"
+            "version": "==2022.14"
         },
         "pyqt5": {
             "hashes": [
@@ -262,11 +254,11 @@
         },
         "qtawesome": {
             "hashes": [
-                "sha256:abc465da18158a4f2973406ae0ecd6c1daf87ddcd950e3a46497b708dd9674b3",
-                "sha256:f440dcab3d4fc8acfa5875c8c565d7bd58e537967a703679484c5c567be3f120"
+                "sha256:97b6c66456592195494993d60ac82cc6b85fe49bfd1f12973eb2ad1fee20fa3f",
+                "sha256:c575789e73b35be8f1a8c1474a650dff1afff37b41c1d8878c0e24215bba6590"
             ],
             "index": "pypi",
-            "version": "==1.2.1"
+            "version": "==1.2.2"
         },
         "qtpy": {
             "hashes": [
