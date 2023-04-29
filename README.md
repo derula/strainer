@@ -1,3 +1,12 @@
+<style>blockquote {
+    background-color: rgba(255, 0, 0, .25);
+    border-radius: 5px;
+}</style>
+
+> ### Warning
+> strainer is no longer in active development. Consider using an alternative
+> such as [thsmi/sieve](https://github.com/thsmi/sieve).
+
 # strainer
 A GUI for Sieve scripts and ManageSieve communications.
 
